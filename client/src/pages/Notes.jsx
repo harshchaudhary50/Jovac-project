@@ -1,0 +1,166 @@
+import React, { useState, useEffect } from 'react';
+import { motion } from "motion/react";
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { serverUrl } from '../App';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import TopicForm from '../components/TopicForm';
+import Sidebar from '../components/Sidebar';
+import FinalResult from '../components/FinalResult';
+import { FiBookOpen, FiArrowRight, FiAlertCircle, FiTool } from 'react-icons/fi';
+
+function Notes() {
+  const navigate = useNavigate();
+  const { userData } = useSelector((state) => state.user);
+  const credits = userData?.credits ?? 0;
+  
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
+
+  const [adminSettings, setAdminSettings] = useState(() => {
+    const savedLocal = localStorage.getItem('adminSettings');
+    if (savedLocal) {
+      try { return JSON.parse(savedLocal); } catch (e) {}
+    }
+    return { maintenanceMode: false };
+  });
+
+  useEffect(() => {
+    axios.get(`${serverUrl}/api/admin/settings`)
+      .then(res => {
+        if (res.data?.success && res.data.settings) {
+          setAdminSettings(res.data.settings);
+          localStorage.setItem('adminSettings', JSON.stringify(res.data.settings));
+        }
+      })
+      .catch(() => null);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[#EDEBE0] dark:bg-[#0d0d0d] text-[#1e2025] dark:text-[#ffffff] relative overflow-hidden font-sans selection:bg-[#EDEBE0] selection:text-[#1e2025] transition-colors duration-300">
+      
+      {/* Background Soft Organic Blobs */}
+      <div className="trekt-bg-blob-top" />
+      <div className="trekt-bg-blob-center" />
+      <div className="trekt-bg-blob-bottom" />
+
+      {/* Global Responsive Navbar */}
+      <Navbar />
+
+      {/* Main Note Generator Container */}
+      <main className="max-w-7xl mx-auto px-6 sm:px-12 pt-28 sm:pt-32 pb-16 relative z-10 space-y-8 font-sans">
+        
+        {/* Top Header Banner */}
+        <div className="relative bg-[#EDEBE0] dark:bg-[#161616] px-8 sm:px-12 py-8 sm:py-10 rounded-[28px] border border-[#B2B4B7]/40 dark:border-[#262626] trekt-card-shadow trekt-card-hover flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
+          
+          <div className="space-y-2 z-10 max-w-2xl text-center md:text-left py-1">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#52565c] dark:text-gray-400 block">
+              AI Exam Note Engine
+            </span>
+            <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif text-[#1e2025] dark:text-white tracking-tight leading-tight">
+              Generate Exam-Oriented Notes
+            </h1>
+            <p className="text-xs sm:text-sm text-[#52565c] dark:text-gray-300 font-medium leading-relaxed">
+              Enter your chapter or syllabus topic below. AI will synthesize structured conceptual explanations, key formulas, priority topic highlights, and visual diagrams tailored for semester exams.
+            </p>
+          </div>
+
+          {/* Direct History Quick Link */}
+          <button
+            onClick={() => navigate('/history')}
+            className="px-6 py-3.5 rounded-full bg-white dark:bg-[#222222] hover:bg-[#1e2025] dark:hover:bg-white text-[#1e2025] dark:text-white hover:text-white dark:hover:text-[#0d0d0d] border border-[#B2B4B7]/40 dark:border-[#303030] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs shrink-0 cursor-pointer"
+          >
+            <span>Saved Note History</span>
+            <FiArrowRight className="w-4 h-4" />
+          </button>
+
+        </div>
+
+        {/* System Maintenance Banner if Active */}
+        {adminSettings?.maintenanceMode && (
+          <div className="p-5 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-[#1e2025] dark:text-amber-200 flex items-center justify-between gap-4 shadow-xs">
+            <div className="flex items-center gap-3">
+              <span className="p-2.5 rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold shrink-0">
+                <FiTool className="w-5 h-5 animate-bounce" />
+              </span>
+              <div>
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                  System Maintenance Mode Active
+                </h4>
+                <p className="text-xs font-medium text-[#52565c] dark:text-gray-300">
+                  AI Note Generation is temporarily paused for scheduled server upgrades. Please check back shortly.
+                </p>
+              </div>
+            </div>
+            <span className="hidden sm:inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-extrabold uppercase tracking-wider shrink-0">
+              Maintenance On
+            </span>
+          </div>
+        )}
+
+        {/* Note Topic Input Form */}
+        <TopicForm 
+          loading={loading} 
+          setResult={setResult} 
+          setLoading={setLoading} 
+          setError={setError}
+          isMaintenance={adminSettings?.maintenanceMode === true}
+        />
+
+        {/* Error Alert Box */}
+        {error && (
+          <div className="p-4 rounded-2xl bg-red-100 dark:bg-red-950/60 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-200 text-xs font-bold flex items-center gap-2.5">
+            <FiAlertCircle className="w-5 h-5 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Empty Placeholder before generation */}
+        {!result && !loading && (
+          <motion.div 
+            whileHover={{ scale: 1.01 }}
+            className="p-12 sm:p-16 rounded-3xl bg-[#EDEBE0] dark:bg-[#161616] border border-dashed border-[#B2B4B7]/60 dark:border-[#262626] flex flex-col items-center justify-center text-center space-y-3 trekt-card-shadow"
+          >
+            <FiBookOpen className="w-8 h-8 text-[#1e2025] dark:text-white" />
+            <div className="space-y-1 max-w-sm">
+              <h3 className="text-base font-extrabold text-[#1e2025] dark:text-white">Generated Notes Will Appear Here</h3>
+              <p className="text-xs text-[#52565c] dark:text-gray-400 font-medium leading-relaxed">
+                Fill in the form above and click "Generate Exam Notes" to instantly produce your exam study material.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Generated Result View Layout */}
+        {result && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start"
+          >
+            {/* Left Sidebar Table of Contents / Highlights */}
+            <div className="lg:col-span-1">
+              <Sidebar result={result} />
+            </div>
+
+            {/* Right Main Note Output */}
+            <div className="lg:col-span-3 bg-[#EDEBE0] dark:bg-[#161616] border border-[#B2B4B7]/40 dark:border-[#262626] rounded-3xl p-6 sm:p-8 trekt-card-shadow">
+              <FinalResult result={result} />
+            </div>
+          </motion.div>
+        )}
+
+      </main>
+
+      {/* Global Footer */}
+      <Footer />
+
+    </div>
+  );
+}
+
+export default Notes;

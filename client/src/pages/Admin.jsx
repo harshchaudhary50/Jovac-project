@@ -38,11 +38,11 @@ class AdminTabBoundary extends React.Component {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="p-8 text-center rounded-2xl bg-white dark:bg-[#161616] border border-[#B2B4B7]/40 dark:border-[#262626] space-y-3 font-sans">
-                    <p className="text-xs font-bold text-[#1e2025] dark:text-white">Tab view reloaded cleanly.</p>
+                <div className="p-8 text-center rounded-3xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] space-y-3 font-sans trekt-card-shadow">
+                    <p className="text-xs font-bold text-[#1E2224] dark:text-white">Tab view reloaded cleanly.</p>
                     <button 
                         onClick={() => this.setState({ hasError: false })}
-                        className="px-4 py-2 rounded-full bg-[#1e2025] dark:bg-white text-white dark:text-[#0d0d0d] text-xs font-bold cursor-pointer"
+                        className="px-4 py-2 rounded-full bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d] text-xs font-bold cursor-pointer"
                     >
                         Reset Tab View
                     </button>
@@ -57,19 +57,10 @@ function Admin() {
     const { userData } = useSelector((state) => state.user);
     const navigate = useNavigate();
 
-    // Route Protection Ready (Uncomment in production when logged in as admin)
-    /*
-    useEffect(() => {
-        if (userData && userData.role && userData.role.toLowerCase() !== "admin") {
-            navigate("/dashboard", { replace: true });
-        }
-    }, [userData, navigate]);
-    */
-
     const [activeTab, setActiveTab] = useState('overview');
     const [loading, setLoading] = useState(false);
     
-    // Default fallback datasets to guarantee 0% blank screen on tab switches
+    // Default fallback datasets
     const defaultOverview = {
         totalUsers: 1284,
         activeUsers: 842,
@@ -137,7 +128,6 @@ function Admin() {
         isBannerActive: true
     };
 
-    // Admin state data initialized with safe defaults
     const [overviewData, setOverviewData] = useState(defaultOverview);
     const [usersList, setUsersList] = useState(defaultUsers);
     const [notesLogs, setNotesLogs] = useState(defaultNotes);
@@ -188,19 +178,19 @@ function Admin() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#EDEBE0] dark:bg-[#0d0d0d] text-[#1e2025] dark:text-white transition-colors duration-300 flex flex-col justify-between">
+        <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#0d0d0d] text-[#1E2224] dark:text-white flex flex-col justify-between selection:bg-[#EBD7BE] transition-colors duration-300">
             <Navbar />
 
-            <div className="pt-20 pb-12 px-4 sm:px-8 max-w-6xl mx-auto w-full space-y-6 flex-1">
+            <div className="pt-24 pb-16 px-4 sm:px-8 max-w-6xl mx-auto w-full space-y-6 flex-1">
                 
-                {/* Compact Minimal Header */}
+                {/* Header */}
                 <div className="flex items-center justify-between pt-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[#1e2025] dark:bg-white text-white dark:text-[#0d0d0d] flex items-center justify-center font-bold text-sm shadow-xs">
+                        <div className="w-9 h-9 rounded-2xl bg-[#2B5866] dark:bg-white text-white dark:text-[#0d0d0d] flex items-center justify-center font-bold text-sm shadow-xs">
                             <FiShield className="w-4 h-4" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-bold text-[#1e2025] dark:text-white font-serif-title">
+                            <h1 className="text-xl font-bold text-[#1E2224] dark:text-white font-serif-title">
                                 Admin Console
                             </h1>
                         </div>
@@ -208,14 +198,14 @@ function Admin() {
 
                     <button
                         onClick={() => fetchAllAdminData(true)}
-                        className="px-3.5 py-1.5 rounded-full bg-white dark:bg-[#1c1c1c] text-[#1e2025] dark:text-gray-200 border border-[#B2B4B7]/40 dark:border-[#262626] text-xs font-bold hover:border-[#1e2025] transition cursor-pointer"
+                        className="px-4 py-2 rounded-full bg-white dark:bg-[#161616] text-[#1E2224] dark:text-white border border-[#E8DFD5] dark:border-[#262626] text-xs font-bold hover:border-[#C85A32] dark:hover:border-white transition cursor-pointer shadow-xs"
                     >
-                        Refresh
+                        Refresh Data
                     </button>
                 </div>
 
-                {/* Minimal Tab Bar */}
-                <div className="p-1 rounded-2xl bg-white/80 dark:bg-[#161616]/80 border border-[#B2B4B7]/30 dark:border-[#262626] flex items-center gap-1 overflow-x-auto no-scrollbar">
+                {/* Minimal Tab Bar with Sliding Underline */}
+                <div className="border-b border-[#E8DFD5] dark:border-[#262626] flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar">
                     {navTabs.map((tab) => {
                         const Icon = tab.icon;
                         const isActive = activeTab === tab.id;
@@ -223,23 +213,21 @@ function Admin() {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className="relative px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer select-none shrink-0"
+                                className={`relative px-3 sm:px-4 py-3 text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer select-none shrink-0 ${
+                                    isActive 
+                                        ? "text-[#C85A32] dark:text-white" 
+                                        : "text-[#5C6468] dark:text-gray-400 hover:text-[#1E2224] dark:hover:text-white"
+                                }`}
                             >
+                                <Icon className="w-4 h-4" />
+                                <span>{tab.label}</span>
                                 {isActive && (
                                     <motion.div
-                                        layoutId="activeAdminTabMinimal"
-                                        transition={{ type: "spring", stiffness: 400, damping: 35 }}
-                                        className="absolute inset-0 bg-[#1e2025] dark:bg-white rounded-xl shadow-xs"
+                                        layoutId="activeAdminTabUnderline"
+                                        transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                                        className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#C85A32] dark:bg-white rounded-full"
                                     />
                                 )}
-                                <span className={`relative z-10 flex items-center gap-1.5 ${
-                                    isActive 
-                                        ? "text-white dark:text-[#0d0d0d]" 
-                                        : "text-[#52565c] dark:text-gray-300 hover:text-[#1e2025] dark:hover:text-white"
-                                }`}>
-                                    <Icon className="w-3.5 h-3.5" />
-                                    <span>{tab.label}</span>
-                                </span>
                             </button>
                         );
                     })}
@@ -248,8 +236,8 @@ function Admin() {
                 {/* Main Content Area */}
                 {loading ? (
                     <div className="py-20 text-center space-y-2">
-                        <div className="w-8 h-8 border-3 border-[#1e2025] dark:border-white border-t-transparent rounded-full animate-spin mx-auto" />
-                        <p className="text-xs text-[#52565c] dark:text-gray-400 font-bold">Loading...</p>
+                        <div className="w-8 h-8 border-3 border-[#C85A32] dark:border-white border-t-transparent rounded-full animate-spin mx-auto" />
+                        <p className="text-xs text-[#5C6468] dark:text-gray-400 font-bold">Loading console...</p>
                     </div>
                 ) : (
                     <AdminTabBoundary key={activeTab}>

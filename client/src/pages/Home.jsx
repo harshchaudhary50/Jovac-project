@@ -1,42 +1,42 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { motion, AnimatePresence } from "motion/react";
-import { useNavigate } from 'react-router-dom';
-import heroImg from '../assets/hero_illustration.jpg';
-import DemoPreview from '../components/DemoPreview';
+import { motion } from "motion/react";
+import heroImg from "../assets/hero_illustration.jpg";
 import { 
-  FiArrowRight, 
-  FiCheckCircle, 
-  FiBookOpen, 
   FiZap, 
-  FiShare2, 
-  FiDownload, 
+  FiCheckCircle, 
+  FiFileText, 
+  FiCpu, 
+  FiTrendingUp, 
+  FiShield, 
   FiAward, 
-  FiFileText,
-  FiTrendingUp,
-  FiPieChart,
-  FiChevronDown,
-  FiChevronUp,
-  FiUsers,
+  FiArrowRight, 
   FiCheck,
-  FiCpu,
-  FiTarget
+  FiBookOpen,
+  FiShare2,
+  FiDownload,
+  FiChevronDown,
+  FiLayers,
+  FiTarget,
+  FiTable
 } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
   const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState(null);
 
-  const toggleFaq = (idx) => {
-    setOpenFaq(openFaq === idx ? null : idx);
+  const toggleFaq = (index) => {
+    setOpenFaq(openFaq === index ? null : index);
   };
 
   return (
-    <div className="min-h-screen bg-[#EDEBE0] text-[#1e2025] relative overflow-hidden font-sans selection:bg-[#EDEBE0] selection:text-[#1e2025]">
+    <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#0d0d0d] text-[#1E2224] dark:text-white relative overflow-hidden font-sans selection:bg-[#EBD7BE] selection:text-[#1E2224] transition-colors duration-300">
       
-      {/* Soft Organic Background Blobs (Soft Sand & Iris Ice Palette) */}
+      {/* Background Soft Organic Washes */}
       <div className="trekt-bg-blob-top" />
+      <div className="trekt-bg-blob-center" />
       <div className="trekt-bg-blob-bottom" />
 
       {/* Clean Navbar */}
@@ -52,21 +52,25 @@ function Home() {
           transition={{ duration: 0.6 }}
           className="lg:col-span-6 space-y-5 relative z-10"
         >
-          <h1 className="text-4xl sm:text-6xl font-serif text-[#1e2025] leading-[1.15] tracking-tight">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#B86337] dark:text-amber-400 block">
+            AI-Powered Exam Co-Pilot
+          </span>
+
+          <h1 className="text-4xl sm:text-6xl font-serif text-[#1E2224] dark:text-white leading-[1.15] tracking-tight">
             Your complete <br />
             roadmap to exam <br />
-            <span className="italic font-normal text-[#52565c]">excellence</span>
+            <span className="italic font-normal text-[#C85A32] dark:text-white">excellence</span>
           </h1>
 
-          <p className="text-sm sm:text-base text-[#52565c] max-w-lg leading-relaxed font-normal">
+          <p className="text-sm sm:text-base text-[#5C6468] dark:text-gray-400 max-w-lg leading-relaxed font-normal">
             Transform dense textbooks, complex syllabi, and lecture slides into high-yield exam notes, 5-minute revision cheat sheets, auto-generated flowcharts, and printable PDFs in under 5 seconds.
           </p>
 
-          {/* Action Button - Soft Palette Charcoal Pill */}
+          {/* Action Buttons */}
           <div className="pt-2 flex flex-col sm:flex-row items-center gap-4">
             <button 
               onClick={() => navigate('/notes')}
-              className="w-full sm:w-auto bg-[#1e2025] hover:bg-[#2d3037] text-white font-bold text-xs uppercase tracking-wider px-8 py-3.5 rounded-full shadow-md shadow-[#1e2025]/10 transition-all flex items-center justify-center gap-2 shrink-0"
+              className="w-full sm:w-auto bg-[#C85A32] dark:bg-white hover:bg-[#B24B27] dark:hover:bg-gray-100 text-white dark:text-[#0d0d0d] font-bold text-xs uppercase tracking-wider px-8 py-3.5 rounded-full shadow-md shadow-[#C85A32]/20 dark:shadow-none transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
             >
               <span>START CREATING NOTES</span>
               <FiArrowRight />
@@ -74,22 +78,22 @@ function Home() {
 
             <button 
               onClick={() => navigate('/pricing')}
-              className="w-full sm:w-auto bg-[#EDEBE0] hover:bg-[#E0E3ED] text-[#1e2025] border border-[#B2B4B7]/40 font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-full transition-all text-center"
+              className="w-full sm:w-auto bg-white dark:bg-[#161616] hover:bg-[#F5EBE1] dark:hover:bg-[#222222] text-[#2B5866] dark:text-white border border-[#E8DFD5] dark:border-[#262626] font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-full transition-all text-center cursor-pointer shadow-xs"
             >
               VIEW CREDIT PLANS
             </button>
           </div>
 
           {/* Micro Guarantees */}
-          <div className="flex flex-wrap items-center gap-5 pt-1 text-xs font-semibold text-[#52565c]">
+          <div className="flex flex-wrap items-center gap-5 pt-1 text-xs font-semibold text-[#5C6468] dark:text-gray-400">
             <span className="flex items-center gap-1.5">
-              <FiCheckCircle className="text-[#1e2025] w-4 h-4" /> 50 Free Signup Credits
+              <FiCheckCircle className="text-[#6B7B52] dark:text-emerald-400 w-4 h-4" /> 50 Free Signup Credits
             </span>
             <span className="flex items-center gap-1.5">
-              <FiCheckCircle className="text-[#1e2025] w-4 h-4" /> Aligned to Your Syllabus
+              <FiCheckCircle className="text-[#6B7B52] dark:text-emerald-400 w-4 h-4" /> Aligned to Your Syllabus
             </span>
             <span className="flex items-center gap-1.5">
-              <FiCheckCircle className="text-[#1e2025] w-4 h-4" /> Instant PDF Exports
+              <FiCheckCircle className="text-[#6B7B52] dark:text-emerald-400 w-4 h-4" /> Instant PDF Exports
             </span>
           </div>
         </motion.div>
@@ -101,7 +105,7 @@ function Home() {
           transition={{ duration: 0.7, delay: 0.15 }}
           className="lg:col-span-6 relative z-10"
         >
-          <div className="relative rounded-3xl p-3 bg-gradient-to-br from-[#EDEBE0]/80 via-[#E0E3ED]/50 to-transparent border border-[#E0E3ED] shadow-xl">
+          <div className="relative rounded-3xl p-3 bg-gradient-to-br from-white via-[#F5EBE1] to-[#EBD7BE]/40 dark:from-[#1a1a1a] dark:via-[#161616] dark:to-[#121212] border border-[#E8DFD5] dark:border-[#262626] shadow-xl">
             <img 
               src={heroImg} 
               alt="Students Studying with AI Notes" 
@@ -112,253 +116,224 @@ function Home() {
 
       </section>
 
-      {/* ================= REALISTIC SOCIAL PROOF & STATS STRIP ================= */}
-      <section className="py-10 bg-[#EDEBE0]/50 border-y border-[#E0E3ED] relative z-10">
+      {/* ================= SOCIAL PROOF & STATS STRIP ================= */}
+      <section className="py-10 bg-white/60 dark:bg-[#141414]/80 border-y border-[#E8DFD5] dark:border-[#262626] relative z-10">
         <div className="max-w-7xl mx-auto px-6 sm:px-12 space-y-8">
           
           {/* Top Social Proof Bar: Student Avatars & Star Ratings */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-[#B2B4B7]/30">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-[#E8DFD5] dark:border-[#262626]">
             
             {/* Student Avatar Stack */}
             <div className="flex items-center gap-3">
               <div className="flex -space-x-2.5 overflow-hidden">
-                <img className="inline-block h-9 w-9 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Student" />
-                <img className="inline-block h-9 w-9 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="Student" />
-                <img className="inline-block h-9 w-9 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="Student" />
-                <img className="inline-block h-9 w-9 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80" alt="Student" />
+                <img className="inline-block h-9 w-9 rounded-full ring-2 ring-white dark:ring-[#161616] object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Student" />
+                <img className="inline-block h-9 w-9 rounded-full ring-2 ring-white dark:ring-[#161616] object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="Student" />
+                <img className="inline-block h-9 w-9 rounded-full ring-2 ring-white dark:ring-[#161616] object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="Student" />
+                <img className="inline-block h-9 w-9 rounded-full ring-2 ring-white dark:ring-[#161616] object-cover" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80" alt="Student" />
               </div>
               <div className="space-y-0.5">
-                <div className="flex items-center gap-1 text-amber-500 text-xs">
-                  ★ ★ ★ ★ ★ <span className="font-bold text-[#1e2025] ml-1">4.9/5.0</span>
+                <div className="flex items-center gap-1 text-[#DA9B42] dark:text-amber-400 text-xs">
+                  ★ ★ ★ ★ ★ <span className="font-bold text-[#1E2224] dark:text-white ml-1">4.9/5.0</span>
                 </div>
-                <p className="text-xs text-[#52565c] font-semibold">
+                <p className="text-xs text-[#5C6468] dark:text-gray-400 font-semibold">
                   Trusted by 25,000+ active students this semester
                 </p>
               </div>
             </div>
 
-            {/* Verification Badge */}
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#E0E3ED] shadow-xs text-xs font-bold text-[#1e2025]">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            {/* Verification Text */}
+            <div className="flex items-center gap-2 text-xs font-bold text-[#6B7B52] dark:text-emerald-400">
+              <FiCheckCircle className="w-4 h-4" />
               <span>Verified Syllabus Alignment Guarantee</span>
             </div>
 
           </div>
 
-          {/* 4 Realistic Metric Cards */}
+          {/* 4 Metric Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-left">
             <StatBox 
-              icon={<FiBookOpen className="w-4 h-4 text-[#1e2025]" />}
+              icon={<FiBookOpen className="w-4 h-4 text-[#C85A32] dark:text-white" />}
               number="25,000+" 
               label="Exam Notes Generated" 
               subtitle="Over 2.5 million chapter pages summarized"
             />
             <StatBox 
-              icon={<FiTarget className="w-4 h-4 text-[#1e2025]" />}
+              icon={<FiTarget className="w-4 h-4 text-[#2B5866] dark:text-teal-400" />}
               number="99.4%" 
               label="Syllabus Precision" 
               subtitle="Tuned for semester & board pattern"
             />
             <StatBox 
-              icon={<FiAward className="w-4 h-4 text-[#1e2025]" />}
+              icon={<FiAward className="w-4 h-4 text-[#DA9B42] dark:text-amber-400" />}
               number="50+ Boards" 
               label="Universities & Boards" 
               subtitle="CBSE, GATE, JEE, VTU, AKTU, DU, NEET"
             />
             <StatBox 
-              icon={<FiTrendingUp className="w-4 h-4 text-[#1e2025]" />}
+              icon={<FiTrendingUp className="w-4 h-4 text-[#6B7B52] dark:text-emerald-400" />}
               number="5 Seconds" 
               label="Average Generation Time" 
               subtitle="Instant PDF export & Mermaid diagrams"
             />
           </div>
 
-          {/* Board Ticker Pills */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-[11px] font-bold text-[#52565c]">
-            <span className="uppercase tracking-wider mr-2 text-[#1e2025]">Supported Syllabi:</span>
-            <span className="px-3 py-1 rounded-full bg-white border border-[#E0E3ED]">B.Tech Semester Exams</span>
-            <span className="px-3 py-1 rounded-full bg-white border border-[#E0E3ED]">CBSE Class 10 & 12</span>
-            <span className="px-3 py-1 rounded-full bg-white border border-[#E0E3ED]">GATE & JEE Aspirants</span>
-            <span className="px-3 py-1 rounded-full bg-white border border-[#E0E3ED]">VTU & AKTU Syllabus</span>
-            <span className="px-3 py-1 rounded-full bg-white border border-[#E0E3ED]">Delhi & Mumbai University</span>
+          {/* Supported Syllabi List */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-[#5C6468] dark:text-gray-400">
+            <span className="uppercase tracking-wider font-extrabold text-[#1E2224] dark:text-white">Supported Syllabi:</span>
+            <span>B.Tech Semester Exams</span>
+            <span>•</span>
+            <span>CBSE Class 10 & 12</span>
+            <span>•</span>
+            <span>GATE & JEE Aspirants</span>
+            <span>•</span>
+            <span>VTU & AKTU Syllabus</span>
+            <span>•</span>
+            <span>Delhi & Mumbai University</span>
           </div>
 
         </div>
       </section>
 
-      {/* ================= WHAT WE OFFER -> OUR OFFER SECTION ================= */}
+      {/* ================= WHAT WE OFFER ================= */}
       <section className="py-16 px-6 sm:px-12 max-w-7xl mx-auto text-center space-y-10 relative z-10">
         
         {/* Section Header */}
         <div className="space-y-2 max-w-xl mx-auto">
-          <h2 className="text-3xl sm:text-5xl font-serif text-[#1e2025]">
+          <h2 className="text-3xl sm:text-5xl font-serif text-[#1E2224] dark:text-white">
             Our Learning Pillars
           </h2>
-          <p className="text-xs sm:text-sm text-[#52565c] leading-relaxed">
-            Engineered specifically to transform raw textbooks into exam-oriented mastery tools.
+          <p className="text-xs sm:text-sm text-[#5C6468] dark:text-gray-400">
+            Engineered precisely for semester exams, competitive entrances, and board papers.
           </p>
         </div>
 
-        {/* 3 Step Pillars */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {/* 3 Pillars Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
           
           <OfferCard 
-            icon={<FiBookOpen className="w-5 h-5 text-[#1e2025]" />}
-            title="1. Deep Conceptual Notes"
-            description="Structured notes with priority tags (⭐ to ⭐⭐⭐), core definitions, formulas, and key exam takeaways."
+            icon={<FiBookOpen className="w-6 h-6 text-[#C85A32] dark:text-white" />}
+            title="Instant Concept Notes"
+            description="Deep dive into complex theoretical concepts, formula derivations, code samples, and university syllabus requirements in seconds."
           />
 
           <OfferCard 
-            icon={<FiZap className="w-5 h-5 text-[#1e2025]" />}
-            title="2. 5-Min Rapid Revision"
-            description="One-click cheat sheets optimized for active recall and last-night exam cramming."
+            icon={<FiZap className="w-6 h-6 text-[#DA9B42] dark:text-amber-400" />}
+            title="5-Minute Rapid Revision"
+            description="Bullet point summaries, crucial keywords, and formula sheets designed specifically for rapid review right before exam time."
           />
 
           <OfferCard 
-            icon={<FiShare2 className="w-5 h-5 text-[#1e2025]" />}
-            title="3. Auto Diagrams & PDFs"
-            description="Automatic Mermaid flowcharts, Recharts visual analytics, and printable PDF downloads."
+            icon={<FiShare2 className="w-6 h-6 text-[#2B5866] dark:text-teal-400" />}
+            title="Visual Flowcharts & Diagrams"
+            description="Interactive Mermaid syntax flowcharts, system architecture diagrams, and visual concept maps generated automatically."
           />
 
         </div>
 
       </section>
 
-      {/* ================= INTERACTIVE DEMO PREVIEW SECTION ================= */}
-      <section className="py-12 px-6 sm:px-12 max-w-7xl mx-auto space-y-6 relative z-10">
-        <div className="text-center space-y-2 max-w-xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-serif text-[#1e2025]">
-            Test the AI Engine Yourself
-          </h2>
-          <p className="text-xs sm:text-sm text-[#52565c]">
-            Switch tabs below to see how PrepAI formats real university exam notes.
-          </p>
-        </div>
+      {/* ================= INTERACTIVE DEMO PREVIEW ================= */}
+      <DemoPreview />
 
-        <DemoPreview />
-      </section>
-
-      {/* ================= LEARN MORE -> FEATURES BENTO SECTION ================= */}
+      {/* ================= FEATURES GRID ================= */}
       <section id="features" className="py-16 px-6 sm:px-12 max-w-7xl mx-auto space-y-10 relative z-10">
         
-        {/* Header */}
         <div className="text-center space-y-2 max-w-xl mx-auto">
-          <h2 className="text-3xl sm:text-5xl font-serif text-[#1e2025]">
-            Engineered for High Marks
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-amber-400">
+            BUILT FOR PERFORMANCE
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-serif text-[#1E2224] dark:text-white">
+            Supercharged Exam Preparation Features
           </h2>
-          <p className="text-xs sm:text-sm text-[#52565c] leading-relaxed">
-            Save hundreds of hours summarizing textbooks with our suite of specialized AI exam tools.
-          </p>
         </div>
 
-        {/* Features Cards Grid (No Emojis, SVG Icons Only) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <FeatureTrektCard 
-            icon={<FiCpu className="w-5 h-5 text-[#1e2025]" />}
-            title="Syllabus Precision Alignment"
-            description="Automatically tunes generated content to your class level (Class 10, B.Tech, Medical) and target exam board (GATE, JEE, NEET, CBSE, University)."
+            icon={<FiAward className="w-5 h-5 text-[#C85A32] dark:text-white" />}
+            title="Exam Question Prediction"
+            description="Anticipate 2-mark, 5-mark, and 10-mark questions with model answer structures based on frequent exam trends."
           />
-
           <FeatureTrektCard 
-            icon={<FiZap className="w-5 h-5 text-[#1e2025]" />}
-            title="5-Minute Exam Cram Mode"
-            description="Converts 20-page textbook chapters into a bulleted 1-page summary cheat sheet for fast review right before entering the exam hall."
+            icon={<FiDownload className="w-5 h-5 text-[#DA9B42] dark:text-amber-400" />}
+            title="Clean Printable PDF Export"
+            description="Download pristine, watermarked, print-ready PDFs formatted cleanly for offline study and quick revision sessions."
           />
-
           <FeatureTrektCard 
-            icon={<FiShare2 className="w-5 h-5 text-[#1e2025]" />}
-            title="Auto Mermaid Flowcharts"
-            description="Converts complex processes, software architecture, and biological loops into beautiful visual flowcharts that impress exam evaluators."
+            icon={<FiCpu className="w-5 h-5 text-[#6B7B52] dark:text-emerald-400" />}
+            title="Multi-Model AI Engine"
+            description="Powered by specialized Gemini models fine-tuned to extract academic clarity without filler text or hallucinations."
           />
-
-          <FeatureTrektCard 
-            icon={<FiDownload className="w-5 h-5 text-[#1e2025]" />}
-            title="Printable PDF Export"
-            description="One-click download of clean, formatted PDFs complete with short/long predicted question banks ready for printing or offline tablet revision."
-          />
-
-          <FeatureTrektCard 
-            icon={<FiPieChart className="w-5 h-5 text-[#1e2025]" />}
-            title="Visual Recharts Data"
-            description="Generates dynamic bar, line, and pie charts for visual topic weightage, comparative analysis, and progress tracking."
-          />
-
-          <FeatureTrektCard 
-            icon={<FiTarget className="w-5 h-5 text-[#1e2025]" />}
-            title="Predicted Question Bank"
-            description="Generates estimated short, long, and diagram-based questions with marks weightage allocation to test your comprehension."
-          />
-
         </div>
 
       </section>
 
-      {/* ================= DUAL PERSONA: STUDENTS & TEACHERS ================= */}
-      <section className="py-14 px-6 sm:px-12 max-w-7xl mx-auto space-y-8 relative z-10">
-        
+      {/* ================= STUDENT VS TEACHER PERSONAS ================= */}
+      <section className="py-16 px-6 sm:px-12 max-w-7xl mx-auto space-y-8 relative z-10">
         <div className="text-center space-y-2 max-w-xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-serif text-[#1e2025]">
-            Built for Both Students & Teachers
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-amber-400">
+            VERSATILE PLATFORM
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-serif text-[#1E2224] dark:text-white">
+            Tailored For Both Students & Educators
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* For Students Card */}
-          <div className="p-8 rounded-3xl bg-[#EDEBE0]/60 border border-[#B2B4B7]/40 trekt-card-shadow space-y-4">
-            <div className="w-10 h-10 rounded-2xl bg-[#1e2025] text-white flex items-center justify-center font-bold text-lg shadow-xs">
-              <FiUsers />
+          {/* Student Persona Card */}
+          <div className="p-8 rounded-3xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow space-y-4">
+            <div className="w-10 h-10 rounded-2xl bg-[#F5EBE1] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-[#C85A32] dark:text-white flex items-center justify-center font-bold text-lg">
+              🎓
             </div>
-            <h3 className="text-2xl font-serif font-bold text-[#1e2025]">For University & School Students</h3>
-            <p className="text-xs sm:text-sm text-[#52565c] leading-relaxed">
-              Stop spending hours making handwritten notes. Generate structured chapter summaries, study predicted exam questions, and download printable PDFs in seconds.
+            <h3 className="text-xl font-serif font-bold text-[#1E2224] dark:text-white">For College & School Students</h3>
+            <p className="text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed">
+              Ace your upcoming semester finals and board exams in less study time. Generate concise revision sheets right before entering the exam hall.
             </p>
-            <ul className="space-y-2 text-xs font-semibold text-[#1e2025] pt-1">
+            <ul className="space-y-2 pt-2 text-xs font-semibold text-[#1E2224] dark:text-gray-200">
               <li className="flex items-center gap-2">
-                <FiCheck className="text-[#1e2025] stroke-[3]" /> Ace semester exams & competitive tests
+                <FiCheck className="text-[#6B7B52] dark:text-emerald-400 shrink-0" /> Rapid last-minute revision summaries
               </li>
               <li className="flex items-center gap-2">
-                <FiCheck className="text-[#1e2025] stroke-[3]" /> Last-night 5-minute revision cheat sheets
+                <FiCheck className="text-[#6B7B52] dark:text-emerald-400 shrink-0" /> Visual Mermaid diagrams for complex concepts
               </li>
               <li className="flex items-center gap-2">
-                <FiCheck className="text-[#1e2025] stroke-[3]" /> Auto visual diagrams for hard subjects
+                <FiCheck className="text-[#6B7B52] dark:text-emerald-400 shrink-0" /> Predicted high-probability exam questions
               </li>
             </ul>
           </div>
 
-          {/* For Educators Card */}
-          <div className="p-8 rounded-3xl bg-white border border-[#E0E3ED] trekt-card-shadow space-y-4">
-            <div className="w-10 h-10 rounded-2xl bg-[#E0E3ED] text-[#1e2025] flex items-center justify-center font-bold text-lg border border-[#B2B4B7]/40">
-              <FiAward />
+          {/* Teacher Persona Card */}
+          <div className="p-8 rounded-3xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow space-y-4">
+            <div className="w-10 h-10 rounded-2xl bg-[#E4ECEF] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-[#2B5866] dark:text-teal-400 flex items-center justify-center font-bold text-lg">
+              👨‍🏫
             </div>
-            <h3 className="text-2xl font-serif font-bold text-[#1e2025]">For Professors & Educators</h3>
-            <p className="text-xs sm:text-sm text-[#52565c] leading-relaxed">
-              Create lecture handouts, visual classroom flowcharts, and homework assignment question banks without manual typing.
+            <h3 className="text-xl font-serif font-bold text-[#1E2224] dark:text-white">For Educators & Teachers</h3>
+            <p className="text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed">
+              Generate classroom handouts, slide visual flowcharts, and structured question banks for your students with minimum prep time.
             </p>
-            <ul className="space-y-2 text-xs font-semibold text-[#1e2025] pt-1">
+            <ul className="space-y-2 pt-2 text-xs font-semibold text-[#1E2224] dark:text-gray-200">
               <li className="flex items-center gap-2">
-                <FiCheck className="text-[#1e2025] stroke-[3]" /> Generate lecture outlines & syllabus notes
+                <FiCheck className="text-[#6B7B52] dark:text-emerald-400 shrink-0" /> Ready-to-print lecture handouts & cheat sheets
               </li>
               <li className="flex items-center gap-2">
-                <FiCheck className="text-[#1e2025] stroke-[3]" /> Auto Mermaid process flowcharts for slides
+                <FiCheck className="text-[#6B7B52] dark:text-emerald-400 shrink-0" /> Embeddable visual system architecture diagrams
               </li>
               <li className="flex items-center gap-2">
-                <FiCheck className="text-[#1e2025] stroke-[3]" /> Create homework & quiz question sets
+                <FiCheck className="text-[#6B7B52] dark:text-emerald-400 shrink-0" /> Formatted assignment & internal assessment tests
               </li>
             </ul>
           </div>
-
         </div>
-
       </section>
 
-      {/* ================= FAQ ACCORDION SECTION ================= */}
-      <section className="py-14 px-6 sm:px-12 max-w-4xl mx-auto space-y-8 relative z-10">
+      {/* ================= FAQ SECTION ================= */}
+      <section className="py-16 px-6 sm:px-12 max-w-4xl mx-auto space-y-8 relative z-10">
         
         <div className="text-center space-y-2">
-          <h2 className="text-3xl sm:text-4xl font-serif text-[#1e2025]">
-            Frequently Asked Questions
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-amber-400">
+            FREQUENTLY ASKED QUESTIONS
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-serif text-[#1E2224] dark:text-white">
+            Everything You Need to Know
           </h2>
         </div>
 
@@ -367,20 +342,25 @@ function Home() {
             index={0}
             openFaq={openFaq}
             toggleFaq={toggleFaq}
-            question="How does PrepAI generate exam-specific notes?"
-            answer="Our AI engine leverages Google Gemini 3.6 tuned with specialized prompts that structure content specifically for exams—including priority subtopic tagging, 5-minute revision bullet points, Mermaid flowcharts, and predicted short/long exam questions."
+            question="How accurate are the generated exam notes?"
+            answer="PrepAI notes are powered by advanced academic LLM prompts that strictly stick to structured textbook definitions, formulas, and syllabus requirements without hallucinating facts."
           />
-
           <FaqItem 
             index={1}
             openFaq={openFaq}
             toggleFaq={toggleFaq}
-            question="Are the generated notes aligned with my syllabus?"
-            answer="Yes! When entering your topic, you can specify your Class Level (e.g. B.Tech 2nd Year, Class 12) and Exam Board (e.g. CBSE, GATE, University Exams) to tune the depth and academic rigor."
+            question="Can I download the generated notes as PDF?"
+            answer="Yes! Every generated note has a one-click 'Download PDF' button that generates a clean, beautifully formatted, printable PDF document."
           />
-
           <FaqItem 
             index={2}
+            openFaq={openFaq}
+            toggleFaq={toggleFaq}
+            question="Are Mermaid diagrams supported in all notes?"
+            answer="Yes! Whenever a topic involves processes, cycles, algorithms, or architectures, PrepAI automatically generates an interactive visual flowchart using Mermaid.js."
+          />
+          <FaqItem 
+            index={3}
             openFaq={openFaq}
             toggleFaq={toggleFaq}
             question="How do credits work?"
@@ -392,17 +372,17 @@ function Home() {
 
       {/* ================= FINAL CTA BANNER ================= */}
       <section className="py-12 px-6 sm:px-12 max-w-7xl mx-auto relative z-10">
-        <div className="rounded-3xl p-10 sm:p-12 bg-[#1e2025] text-white text-center space-y-5 shadow-xl">
+        <div className="rounded-3xl p-10 sm:p-12 bg-gradient-to-br from-[#2B5866] to-[#1E3B45] dark:from-[#1a1a1a] dark:to-[#121212] text-white text-center space-y-5 shadow-xl border border-[#2B5866]/30 dark:border-[#262626]">
           <h2 className="text-3xl sm:text-4xl font-serif font-bold">
             Ready to Ace Your Exams?
           </h2>
-          <p className="text-xs sm:text-sm text-[#B2B4B7] max-w-xl mx-auto font-normal">
+          <p className="text-xs sm:text-sm text-[#EBD7BE] dark:text-gray-300 max-w-xl mx-auto font-normal">
             Join thousands of university and high school students who are saving hundreds of study hours and scoring higher marks with PrepAI.
           </p>
           <div className="pt-2">
             <button
               onClick={() => navigate('/notes')}
-              className="bg-[#EDEBE0] hover:bg-white text-[#1e2025] font-extrabold text-xs uppercase tracking-wider px-8 py-3.5 rounded-full shadow-md transition-all"
+              className="bg-[#DA9B42] dark:bg-white hover:bg-[#C0842E] dark:hover:bg-gray-100 text-white dark:text-[#0d0d0d] font-extrabold text-xs uppercase tracking-wider px-8 py-3.5 rounded-full shadow-lg transition-all cursor-pointer"
             >
               CLAIM YOUR 50 FREE CREDITS NOW
             </button>
@@ -410,7 +390,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Clean Light Footer */}
+      {/* Footer */}
       <Footer />
 
     </div>
@@ -419,70 +399,166 @@ function Home() {
 
 function StatBox({ icon, number, label, subtitle }) {
   return (
-    <div className="p-5 rounded-2xl bg-white border border-[#E0E3ED] trekt-card-shadow space-y-2 hover:-translate-y-0.5 transition-all">
+    <div className="p-5 rounded-2xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow space-y-2 hover:-translate-y-0.5 transition-all">
       <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg bg-[#EDEBE0] flex items-center justify-center border border-[#B2B4B7]/40 shrink-0">
+        <div className="p-2 rounded-xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030]">
           {icon}
         </div>
-        <h4 className="text-xl sm:text-2xl font-serif font-bold text-[#1e2025]">{number}</h4>
+        <span className="text-xs font-bold text-[#5C6468] dark:text-gray-400">{label}</span>
       </div>
-      <div>
-        <p className="text-xs font-bold text-[#1e2025]">{label}</p>
-        <p className="text-[11px] font-medium text-[#52565c] leading-tight pt-0.5">{subtitle}</p>
-      </div>
+      <div className="text-2xl font-serif font-bold text-[#1E2224] dark:text-white">{number}</div>
+      <p className="text-[11px] text-[#5C6468] dark:text-gray-400 leading-snug">{subtitle}</p>
     </div>
   );
 }
 
 function OfferCard({ icon, title, description }) {
   return (
-    <div className="p-7 rounded-3xl bg-white border border-[#E0E3ED] trekt-card-shadow text-center space-y-3 hover:-translate-y-1 transition-all">
-      <div className="w-12 h-12 rounded-2xl bg-[#E0E3ED]/60 border border-[#B2B4B7]/30 flex items-center justify-center mx-auto text-[#1e2025]">
+    <div className="p-8 rounded-3xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow trekt-card-hover space-y-4">
+      <div className="w-12 h-12 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] flex items-center justify-center">
         {icon}
       </div>
-      <h3 className="text-lg font-serif font-bold text-[#1e2025]">{title}</h3>
-      <p className="text-xs text-[#52565c] leading-relaxed">{description}</p>
+      <h3 className="text-xl font-serif font-bold text-[#1E2224] dark:text-white">{title}</h3>
+      <p className="text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed">{description}</p>
     </div>
   );
 }
 
 function FeatureTrektCard({ icon, title, description }) {
   return (
-    <div className="p-6 rounded-3xl bg-white border border-[#E0E3ED] trekt-card-shadow space-y-3 hover:-translate-y-1 transition-all">
-      <div className="w-10 h-10 rounded-xl bg-[#E0E3ED]/60 border border-[#B2B4B7]/30 flex items-center justify-center text-[#1e2025]">
+    <div className="p-6 rounded-3xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow space-y-3">
+      <div className="w-10 h-10 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] flex items-center justify-center">
         {icon}
       </div>
-      <h3 className="text-base font-serif font-bold text-[#1e2025]">{title}</h3>
-      <p className="text-xs text-[#52565c] leading-relaxed">{description}</p>
+      <h3 className="text-base font-serif font-bold text-[#1E2224] dark:text-white">{title}</h3>
+      <p className="text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed">{description}</p>
     </div>
+  );
+}
+
+function DemoPreview() {
+  const [activeTab, setActiveTab] = useState('notes');
+
+  return (
+    <section className="py-12 px-6 sm:px-12 max-w-5xl mx-auto relative z-10">
+      <div className="rounded-3xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow overflow-hidden">
+        
+        {/* Mock Browser Header */}
+        <div className="px-6 py-4 bg-[#FAF7F2] dark:bg-[#1a1a1a] border-b border-[#E8DFD5] dark:border-[#262626] flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-[#C85A32]/60" />
+            <span className="w-3 h-3 rounded-full bg-[#DA9B42]/60" />
+            <span className="w-3 h-3 rounded-full bg-[#6B7B52]/60" />
+          </div>
+          <div className="px-4 py-1 rounded-full bg-white dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-[11px] font-bold text-[#5C6468] dark:text-gray-400">
+            preview: DBMS Normalization & BCNF
+          </div>
+          <div className="flex items-center gap-2 text-xs font-bold text-[#2B5866] dark:text-teal-400">
+            <FiCheckCircle /> 100% Ready
+          </div>
+        </div>
+
+        {/* Tab Controls */}
+        <div className="p-4 border-b border-[#E8DFD5] dark:border-[#262626] flex items-center gap-2 overflow-x-auto">
+          <button
+            onClick={() => setActiveTab('notes')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+              activeTab === 'notes'
+                ? 'bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d]'
+                : 'bg-[#FAF7F2] dark:bg-[#222222] text-[#5C6468] dark:text-gray-400 hover:text-[#1E2224]'
+            }`}
+          >
+            Concept Notes View
+          </button>
+          <button
+            onClick={() => setActiveTab('revision')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+              activeTab === 'revision'
+                ? 'bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d]'
+                : 'bg-[#FAF7F2] dark:bg-[#222222] text-[#5C6468] dark:text-gray-400 hover:text-[#1E2224]'
+            }`}
+          >
+            5-Min Revision Cheat Sheet
+          </button>
+          <button
+            onClick={() => setActiveTab('flowchart')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+              activeTab === 'flowchart'
+                ? 'bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d]'
+                : 'bg-[#FAF7F2] dark:bg-[#222222] text-[#5C6468] dark:text-gray-400 hover:text-[#1E2224]'
+            }`}
+          >
+            Visual Flowchart
+          </button>
+        </div>
+
+        {/* Content Body */}
+        <div className="p-6 sm:p-8 text-left space-y-4">
+          {activeTab === 'notes' && (
+            <div className="space-y-3">
+              <h4 className="text-xl font-serif font-bold text-[#1E2224] dark:text-white">
+                1. Boyce-Codd Normal Form (BCNF)
+              </h4>
+              <p className="text-xs text-[#5C6468] dark:text-gray-300 leading-relaxed">
+                A relation R is in BCNF if and only if every determinant is a candidate key. That is, for every non-trivial functional dependency X → Y, X must be a superkey of R.
+              </p>
+              <div className="p-4 rounded-2xl bg-[#FAF0DC] dark:bg-[#222222] border border-[#DA9B42]/30 dark:border-[#303030] text-xs font-semibold text-[#B86337] dark:text-amber-400">
+                ⚡ <strong>Exam Key Rule:</strong> BCNF is strictly stronger than 3NF. Every relation in BCNF is also in 3NF, but the converse is not always true.
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'revision' && (
+            <div className="space-y-3">
+              <h4 className="text-xl font-serif font-bold text-[#1E2224] dark:text-white">
+                ⚡ 5-Minute Rapid Revision Takeaways
+              </h4>
+              <ul className="list-disc ml-5 text-xs text-[#5C6468] dark:text-gray-300 space-y-1.5">
+                <li><strong>1NF:</strong> Eliminates duplicate columns & ensures atomic values.</li>
+                <li><strong>2NF:</strong> Achieves 1NF + removes partial functional dependencies.</li>
+                <li><strong>3NF:</strong> Achieves 2NF + eliminates transitive functional dependencies.</li>
+                <li><strong>BCNF:</strong> For every X → Y, X must be a super key.</li>
+              </ul>
+            </div>
+          )}
+
+          {activeTab === 'flowchart' && (
+            <div className="p-6 rounded-2xl bg-[#FAF7F2] dark:bg-[#1a1a1a] border border-[#E8DFD5] dark:border-[#262626] flex items-center justify-center">
+              <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-extrabold text-[#1E2224] dark:text-white">
+                <span className="p-3 rounded-xl bg-white dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030]">Unnormalized Table</span>
+                <span>➔</span>
+                <span className="p-3 rounded-xl bg-white dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030]">1NF (Atomic Data)</span>
+                <span>➔</span>
+                <span className="p-3 rounded-xl bg-white dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030]">2NF (No Partial Dep)</span>
+                <span>➔</span>
+                <span className="p-3 rounded-xl bg-[#2B5866] dark:bg-white text-white dark:text-[#0d0d0d]">BCNF Complete</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </section>
   );
 }
 
 function FaqItem({ index, openFaq, toggleFaq, question, answer }) {
   const isOpen = openFaq === index;
+
   return (
-    <div className="rounded-2xl bg-white border border-[#E0E3ED] shadow-xs overflow-hidden transition-all">
-      <button 
+    <div className="rounded-2xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] overflow-hidden trekt-card-shadow transition-all">
+      <button
         onClick={() => toggleFaq(index)}
-        className="w-full p-4 sm:p-5 text-left font-serif font-bold text-[#1e2025] text-sm sm:text-base flex items-center justify-between gap-4"
+        className="w-full p-5 text-left font-serif font-bold text-base text-[#1E2224] dark:text-white flex items-center justify-between gap-4 cursor-pointer"
       >
         <span>{question}</span>
-        <div className="w-6 h-6 rounded-full bg-[#EDEBE0] text-[#1e2025] flex items-center justify-center shrink-0">
-          {isOpen ? <FiChevronUp /> : <FiChevronDown />}
-        </div>
+        <FiChevronDown className={`w-4 h-4 text-[#5C6468] transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#C85A32]' : ''}`} />
       </button>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="px-5 pb-4 text-xs sm:text-sm text-[#52565c] leading-relaxed border-t border-[#E0E3ED] pt-3"
-          >
-            {answer}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isOpen && (
+        <div className="px-5 pb-5 text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed border-t border-[#E8DFD5]/40 dark:border-[#262626] pt-3">
+          {answer}
+        </div>
+      )}
     </div>
   );
 }

@@ -48,7 +48,7 @@ function History() {
   );
 
   return (
-    <div className="min-h-screen bg-[#EDEBE0] dark:bg-[#0d0d0d] text-[#1e2025] dark:text-[#ffffff] relative overflow-hidden font-sans selection:bg-[#EDEBE0] selection:text-[#1e2025] transition-colors duration-300">
+    <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#0d0d0d] text-[#1E2224] dark:text-white relative overflow-hidden font-sans selection:bg-[#EBD7BE] selection:text-[#1E2224] transition-colors duration-300">
       
       {/* Background Soft Organic Blobs */}
       <div className="trekt-bg-blob-top" />
@@ -63,41 +63,41 @@ function History() {
         
         {/* Header Section / Note Reader Header */}
         {selectedNote ? (
-          <div className="flex items-center justify-between gap-4 bg-[#EDEBE0] dark:bg-[#161616] p-6 rounded-3xl border border-[#B2B4B7]/40 dark:border-[#262626] trekt-card-shadow">
+          <div className="flex items-center justify-between gap-4 bg-white dark:bg-[#161616] p-6 rounded-3xl border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow">
             <button
               onClick={() => setSelectedNote(null)}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#222222] hover:bg-[#1e2025] dark:hover:bg-white text-[#1e2025] dark:text-white hover:text-white dark:hover:text-[#0d0d0d] border border-[#B2B4B7]/40 dark:border-[#303030] text-xs font-bold transition-all shadow-xs cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF7F2] dark:bg-[#222222] hover:bg-[#C85A32] dark:hover:bg-white text-[#1E2224] dark:text-white hover:text-white dark:hover:text-[#0d0d0d] border border-[#E8DFD5] dark:border-[#303030] text-xs font-bold transition-all shadow-xs cursor-pointer"
             >
               <FiArrowLeft className="w-4 h-4" />
               <span>Back to History List</span>
             </button>
-            <span className="text-xs font-extrabold text-[#52565c] dark:text-gray-400 uppercase tracking-wider truncate">
-              Viewing Note: <strong className="text-[#1e2025] dark:text-white">{selectedNote.topic}</strong>
+            <span className="text-xs font-extrabold text-[#5C6468] dark:text-gray-400 uppercase tracking-wider truncate">
+              Viewing Note: <strong className="text-[#1E2224] dark:text-white">{selectedNote.topic}</strong>
             </span>
           </div>
         ) : (
-          <div className="relative bg-[#EDEBE0] dark:bg-[#161616] px-8 sm:px-12 py-8 sm:py-10 rounded-[28px] border border-[#B2B4B7]/40 dark:border-[#262626] trekt-card-shadow trekt-card-hover flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
+          <div className="relative bg-white dark:bg-[#161616] px-8 sm:px-12 py-8 sm:py-10 rounded-[28px] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow trekt-card-hover flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
             <div className="space-y-2 z-10 max-w-2xl text-center md:text-left py-1">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#52565c] dark:text-gray-400 block">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-amber-400 block">
                 Personal Study Library
               </span>
-              <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif text-[#1e2025] dark:text-white tracking-tight leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif text-[#1E2224] dark:text-white tracking-tight leading-tight">
                 Generated Note History
               </h1>
-              <p className="text-xs sm:text-sm text-[#52565c] dark:text-gray-400 font-medium leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
                 Review, study, and revisit all your previously generated exam notes, 5-minute revision sheets, and visual flowcharts anytime.
               </p>
             </div>
 
             {/* Search Input Widget */}
             <div className="w-full md:w-72 relative shrink-0">
-              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#71757c] dark:text-gray-400 w-4 h-4" />
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#877F76] dark:text-gray-400 w-4 h-4" />
               <input
                 type="text"
                 placeholder="Search history by topic..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-[#222222] border border-[#B2B4B7]/40 dark:border-[#303030] text-xs font-bold text-[#1e2025] dark:text-white placeholder-[#71757c] dark:placeholder-gray-400 focus:outline-none focus:border-[#1e2025] dark:focus:border-white shadow-xs transition-all"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-xs font-bold text-[#1E2224] dark:text-white placeholder-[#877F76] dark:placeholder-gray-500 focus:outline-none focus:border-[#C85A32] dark:focus:border-white shadow-xs transition-all"
               />
             </div>
           </div>
@@ -106,8 +106,8 @@ function History() {
         {/* Note Reader View Mode */}
         {selectedNote ? (
           <motion.div
-            initial={{ opacity: 0, rotateY: -15, scale: 0.98 }}
-            animate={{ opacity: 1, rotateY: 0, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
             className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start"
           >
@@ -115,7 +115,7 @@ function History() {
               <Sidebar result={selectedNote.content} />
             </div>
 
-            <div className="lg:col-span-3 bg-[#EDEBE0] dark:bg-[#161616] border border-[#B2B4B7]/40 dark:border-[#262626] rounded-3xl p-6 sm:p-8 trekt-card-shadow">
+            <div className="lg:col-span-3 bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-6 sm:p-8 trekt-card-shadow">
               <FinalResult result={selectedNote.content} />
             </div>
           </motion.div>
@@ -124,14 +124,16 @@ function History() {
           <div className="space-y-6">
             {loading ? (
               <div className="py-20 flex flex-col items-center justify-center space-y-4">
-                <div className="w-8 h-8 border-3 border-[#1e2025] dark:border-white border-t-transparent rounded-full animate-spin" />
-                <p className="text-xs font-bold text-[#52565c] dark:text-gray-400">Loading your study library...</p>
+                <div className="w-8 h-8 border-3 border-[#C85A32] dark:border-white border-t-transparent rounded-full animate-spin" />
+                <p className="text-xs font-bold text-[#5C6468] dark:text-gray-400">Loading your study library...</p>
               </div>
             ) : filteredHistory.length === 0 ? (
-              <div className="p-12 sm:p-16 rounded-3xl bg-[#EDEBE0] dark:bg-[#161616] border border-dashed border-[#B2B4B7]/60 dark:border-[#262626] text-center space-y-3 trekt-card-shadow">
-                <FiBookOpen className="w-8 h-8 text-[#1e2025] dark:text-white mx-auto" />
-                <h3 className="text-base font-extrabold text-[#1e2025] dark:text-white">No Notes Found in History</h3>
-                <p className="text-xs text-[#52565c] dark:text-gray-400 font-medium">
+              <div className="p-12 sm:p-16 rounded-3xl bg-white dark:bg-[#161616] border border-dashed border-[#E8DFD5] dark:border-[#262626] text-center space-y-3 trekt-card-shadow">
+                <div className="w-12 h-12 rounded-2xl bg-[#F5EBE1] dark:bg-[#222222] border border-[#EBD7BE] dark:border-[#303030] flex items-center justify-center text-[#C85A32] dark:text-white mx-auto">
+                  <FiBookOpen className="w-6 h-6" />
+                </div>
+                <h3 className="text-base font-extrabold text-[#1E2224] dark:text-white">No Notes Found in History</h3>
+                <p className="text-xs text-[#5C6468] dark:text-gray-400 font-medium">
                   {searchTerm ? "No saved notes match your search term." : "You haven't generated any AI notes yet. Create your first note now!"}
                 </p>
               </div>
@@ -143,16 +145,16 @@ function History() {
                     whileHover={{ y: -5 }}
                     transition={{ duration: 0.2 }}
                     onClick={() => setSelectedNote(item)}
-                    className="p-6 rounded-3xl bg-[#EDEBE0] dark:bg-[#161616] border border-[#B2B4B7]/40 dark:border-[#262626] trekt-card-shadow trekt-card-hover cursor-pointer flex flex-col justify-between space-y-5 group"
+                    className="p-6 rounded-3xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow trekt-card-hover cursor-pointer flex flex-col justify-between space-y-5 group"
                   >
                     <div className="space-y-4">
                       {/* Top Badges */}
                       <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <span className="text-[10px] font-extrabold text-[#52565c] dark:text-gray-400 uppercase tracking-wider">
+                        <span className="text-[10px] font-extrabold text-[#B86337] dark:text-amber-400 uppercase tracking-wider">
                           {item.examType || "Concept Note"}
                         </span>
                         {item.createdAt && (
-                          <span className="text-[10px] text-[#71757c] dark:text-gray-400 font-bold flex items-center gap-1">
+                          <span className="text-[10px] text-[#5C6468] dark:text-gray-400 font-bold flex items-center gap-1">
                             <FiCalendar className="w-3 h-3" />
                             {new Date(item.createdAt).toLocaleDateString()}
                           </span>
@@ -161,11 +163,11 @@ function History() {
 
                       {/* Title & Course */}
                       <div className="space-y-1">
-                        <h3 className="text-lg font-extrabold tracking-tight text-[#1e2025] dark:text-white group-hover:underline line-clamp-2">
+                        <h3 className="text-lg font-extrabold tracking-tight text-[#1E2224] dark:text-white group-hover:text-[#C85A32] dark:group-hover:text-amber-400 transition-colors line-clamp-2">
                           {item.topic}
                         </h3>
                         {item.classLevel && (
-                          <p className="text-xs text-[#52565c] dark:text-gray-400 font-semibold truncate">
+                          <p className="text-xs text-[#5C6468] dark:text-gray-400 font-semibold truncate">
                             {item.classLevel}
                           </p>
                         )}
@@ -173,12 +175,12 @@ function History() {
                     </div>
 
                     {/* Bottom Action Bar */}
-                    <div className="pt-3 border-t border-[#B2B4B7]/30 dark:border-[#303030] flex items-center justify-between text-xs font-bold text-[#1e2025] dark:text-white">
+                    <div className="pt-3 border-t border-[#E8DFD5] dark:border-[#262626] flex items-center justify-between text-xs font-bold text-[#C85A32] dark:text-white">
                       <span className="flex items-center gap-1.5">
-                        <FiBookOpen className="w-3.5 h-3.5 text-[#1e2025] dark:text-white" />
+                        <FiBookOpen className="w-3.5 h-3.5" />
                         <span>Read Note</span>
                       </span>
-                      <FiChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-[#1e2025] dark:text-white" />
+                      <FiChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </motion.div>
                 ))}

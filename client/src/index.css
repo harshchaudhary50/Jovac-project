@@ -6,8 +6,8 @@
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    color: #1e2025;
-    background-color: #EDEBE0;
+    color: #1E2224;
+    background-color: #FAF7F2;
     overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
@@ -24,7 +24,7 @@
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #B2B4B7 #EDEBE0;
+  scrollbar-color: #D6C8B8 #FAF7F2;
 }
 
 html.dark * {
@@ -36,20 +36,20 @@ html.dark * {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #EDEBE0;
+  background: #FAF7F2;
 }
 html.dark ::-webkit-scrollbar-track {
   background: #0d0d0d;
 }
 ::-webkit-scrollbar-thumb {
-  background: #B2B4B7;
+  background: #D6C8B8;
   border-radius: 4px;
 }
 html.dark ::-webkit-scrollbar-thumb {
   background: #262626;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #71757a;
+  background: #C85A32;
 }
 html.dark ::-webkit-scrollbar-thumb:hover {
   background: #404040;
@@ -60,12 +60,12 @@ html.dark ::-webkit-scrollbar-thumb:hover {
   position: absolute;
   top: -60px;
   right: -60px;
-  width: 700px;
-  height: 650px;
-  background: radial-gradient(circle, rgba(224, 227, 237, 0.5) 0%, rgba(237, 235, 224, 0.4) 60%, transparent 80%);
+  width: 720px;
+  height: 680px;
+  background: radial-gradient(circle, rgba(200, 90, 50, 0.08) 0%, rgba(218, 155, 66, 0.06) 45%, rgba(250, 247, 242, 0) 75%);
   z-index: 0;
   pointer-events: none;
-  filter: blur(40px);
+  filter: blur(50px);
   transition: background 0.3s ease;
 }
 
@@ -75,14 +75,14 @@ html.dark .trekt-bg-blob-top {
 
 .trekt-bg-blob-bottom {
   position: absolute;
-  bottom: -40px;
+  bottom: -60px;
   left: -80px;
-  width: 700px;
-  height: 650px;
-  background: radial-gradient(circle, rgba(224, 227, 237, 0.4) 0%, rgba(237, 235, 224, 0.3) 60%, transparent 80%);
+  width: 720px;
+  height: 680px;
+  background: radial-gradient(circle, rgba(43, 88, 102, 0.08) 0%, rgba(107, 123, 82, 0.06) 45%, rgba(250, 247, 242, 0) 75%);
   z-index: 0;
   pointer-events: none;
-  filter: blur(40px);
+  filter: blur(50px);
   transition: background 0.3s ease;
 }
 
@@ -92,15 +92,15 @@ html.dark .trekt-bg-blob-bottom {
 
 .trekt-bg-blob-center {
   position: absolute;
-  top: 40%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 850px;
-  height: 650px;
-  background: radial-gradient(circle, rgba(224, 227, 237, 0.35) 0%, rgba(237, 235, 224, 0.25) 65%, transparent 85%);
+  width: 880px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(235, 215, 190, 0.45) 0%, rgba(218, 155, 66, 0.05) 50%, rgba(250, 247, 242, 0) 80%);
   z-index: 0;
   pointer-events: none;
-  filter: blur(50px);
+  filter: blur(60px);
   transition: background 0.3s ease;
 }
 
@@ -108,38 +108,53 @@ html.dark .trekt-bg-blob-center {
   background: radial-gradient(circle, rgba(30, 30, 30, 0.3) 0%, rgba(13, 13, 13, 0.2) 65%, transparent 85%);
 }
 
+/* Card Shadows & Transitions */
 .trekt-card-shadow {
-  box-shadow: 0 10px 25px -8px rgba(178, 180, 183, 0.25), 0 2px 6px rgba(30, 32, 37, 0.02);
-  transition: box-shadow 0.3s ease;
+  box-shadow: 0 10px 25px -8px rgba(184, 99, 55, 0.08), 0 2px 6px rgba(30, 34, 36, 0.04);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 html.dark .trekt-card-shadow {
   box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.8), 0 2px 8px rgba(0, 0, 0, 0.5);
+  background-color: #161616 !important;
+  border-color: #262626 !important;
+}
+
+/* Minimal Subtle Border Hover Effect in Dark Mode */
+html.dark .trekt-card-shadow:hover {
+  border-color: #4a4a4a !important;
 }
 
 /* Minimal Card Hover Effect */
 .trekt-card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .trekt-card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px -12px rgba(30, 32, 37, 0.08), 0 4px 12px rgba(178, 180, 183, 0.2);
-  border-color: #B2B4B7;
+  transform: translateY(-3px);
+  box-shadow: 0 18px 32px -8px rgba(43, 88, 102, 0.12), 0 4px 12px rgba(200, 90, 50, 0.08);
+  border-color: #C85A32;
 }
 
 html.dark .trekt-card-hover:hover {
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.9);
-  border-color: #383838;
+  transform: translateY(-3px);
+  box-shadow: 0 18px 36px -10px rgba(0, 0, 0, 0.95);
+  border-color: #555555 !important;
 }
 
-/* Fallback CSS for dark mode elements */
+/* Original Clean Dark Mode styling */
 html.dark header {
   background-color: rgba(13, 13, 13, 0.92) !important;
-  border-color: #222222 !important;
+  border-color: #262626 !important;
 }
 
-html.dark .trekt-card-shadow {
-  background-color: #161616 !important;
-  border-color: #262626 !important;
+html.dark .trekt-card-shadow h1,
+html.dark .trekt-card-shadow h2,
+html.dark .trekt-card-shadow h3,
+html.dark .trekt-card-shadow h4 {
+  color: #ffffff !important;
+}
+
+html.dark .trekt-card-shadow p {
+  color: #9ca3af !important;
 }

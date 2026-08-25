@@ -40,7 +40,7 @@ function Notes() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#EDEBE0] dark:bg-[#0d0d0d] text-[#1e2025] dark:text-[#ffffff] relative overflow-hidden font-sans selection:bg-[#EDEBE0] selection:text-[#1e2025] transition-colors duration-300">
+    <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#0d0d0d] text-[#1E2224] dark:text-white relative overflow-hidden font-sans selection:bg-[#EBD7BE] selection:text-[#1E2224] transition-colors duration-300">
       
       {/* Background Soft Organic Blobs */}
       <div className="trekt-bg-blob-top" />
@@ -54,16 +54,16 @@ function Notes() {
       <main className="max-w-7xl mx-auto px-6 sm:px-12 pt-28 sm:pt-32 pb-16 relative z-10 space-y-8 font-sans">
         
         {/* Top Header Banner */}
-        <div className="relative bg-[#EDEBE0] dark:bg-[#161616] px-8 sm:px-12 py-8 sm:py-10 rounded-[28px] border border-[#B2B4B7]/40 dark:border-[#262626] trekt-card-shadow trekt-card-hover flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
+        <div className="relative bg-white dark:bg-[#161616] px-8 sm:px-12 py-8 sm:py-10 rounded-[28px] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow trekt-card-hover flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
           
           <div className="space-y-2 z-10 max-w-2xl text-center md:text-left py-1">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#52565c] dark:text-gray-400 block">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-amber-400 block">
               AI Exam Note Engine
             </span>
-            <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif text-[#1e2025] dark:text-white tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif text-[#1E2224] dark:text-white tracking-tight leading-tight">
               Generate Exam-Oriented Notes
             </h1>
-            <p className="text-xs sm:text-sm text-[#52565c] dark:text-gray-300 font-medium leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
               Enter your chapter or syllabus topic below. AI will synthesize structured conceptual explanations, key formulas, priority topic highlights, and visual diagrams tailored for semester exams.
             </p>
           </div>
@@ -71,7 +71,7 @@ function Notes() {
           {/* Direct History Quick Link */}
           <button
             onClick={() => navigate('/history')}
-            className="px-6 py-3.5 rounded-full bg-white dark:bg-[#222222] hover:bg-[#1e2025] dark:hover:bg-white text-[#1e2025] dark:text-white hover:text-white dark:hover:text-[#0d0d0d] border border-[#B2B4B7]/40 dark:border-[#303030] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs shrink-0 cursor-pointer"
+            className="px-6 py-3.5 rounded-full bg-[#FAF7F2] dark:bg-[#222222] hover:bg-[#2B5866] dark:hover:bg-white text-[#2B5866] dark:text-white hover:text-white dark:hover:text-[#0d0d0d] border border-[#E8DFD5] dark:border-[#303030] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs shrink-0 cursor-pointer"
           >
             <span>Saved Note History</span>
             <FiArrowRight className="w-4 h-4" />
@@ -81,23 +81,20 @@ function Notes() {
 
         {/* System Maintenance Banner if Active */}
         {adminSettings?.maintenanceMode && (
-          <div className="p-5 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-[#1e2025] dark:text-amber-200 flex items-center justify-between gap-4 shadow-xs">
+          <div className="p-5 rounded-3xl bg-[#FAF0DC] dark:bg-[#1a1a1a] border border-[#DA9B42]/40 dark:border-[#303030] text-[#1E2224] dark:text-white flex items-center justify-between gap-4 shadow-xs">
             <div className="flex items-center gap-3">
-              <span className="p-2.5 rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold shrink-0">
+              <span className="p-2.5 rounded-2xl bg-[#DA9B42]/20 text-[#DA9B42] font-bold shrink-0">
                 <FiTool className="w-5 h-5 animate-bounce" />
               </span>
               <div>
-                <h4 className="text-xs font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#B86337] dark:text-amber-400">
                   System Maintenance Mode Active
                 </h4>
-                <p className="text-xs font-medium text-[#52565c] dark:text-gray-300">
+                <p className="text-xs font-medium text-[#5C6468] dark:text-gray-400">
                   AI Note Generation is temporarily paused for scheduled server upgrades. Please check back shortly.
                 </p>
               </div>
             </div>
-            <span className="hidden sm:inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-extrabold uppercase tracking-wider shrink-0">
-              Maintenance On
-            </span>
           </div>
         )}
 
@@ -112,8 +109,8 @@ function Notes() {
 
         {/* Error Alert Box */}
         {error && (
-          <div className="p-4 rounded-2xl bg-red-100 dark:bg-red-950/60 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-200 text-xs font-bold flex items-center gap-2.5">
-            <FiAlertCircle className="w-5 h-5 shrink-0" />
+          <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-bold flex items-center gap-2.5">
+            <FiAlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
             <span>{error}</span>
           </div>
         )}
@@ -122,12 +119,14 @@ function Notes() {
         {!result && !loading && (
           <motion.div 
             whileHover={{ scale: 1.01 }}
-            className="p-12 sm:p-16 rounded-3xl bg-[#EDEBE0] dark:bg-[#161616] border border-dashed border-[#B2B4B7]/60 dark:border-[#262626] flex flex-col items-center justify-center text-center space-y-3 trekt-card-shadow"
+            className="p-12 sm:p-16 rounded-3xl bg-white dark:bg-[#161616] border border-dashed border-[#E8DFD5] dark:border-[#262626] flex flex-col items-center justify-center text-center space-y-3 trekt-card-shadow"
           >
-            <FiBookOpen className="w-8 h-8 text-[#1e2025] dark:text-white" />
+            <div className="w-12 h-12 rounded-2xl bg-[#F5EBE1] dark:bg-[#222222] border border-[#EBD7BE] dark:border-[#303030] flex items-center justify-center text-[#C85A32] dark:text-white">
+              <FiBookOpen className="w-6 h-6" />
+            </div>
             <div className="space-y-1 max-w-sm">
-              <h3 className="text-base font-extrabold text-[#1e2025] dark:text-white">Generated Notes Will Appear Here</h3>
-              <p className="text-xs text-[#52565c] dark:text-gray-400 font-medium leading-relaxed">
+              <h3 className="text-base font-extrabold text-[#1E2224] dark:text-white">Generated Notes Will Appear Here</h3>
+              <p className="text-xs text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
                 Fill in the form above and click "Generate Exam Notes" to instantly produce your exam study material.
               </p>
             </div>
@@ -148,7 +147,7 @@ function Notes() {
             </div>
 
             {/* Right Main Note Output */}
-            <div className="lg:col-span-3 bg-[#EDEBE0] dark:bg-[#161616] border border-[#B2B4B7]/40 dark:border-[#262626] rounded-3xl p-6 sm:p-8 trekt-card-shadow">
+            <div className="lg:col-span-3 bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-6 sm:p-8 trekt-card-shadow">
               <FinalResult result={result} />
             </div>
           </motion.div>

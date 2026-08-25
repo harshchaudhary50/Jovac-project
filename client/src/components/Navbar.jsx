@@ -1,12 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from "motion/react";
-import logo from "../assets/logo.png";
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { serverUrl } from '../App';
 import { setUserData } from '../redux/userSlice';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiMenu, FiX, FiZap, FiLogOut, FiClock, FiPlus, FiChevronDown, FiBookOpen, FiGrid, FiFolder, FiDollarSign, FiSun, FiMoon, FiShield } from 'react-icons/fi';
+import { 
+    FiMenu, 
+    FiX, 
+    FiZap, 
+    FiLogOut, 
+    FiPlus, 
+    FiChevronDown, 
+    FiGrid, 
+    FiFolder, 
+    FiDollarSign, 
+    FiShield, 
+    FiSun, 
+    FiMoon 
+} from 'react-icons/fi';
 
 function Navbar() {
     const { userData } = useSelector((state) => state.user);
@@ -14,15 +26,12 @@ function Navbar() {
     const [showCredits, setShowCredits] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    
-    // Persistent Dark Mode State
+
+    // Dark Mode Theme State
     const [isDark, setIsDark] = useState(() => {
-        if (typeof window !== "undefined") {
-            const savedTheme = localStorage.getItem("theme");
-            if (savedTheme) {
-                return savedTheme === "dark";
-            }
-            return document.documentElement.classList.contains("dark") || document.body.classList.contains("dark");
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+            return savedTheme === "dark";
         }
         return false;
     });
@@ -38,6 +47,10 @@ function Navbar() {
             localStorage.setItem("theme", "light");
         }
     }, [isDark]);
+
+    const toggleTheme = () => {
+        setIsDark(prev => !prev);
+    };
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -67,7 +80,7 @@ function Navbar() {
         { label: "Notes", href: "/notes", icon: <FiZap className="w-3.5 h-3.5" /> },
         { label: "History", href: "/history", icon: <FiFolder className="w-3.5 h-3.5" /> },
         { label: "Pricing", href: "/pricing", icon: <FiDollarSign className="w-3.5 h-3.5" /> },
-        { label: "Admin", href: "/admin", icon: <FiShield className="w-3.5 h-3.5 text-amber-500" /> }
+        { label: "Admin", href: "/admin", icon: <FiShield className="w-3.5 h-3.5 text-[#DA9B42]" /> }
     ];
 
     const handleNavClick = (href) => {
@@ -89,10 +102,10 @@ function Navbar() {
     };
 
     return (
-        <header className="fixed top-0 left-0 w-full z-50 px-4 sm:px-8 py-3 bg-[#EDEBE0]/90 dark:bg-[#0d0d0d]/90 backdrop-blur-md border-b border-[#B2B4B7]/40 dark:border-[#222222] transition-colors duration-300">
+        <header className="fixed top-0 left-0 w-full z-50 px-4 sm:px-8 py-3 bg-[#FAF7F2]/90 dark:bg-[#0d0d0d]/90 backdrop-blur-md border-b border-[#E8DFD5] dark:border-[#262626] transition-colors duration-300">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
                 
-                {/* Compact Brand Logo */}
+                {/* Brand Logo */}
                 <div 
                     onClick={() => navigate(userData ? "/dashboard" : "/")} 
                     className="flex items-center gap-2 cursor-pointer select-none group shrink-0"
@@ -100,10 +113,10 @@ function Navbar() {
                     <img 
                         src="/favicon.jpg" 
                         alt="PrepAI Logo" 
-                        className="w-7 h-7 rounded-full object-cover shadow-xs border border-[#B2B4B7]/30 dark:border-[#303030] group-hover:scale-105 transition-transform" 
+                        className="w-7 h-7 rounded-full object-cover shadow-xs border border-[#EBD7BE] dark:border-[#303030] group-hover:scale-105 transition-transform" 
                     />
-                    <span className="text-lg font-bold tracking-tight text-[#1e2025] dark:text-white flex items-center gap-0.5 font-sans">
-                        Prep<span className="text-[#52565c] dark:text-gray-400 font-semibold">AI</span>
+                    <span className="text-lg font-bold tracking-tight text-[#1E2224] dark:text-white flex items-center gap-0.5 font-sans">
+                        Prep<span className="text-[#C85A32] dark:text-white font-extrabold">AI</span>
                     </span>
                 </div>
 
@@ -119,19 +132,19 @@ function Navbar() {
                                     <button
                                         key={link.href}
                                         onClick={() => navigate(link.href)}
-                                        className="relative px-3 py-1.5 rounded-full text-xs font-bold transition-colors duration-200 flex items-center gap-1.5 cursor-pointer select-none whitespace-nowrap shrink-0"
+                                        className="relative px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-200 flex items-center gap-1.5 cursor-pointer select-none whitespace-nowrap shrink-0"
                                     >
                                         {isActive && (
                                             <motion.div
                                                 layoutId="activeNavPill"
                                                 transition={{ type: "spring", stiffness: 400, damping: 35 }}
-                                                className="absolute inset-0 bg-[#1e2025] dark:bg-white rounded-full shadow-xs"
+                                                className="absolute inset-0 bg-[#C85A32] dark:bg-white rounded-full shadow-sm"
                                             />
                                         )}
                                         <span className={`relative z-10 flex items-center gap-1.5 ${
                                             isActive 
                                                 ? "text-white dark:text-[#0d0d0d]" 
-                                                : "text-[#52565c] dark:text-gray-300 hover:text-[#1e2025] dark:hover:text-white"
+                                                : "text-[#5C6468] dark:text-gray-400 hover:text-[#1E2224] dark:hover:text-white"
                                         }`}>
                                             {link.icon}
                                             <span>{link.label}</span>
@@ -147,7 +160,7 @@ function Navbar() {
                                 <button
                                     key={idx}
                                     onClick={() => handleNavClick(link.href)}
-                                    className="text-xs font-semibold uppercase tracking-wider text-[#52565c] dark:text-gray-300 hover:text-[#1e2025] dark:hover:text-white transition-colors"
+                                    className="text-xs font-semibold uppercase tracking-wider text-[#5C6468] dark:text-gray-400 hover:text-[#C85A32] dark:hover:text-white transition-colors cursor-pointer"
                                 >
                                     {link.label}
                                 </button>
@@ -155,18 +168,20 @@ function Navbar() {
                         </nav>
                     )}
 
-                    {/* Professional Dark Mode Toggle Button (Visible ONLY when Logged In) */}
-                    {userData && (
-                        <motion.button
-                            onClick={() => setIsDark(!isDark)}
-                            whileHover={{ scale: 1.08 }}
-                            whileTap={{ scale: 0.92 }}
-                            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                            className="p-2 rounded-full bg-white dark:bg-[#161616] text-[#1e2025] dark:text-amber-400 border border-[#B2B4B7]/40 dark:border-[#262626] shadow-xs hover:border-[#1e2025] dark:hover:border-amber-400 transition-all flex items-center justify-center cursor-pointer"
-                        >
-                            {isDark ? <FiSun className="w-4 h-4 text-amber-400" /> : <FiMoon className="w-4 h-4 text-[#1e2025]" />}
-                        </motion.button>
-                    )}
+                    {/* Simple Clean Dark/Light Mode Switcher */}
+                    <motion.button
+                        onClick={toggleTheme}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                        className="w-9 h-9 rounded-full bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] text-[#1E2224] dark:text-white flex items-center justify-center shadow-xs transition-colors cursor-pointer"
+                    >
+                        {isDark ? (
+                            <FiSun className="w-4 h-4 text-amber-400" />
+                        ) : (
+                            <FiMoon className="w-4 h-4 text-[#2B5866]" />
+                        )}
+                    </motion.button>
 
                     {/* Action Controls */}
                     {userData ? (
@@ -177,13 +192,13 @@ function Navbar() {
                                     onClick={() => { setShowCredits(!showCredits); setShowProfile(false); }}
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.97 }}
-                                    className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#161616] text-[#1e2025] dark:text-white border border-[#B2B4B7]/40 dark:border-[#262626] text-xs font-bold transition shadow-xs cursor-pointer"
+                                    className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#161616] text-[#1E2224] dark:text-white border border-[#E8DFD5] dark:border-[#262626] text-xs font-bold transition shadow-xs hover:border-[#DA9B42] cursor-pointer"
                                 >
-                                    <span className="flex items-center gap-1 text-[#1e2025] dark:text-white">
-                                        <FiZap className="w-3.5 h-3.5 text-[#1e2025] dark:text-amber-400" />
+                                    <span className="flex items-center gap-1.5">
+                                        <FiZap className="w-3.5 h-3.5 text-[#DA9B42] dark:text-amber-400" />
                                         <span>{credits} Credits</span>
                                     </span>
-                                    <span className="w-4 h-4 rounded-full bg-[#1e2025] dark:bg-white text-white dark:text-[#0d0d0d] flex items-center justify-center text-[10px]">
+                                    <span className="w-4 h-4 rounded-full bg-[#DA9B42] dark:bg-white text-white dark:text-[#0d0d0d] flex items-center justify-center text-[10px]">
                                         <FiPlus />
                                     </span>
                                 </motion.button>
@@ -195,18 +210,20 @@ function Navbar() {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 10 }}
-                                            className="absolute right-0 mt-3 w-64 p-4 bg-[#EDEBE0] dark:bg-[#161616] border border-[#B2B4B7]/40 dark:border-[#262626] rounded-2xl shadow-xl z-50 text-left space-y-3"
+                                            className="absolute right-0 mt-3 w-64 p-4 bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] rounded-2xl shadow-xl z-50 text-left space-y-3"
                                         >
                                             <div className="space-y-1">
-                                                <p className="text-xs font-bold text-[#1e2025] dark:text-gray-300">Available AI Credits</p>
-                                                <p className="text-2xl font-extrabold text-[#1e2025] dark:text-white">{credits} Credits</p>
+                                                <p className="text-xs font-bold text-[#5C6468] dark:text-gray-400">Available AI Credits</p>
+                                                <p className="text-2xl font-extrabold text-[#1E2224] dark:text-white flex items-center gap-1.5">
+                                                    <span className="text-[#DA9B42] dark:text-amber-400"><FiZap className="inline" /></span> {credits}
+                                                </p>
                                             </div>
-                                            <p className="text-[11px] text-[#52565c] dark:text-gray-400 font-medium leading-relaxed">
+                                            <p className="text-[11px] text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
                                                 Each AI note generation costs 10 credits.
                                             </p>
                                             <button
                                                 onClick={() => { setShowCredits(false); navigate("/pricing"); }}
-                                                className="w-full py-2.5 rounded-xl bg-[#1e2025] dark:bg-white text-white dark:text-[#0d0d0d] text-xs font-bold uppercase tracking-wider hover:bg-black dark:hover:bg-gray-200 transition-all shadow-xs cursor-pointer"
+                                                className="w-full py-2.5 rounded-xl bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d] text-xs font-bold uppercase tracking-wider hover:bg-[#B24B27] transition-all shadow-xs cursor-pointer"
                                             >
                                                 Buy More Credits
                                             </button>
@@ -219,13 +236,13 @@ function Navbar() {
                             <div className="relative">
                                 <button
                                     onClick={() => { setShowProfile(!showProfile); setShowCredits(false); }}
-                                    className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-white dark:bg-[#161616] border border-[#B2B4B7]/40 dark:border-[#262626] text-xs font-bold text-[#1e2025] dark:text-white shadow-xs hover:border-[#1e2025] dark:hover:border-white transition-all cursor-pointer"
+                                    className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] text-xs font-bold text-[#1E2224] dark:text-white shadow-xs hover:border-[#C85A32] dark:hover:border-white transition-all cursor-pointer"
                                 >
-                                    <div className="w-7 h-7 rounded-full bg-[#1e2025] dark:bg-white text-white dark:text-[#0d0d0d] flex items-center justify-center text-xs font-bold uppercase">
+                                    <div className="w-7 h-7 rounded-full bg-[#2B5866] dark:bg-white text-white dark:text-[#0d0d0d] flex items-center justify-center text-xs font-bold uppercase">
                                         {userData?.name ? userData.name.charAt(0) : "U"}
                                     </div>
-                                    <span className="hidden sm:inline max-w-[100px] truncate text-[#1e2025] dark:text-white">{userData?.name?.split(' ')[0]}</span>
-                                    <FiChevronDown className="w-3.5 h-3.5 text-[#52565c] dark:text-gray-400" />
+                                    <span className="hidden sm:inline max-w-[100px] truncate text-[#1E2224] dark:text-white">{userData?.name?.split(' ')[0]}</span>
+                                    <FiChevronDown className="w-3.5 h-3.5 text-[#5C6468] dark:text-gray-400" />
                                 </button>
 
                                 {/* Profile Dropdown */}
@@ -235,15 +252,15 @@ function Navbar() {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 10 }}
-                                            className="absolute right-0 mt-3 w-56 p-3 bg-[#EDEBE0] dark:bg-[#161616] border border-[#B2B4B7]/40 dark:border-[#262626] rounded-2xl shadow-xl z-50 text-left space-y-2"
+                                            className="absolute right-0 mt-3 w-56 p-3 bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] rounded-2xl shadow-xl z-50 text-left space-y-2"
                                         >
-                                            <div className="p-2 space-y-0.5 border-b border-[#B2B4B7]/30 dark:border-[#262626]">
-                                                <p className="text-xs font-bold text-[#1e2025] dark:text-white truncate">{userData?.name}</p>
-                                                <p className="text-[10px] text-[#52565c] dark:text-gray-400 truncate">{userData?.email}</p>
+                                            <div className="p-2 space-y-0.5 border-b border-[#E8DFD5] dark:border-[#262626]">
+                                                <p className="text-xs font-bold text-[#1E2224] dark:text-white truncate">{userData?.name}</p>
+                                                <p className="text-[10px] text-[#5C6468] dark:text-gray-400 truncate">{userData?.email}</p>
                                             </div>
                                             <button
                                                 onClick={handleSignOut}
-                                                className="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-all flex items-center gap-2 cursor-pointer"
+                                                className="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all flex items-center gap-2 cursor-pointer"
                                             >
                                                 <FiLogOut className="w-3.5 h-3.5" />
                                                 <span>Sign Out</span>
@@ -256,7 +273,7 @@ function Navbar() {
                             {/* Mobile Hamburger Toggle */}
                             <button
                                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                                className="md:hidden p-2 rounded-full bg-white dark:bg-[#161616] border border-[#B2B4B7]/40 dark:border-[#262626] text-[#1e2025] dark:text-white cursor-pointer"
+                                className="md:hidden p-2 rounded-full bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] text-[#1E2224] dark:text-white cursor-pointer"
                             >
                                 {mobileMenuOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
                             </button>
@@ -265,13 +282,13 @@ function Navbar() {
                         <div className="flex items-center gap-3">
                             <button
                                 onClick={() => navigate("/auth")}
-                                className="text-xs font-bold text-[#1e2025] dark:text-white hover:underline px-3 py-2 cursor-pointer"
+                                className="text-xs font-bold text-[#1E2224] dark:text-white hover:text-[#C85A32] dark:hover:text-gray-300 px-3 py-2 cursor-pointer"
                             >
                                 Sign In
                             </button>
                             <button
                                 onClick={() => navigate("/auth")}
-                                className="px-5 py-2.5 rounded-full bg-[#1e2025] dark:bg-white hover:bg-black dark:hover:bg-gray-200 text-white dark:text-[#0d0d0d] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                                className="px-5 py-2.5 rounded-full bg-[#C85A32] dark:bg-white hover:bg-[#B24B27] dark:hover:bg-gray-100 text-white dark:text-[#0d0d0d] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                             >
                                 Get Started
                             </button>
@@ -288,14 +305,14 @@ function Navbar() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden pt-4 pb-2 space-y-2 border-t border-[#B2B4B7]/30 dark:border-[#222222] mt-3"
+                        className="md:hidden pt-4 pb-2 space-y-2 border-t border-[#E8DFD5] dark:border-[#262626] mt-3"
                     >
                         {userData ? (
                             loggedInNavLinks.map((link, idx) => (
                                 <button
                                     key={idx}
                                     onClick={() => { setMobileMenuOpen(false); navigate(link.href); }}
-                                    className="w-full px-4 py-2.5 rounded-xl text-left text-xs font-bold text-[#1e2025] dark:text-white hover:bg-white dark:hover:bg-[#161616] flex items-center gap-3 transition-all cursor-pointer"
+                                    className="w-full px-4 py-2.5 rounded-xl text-left text-xs font-bold text-[#1E2224] dark:text-white hover:bg-[#F5EBE1] dark:hover:bg-[#1a1a1a] flex items-center gap-3 transition-all cursor-pointer"
                                 >
                                     {link.icon}
                                     <span>{link.label}</span>
@@ -306,7 +323,7 @@ function Navbar() {
                                 <button
                                     key={idx}
                                     onClick={() => handleNavClick(link.href)}
-                                    className="w-full px-4 py-2.5 rounded-xl text-left text-xs font-bold text-[#1e2025] dark:text-white hover:bg-white dark:hover:bg-[#161616] transition-all cursor-pointer"
+                                    className="w-full px-4 py-2.5 rounded-xl text-left text-xs font-bold text-[#1E2224] dark:text-white hover:bg-[#F5EBE1] dark:hover:bg-[#1a1a1a] transition-all cursor-pointer"
                                 >
                                     {link.label}
                                 </button>

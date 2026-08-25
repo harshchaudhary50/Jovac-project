@@ -1,38 +1,47 @@
-import React, { useState } from 'react'
-import ReactMarkdown from 'react-markdown'
+import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import MermaidSetup from './MermaidSetup';
 import RechartSetUp from './RechartSetUp';
 import { downloadPdf } from '../services/api';
+import { FiDownload, FiZap, FiBookOpen, FiShare2, FiHelpCircle, FiBarChart2, FiCheckCircle } from 'react-icons/fi';
+
 const markDownComponent = {
     h1: ({ children }) => (
-        <h1 className="text-2xl font-bold text-indigo-700 mt-6 mb-4 border-b pb-2">
+        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#1E2224] dark:text-white mt-6 mb-4 border-b border-[#E8DFD5] dark:border-[#262626] pb-2">
             {children}
         </h1>
     ),
     h2: ({ children }) => (
-        <h2 className="text-xl font-semibold text-indigo-600 mt-5 mb-3">
+        <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#C85A32] dark:text-amber-400 mt-5 mb-3">
             {children}
         </h2>
     ),
     h3: ({ children }) => (
-        <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">
+        <h3 className="text-lg font-serif font-bold text-[#2B5866] dark:text-teal-400 mt-4 mb-2">
             {children}
         </h3>
     ),
     p: ({ children }) => (
-        <p className="text-gray-700 leading-relaxed mb-3">
+        <p className="text-sm text-[#5C6468] dark:text-gray-300 leading-relaxed mb-3 font-normal">
             {children}
         </p>
     ),
     ul: ({ children }) => (
-        <ul className="list-disc ml-6 space-y-1 text-gray-700">
+        <ul className="list-disc ml-6 space-y-1.5 text-sm text-[#5C6468] dark:text-gray-300 mb-3">
             {children}
         </ul>
     ),
     li: ({ children }) => (
-        <li className="marker:text-indigo-500">{children}</li>
+        <li className="marker:text-[#C85A32] dark:marker:text-amber-400">{children}</li>
     ),
-}
+    strong: ({ children }) => (
+        <strong className="font-bold text-[#1E2224] dark:text-white">{children}</strong>
+    ),
+    code: ({ children }) => (
+        <code className="px-1.5 py-0.5 rounded-md bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-xs font-mono text-[#C85A32] dark:text-amber-400">{children}</code>
+    )
+};
+
 function FinalResult({ result }) {
     const [quickRevision, setQuickRevision] = useState(false);
     if (
@@ -47,156 +56,164 @@ function FinalResult({ result }) {
     }
 
     return (
-        <div className='mt-6 p-3 space-y-10 bg-white'>
+        <div className="space-y-8 text-[#1E2224] dark:text-white">
 
-            <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
+            {/* Top Action Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-[#E8DFD5] dark:border-[#262626]">
+                <div className="space-y-1">
+                    <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1E2224] dark:text-white">
+                        Generated Exam Notes
+                    </h2>
+                    <p className="text-xs text-[#5C6468] dark:text-gray-400 font-medium">Ready for revision, testing, and printable export.</p>
+                </div>
 
-                <h2 className='text-3xl font-bold
-          bg-gradient-to-r from-indigo-600 to-purple-600
-          bg-clip-text text-transparent'>
-                    📘 Generated Notes
-                </h2>
+                <div className="flex flex-wrap items-center gap-3">
+                    <button 
+                        onClick={() => setQuickRevision(!quickRevision)} 
+                        className={`px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition flex items-center gap-2 cursor-pointer ${
+                            quickRevision
+                                ? "bg-[#DA9B42] text-white shadow-sm"
+                                : "bg-[#FAF0DC] dark:bg-[#222222] text-[#B86337] dark:text-amber-400 border border-[#DA9B42]/30 dark:border-[#303030] hover:bg-[#DA9B42] hover:text-white"
+                        }`}
+                    >
+                        <FiZap className="w-3.5 h-3.5" />
+                        <span>{quickRevision ? "Full Concept View" : "5-Min Revision Mode"}</span>
+                    </button>
 
-                <div className='flex gap-3'>
-                    <button onClick={() => setQuickRevision(!quickRevision)} className={`
-              px-4 py-2 rounded-lg text-sm font-medium transition
-              ${quickRevision
-                            ? "bg-green-600 text-white"
-                            : "bg-green-100 text-green-700 hover:bg-green-200"}
-            `}>  {quickRevision ? "Exit Revision Mode" : "Quick Revision (5 min)"}</button>
-                    <button onClick={()=>downloadPdf(result)}
-                    className='px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700'>
-                        ⬇️ Download PDF
+                    <button 
+                        onClick={() => downloadPdf(result)}
+                        className="px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#C85A32] dark:bg-white hover:bg-[#B24B27] dark:hover:bg-gray-100 text-white dark:text-[#0d0d0d] transition shadow-sm flex items-center gap-2 cursor-pointer"
+                    >
+                        <FiDownload className="w-3.5 h-3.5" />
+                        <span>Download PDF</span>
                     </button>
                 </div>
             </div>
 
-
-            {!quickRevision && <section>
-
-                <SectionHeader icon="⭐" title="Sub Topics" color="indigo" />
-                {
-                    Object.entries(result.subTopics).map(([star, topics]) => (
-                        <div key={star} className='mb-3
-              '>
-
-                            <p className='font-medium text-indigo-600 mb-1'>
-                                {star} Priority
-                            </p>
-                            <ul className='list-disc ml-6 text-gray-700'>
-                                {topics.map((t, i) => (
-                                    <li key={i}>{t}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))
-                }
-            </section>}
-
-
-            {!quickRevision && <section>
-                <SectionHeader icon="📝" title="Detailed Notes" color="purple" />
-                <div className='bg-white border border-gray-200 rounded-xl p-6'>
-                    <ReactMarkdown components={markDownComponent}>
-                        {result.notes}
-
-                    </ReactMarkdown>
-                </div>
-            </section>}
-
-
-            {quickRevision &&
-                <section className='rounded-xl bg-gradient-to-r from-green-100 to-green-50 border border-green-200 p-6'>
-                    <h3 className='font-bold text-green-700 mb-3 text-lg'>
-                        ⚡ Exam Quick Revision Points
-                    </h3>
-                    <ul className='list-disc ml-6 space-y-1 text-gray-800'>
-                        {result.revisionPoints.map((p, i) => (
-                            <li key={i}>{p}</li>
+            {/* Sub Topics Summary */}
+            {!quickRevision && (
+                <section className="space-y-3">
+                    <SectionHeader icon={<FiBookOpen />} title="Priority Subtopics" color="terracotta" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {Object.entries(result.subTopics).map(([star, topics]) => (
+                            <div key={star} className="p-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-1">
+                                <p className="text-xs font-extrabold text-[#C85A32] dark:text-amber-400">
+                                    {star} Priority
+                                </p>
+                                <ul className="list-disc ml-4 text-xs text-[#5C6468] dark:text-gray-400 space-y-1">
+                                    {topics.map((t, i) => (
+                                        <li key={i}>{t}</li>
+                                    ))}
+                                </ul>
+                            </div>
                         ))}
-                    </ul>
-                </section>}
-
-
-            {result.diagram?.data && <section>
-                <SectionHeader icon="📊" title="Diagram" color="cyan" />
-
-                <MermaidSetup diagram={result.diagram?.data} />
-                <p className="mt-3 text-xs text-gray-500 italic">
-                    ℹ️ If you need this diagram for future reference or revision,
-                    you can save it by taking a screenshot.
-                </p>
-
-            </section>}
-
-
-            {result.charts?.length > 0 &&
-                <section>
-                    <SectionHeader icon="📈" title="Visual Charts" color="indigo" />
-                    <RechartSetUp charts={result.charts} />
-                    <p className="mt-3 text-xs text-gray-500 italic">
-                        ℹ️ If you need this Chart for future reference or revision,
-                        you can save it by taking a screenshot.
-                    </p>
-
-                </section>}
-
-            {result.charts && result.charts.length === 0 && (
-                <p className="text-sm text-gray-400 italic">
-                    📉 Charts are not relevant for this topic.
-                </p>
+                    </div>
+                </section>
             )}
 
+            {/* Detailed Notes Markdown */}
+            {!quickRevision && (
+                <section className="space-y-3">
+                    <SectionHeader icon={<FiBookOpen />} title="Detailed Concept Notes" color="teal" />
+                    <div className="bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-6 sm:p-8">
+                        <ReactMarkdown components={markDownComponent}>
+                            {result.notes}
+                        </ReactMarkdown>
+                    </div>
+                </section>
+            )}
 
-            <section>
-                <SectionHeader icon="❓" title="Important Questions" color="rose" />
+            {/* Quick Revision Sheet */}
+            {quickRevision && (
+                <section className="rounded-3xl bg-[#FAF0DC] dark:bg-[#1e1e1e] border border-[#DA9B42]/40 dark:border-[#303030] p-6 sm:p-8 space-y-4">
+                    <div className="flex items-center gap-2 text-[#B86337] dark:text-amber-400">
+                        <FiZap className="w-5 h-5 text-[#DA9B42]" />
+                        <h3 className="font-serif font-bold text-xl text-[#1E2224] dark:text-white">
+                            5-Minute Exam Revision Cheat Sheet
+                        </h3>
+                    </div>
+                    <ul className="list-disc ml-6 space-y-2 text-xs sm:text-sm text-[#5C6468] dark:text-gray-300 leading-relaxed">
+                        {result.revisionPoints.map((p, i) => (
+                            <li key={i} className="marker:text-[#DA9B42]">{p}</li>
+                        ))}
+                    </ul>
+                </section>
+            )}
 
-                <p className='font-medium'>Short Questions:</p>
-                <ul className='list-disc ml-6 text-gray-700'>
-                    {result.questions.short.map((q, i) => (
-                        <li key={i}>{q}</li>
-                    ))}
-                </ul>
+            {/* Mermaid Diagram */}
+            {result.diagram?.data && (
+                <section className="space-y-3">
+                    <SectionHeader icon={<FiShare2 />} title="Visual Process Flowchart" color="olive" />
+                    <div className="bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-6 overflow-x-auto">
+                        <MermaidSetup diagram={result.diagram?.data} />
+                    </div>
+                    <p className="text-[11px] text-[#5C6468] dark:text-gray-400 italic">
+                        Tip: You can export this flowchart along with your complete notes in the PDF download above.
+                    </p>
+                </section>
+            )}
 
+            {/* Visual Charts */}
+            {result.charts?.length > 0 && (
+                <section className="space-y-3">
+                    <SectionHeader icon={<FiBarChart2 />} title="Topic Weightage & Visual Analytics" color="ochre" />
+                    <div className="bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-6">
+                        <RechartSetUp charts={result.charts} />
+                    </div>
+                </section>
+            )}
 
-                <p className='font-medium mt-4'>Long Questions:</p>
-                <ul className='list-disc ml-6 text-gray-700'>
-                    {result.questions.long.map((q, i) => (
-                        <li key={i}>{q}</li>
-                    ))}
-                </ul>
-                <p className='font-medium mt-4'>Diagram Question:</p>
-                <ul className='list-disc ml-6 text-gray-700'>
-                    <li>{result.questions.diagram}</li>
-                </ul>
+            {/* Important Exam Questions */}
+            <section className="space-y-4">
+                <SectionHeader icon={<FiHelpCircle />} title="Predicted Exam Questions" color="sienna" />
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-5 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-2">
+                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#2B5866] dark:text-teal-400">Short Answer Questions</p>
+                        <ul className="list-disc ml-4 text-xs text-[#5C6468] dark:text-gray-400 space-y-1.5 leading-relaxed">
+                            {result.questions.short.map((q, i) => (
+                                <li key={i}>{q}</li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className="p-5 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-2">
+                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-amber-400">Long Answer / Essay Questions</p>
+                        <ul className="list-disc ml-4 text-xs text-[#5C6468] dark:text-gray-400 space-y-1.5 leading-relaxed">
+                            {result.questions.long.map((q, i) => (
+                                <li key={i}>{q}</li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+
+                {result.questions.diagram && (
+                    <div className="p-5 rounded-2xl bg-[#EDF2E8] dark:bg-[#1e1e1e] border border-[#6B7B52]/30 dark:border-[#303030] space-y-1">
+                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#6B7B52] dark:text-emerald-400">Diagram-Based Question</p>
+                        <p className="text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed font-medium">{result.questions.diagram}</p>
+                    </div>
+                )}
             </section>
 
         </div>
-    )
+    );
 }
 
-
-function SectionHeader({ icon, title, color }) {
-    const colors = {
-        indigo: "from-indigo-100 to-indigo-50 text-indigo-700",
-        purple: "from-purple-100 to-purple-50 text-purple-700",
-        blue: "from-blue-100 to-blue-50 text-blue-700",
-        green: "from-green-100 to-green-50 text-green-700",
-        cyan: "from-cyan-100 to-cyan-50 text-cyan-700",
-        rose: "from-rose-100 to-rose-50 text-rose-700",
+function SectionHeader({ icon, title, color = "terracotta" }) {
+    const colorStyles = {
+        terracotta: "bg-[#F5EBE1] dark:bg-[#222222] text-[#C85A32] dark:text-white border-[#EBD7BE] dark:border-[#303030]",
+        teal: "bg-[#E4ECEF] dark:bg-[#222222] text-[#2B5866] dark:text-teal-400 border-[#2B5866]/20 dark:border-[#303030]",
+        olive: "bg-[#EDF2E8] dark:bg-[#222222] text-[#6B7B52] dark:text-emerald-400 border-[#6B7B52]/20 dark:border-[#303030]",
+        ochre: "bg-[#FAF0DC] dark:bg-[#222222] text-[#B86337] dark:text-amber-400 border-[#DA9B42]/30 dark:border-[#303030]",
+        sienna: "bg-[#F6ECE4] dark:bg-[#222222] text-[#B86337] dark:text-amber-400 border-[#E8DFD5] dark:border-[#303030]"
     };
+
     return (
-        <div className={`
-        mb-4 px-4 py-2 rounded-lg
-        bg-gradient-to-r ${colors[color]}
-        font-semibold flex items-center gap-2
-      `}>
+        <div className={`px-4 py-2 rounded-2xl border font-bold text-xs flex items-center gap-2 w-fit ${colorStyles[color] || colorStyles.terracotta}`}>
             <span>{icon}</span>
             <span>{title}</span>
         </div>
-
-    )
+    );
 }
 
-export default FinalResult
+export default FinalResult;

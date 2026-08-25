@@ -93,7 +93,7 @@ function Pricing() {
           email: userData?.email || ""
         },
         theme: {
-          color: "#1e2025"
+          color: "#C85A32"
         }
       };
 
@@ -110,7 +110,7 @@ function Pricing() {
   };
 
   return (
-    <div className="min-h-screen bg-[#EDEBE0] dark:bg-[#0d0d0d] text-[#1e2025] dark:text-white relative overflow-hidden font-sans selection:bg-[#EDEBE0] selection:text-[#1e2025] transition-colors duration-300">
+    <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#0d0d0d] text-[#1E2224] dark:text-white relative overflow-hidden font-sans selection:bg-[#EBD7BE] selection:text-[#1E2224] transition-colors duration-300">
       
       {/* Soft Organic Background Blobs */}
       <div className="trekt-bg-blob-top" />
@@ -123,17 +123,12 @@ function Pricing() {
         
         {/* Page Title & Subtitle */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <p className="text-xs font-extrabold uppercase tracking-wider text-[#52565c] dark:text-gray-400 flex items-center justify-center gap-1.5">
-            <FiZap className="w-3.5 h-3.5 text-amber-500" />
-            <span>AI Credit Refill Packs</span>
-          </p>
-
-          <h1 className="text-4xl sm:text-5xl font-serif text-[#1e2025] dark:text-white tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-serif text-[#1E2224] dark:text-white tracking-tight">
             Simple, Transparent <br />
-            <span className="italic font-normal text-[#52565c] dark:text-gray-400">Pay-As-You-Study</span> Pricing
+            <span className="italic font-normal text-[#C85A32] dark:text-white">Pay-As-You-Study</span> Pricing
           </h1>
 
-          <p className="text-xs sm:text-sm text-[#52565c] dark:text-gray-400 font-medium leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
             No monthly subscriptions. Buy credits when you need them for your exam prep and use them at your own pace.
           </p>
         </div>
@@ -162,7 +157,7 @@ function Pricing() {
             payingAmount={payingAmount}
           />
 
-          {/* Value Pack (Popular / Pro Plan) */}
+          {/* Pro Exam Pack */}
           <PricingCard
             title="Pro Exam Pack"
             price={`₹${proPrice}`}
@@ -185,7 +180,7 @@ function Pricing() {
             payingAmount={payingAmount}
           />
 
-          {/* Pro Pack */}
+          {/* Semester Pass */}
           <PricingCard
             title="Semester Pass"
             price="₹399"
@@ -210,12 +205,12 @@ function Pricing() {
         </div>
 
         {/* Payment FAQ / Guarantee Note */}
-        <div className="p-6 rounded-3xl bg-[#EDEBE0] dark:bg-[#161616] border border-[#B2B4B7]/40 dark:border-[#262626] trekt-card-shadow text-center space-y-2 max-w-2xl mx-auto">
-          <div className="flex items-center justify-center gap-2 text-xs font-extrabold text-[#1e2025] dark:text-white">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow text-center space-y-2 max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-2 text-xs font-extrabold text-[#6B7B52] dark:text-emerald-400">
             <FiCreditCard className="w-4 h-4" />
             <span>Instant Credit Delivery</span>
           </div>
-          <p className="text-xs text-[#52565c] dark:text-gray-400 font-medium leading-relaxed">
+          <p className="text-xs text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
             Credits are credited to your account balance immediately upon successful payment verification.
           </p>
         </div>
@@ -255,60 +250,56 @@ function PricingCard({
       className={`
         relative cursor-pointer rounded-3xl p-7 sm:p-8 flex flex-col justify-between transition-all border
         ${isSelected 
-          ? "bg-[#1e2025] dark:bg-white text-white dark:text-[#0d0d0d] border-[#1e2025] dark:border-white shadow-xl ring-2 ring-[#1e2025]/20 dark:ring-white/20" 
+          ? "bg-[#2B5866] dark:bg-[#1e1e1e] text-white border-[#2B5866] dark:border-white shadow-xl" 
           : popular
-          ? "bg-[#EDEBE0] dark:bg-[#161616] border-[#1e2025] dark:border-white trekt-card-shadow"
-          : "bg-[#EDEBE0] dark:bg-[#161616] border-[#B2B4B7]/40 dark:border-[#262626] trekt-card-shadow hover:border-[#1e2025] dark:hover:border-white"
+          ? "bg-white dark:bg-[#161616] border-[#C85A32] dark:border-[#333333] trekt-card-shadow"
+          : "bg-white dark:bg-[#161616] border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow hover:border-[#C85A32] dark:hover:border-white"
         }
       `}
     >
       <div className="space-y-5">
         
-        {/* Header Badge */}
-        <div className="flex items-center justify-between gap-2">
-          <span className={`text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full border ${
-            isSelected 
-              ? "bg-white/20 dark:bg-black/10 text-white dark:text-[#0d0d0d] border-white/20 dark:border-black/20" 
-              : popular
-              ? "bg-[#1e2025] dark:bg-white text-white dark:text-[#0d0d0d] border-[#1e2025] dark:border-white"
-              : "text-[#52565c] dark:text-gray-400 font-bold border-[#B2B4B7]/40 dark:border-[#262626]"
-          }`}>
-            {badge}
-          </span>
-        </div>
+        {/* Header Label (Clean Text, No Pill Badge) */}
+        {badge && (
+          <div>
+            <span className={`text-[10px] font-extrabold uppercase tracking-wider ${
+              isSelected ? "text-[#EBD7BE] dark:text-gray-300" : "text-[#B86337] dark:text-amber-400"
+            }`}>
+              {badge}
+            </span>
+          </div>
+        )}
 
         <div className="space-y-1">
-          <h2 className={`text-2xl font-extrabold tracking-tight ${isSelected ? "text-white dark:text-[#0d0d0d]" : "text-[#1e2025] dark:text-white"}`}>
+          <h2 className={`text-2xl font-extrabold tracking-tight ${isSelected ? "text-white" : "text-[#1E2224] dark:text-white"}`}>
             {title}
           </h2>
-          <p className={`text-xs font-medium leading-relaxed ${isSelected ? "text-gray-300 dark:text-gray-700" : "text-[#52565c] dark:text-gray-400"}`}>
+          <p className={`text-xs font-medium leading-relaxed ${isSelected ? "text-[#EBD7BE] dark:text-gray-300" : "text-[#5C6468] dark:text-gray-400"}`}>
             {description}
           </p>
         </div>
 
-        {/* Clean Refined Pricing & Credits Info */}
+        {/* Pricing & Credits Info */}
         <div className={`p-4 rounded-2xl border space-y-2 ${
           isSelected 
-            ? "bg-white/10 dark:bg-black/10 border-white/20 dark:border-black/20" 
-            : "bg-white/90 dark:bg-[#222222] border-[#B2B4B7]/30 dark:border-[#303030]"
+            ? "bg-white/10 dark:bg-[#262626] border-white/20 dark:border-[#333333]" 
+            : "bg-[#FAF7F2] dark:bg-[#1e1e1e] border-[#E8DFD5] dark:border-[#262626]"
         }`}>
           <div className="flex items-baseline justify-between gap-2">
             <div className="flex items-baseline gap-1">
-              <span className={`text-3xl font-extrabold tracking-tight ${isSelected ? "text-white dark:text-[#0d0d0d]" : "text-[#1e2025] dark:text-white"}`}>
+              <span className={`text-3xl font-extrabold tracking-tight ${isSelected ? "text-white" : "text-[#1E2224] dark:text-white"}`}>
                 {price}
               </span>
-              <span className={`text-xs font-semibold ${isSelected ? "text-gray-300 dark:text-gray-700" : "text-[#52565c] dark:text-gray-400"}`}>
+              <span className={`text-xs font-semibold ${isSelected ? "text-white/80" : "text-[#5C6468] dark:text-gray-400"}`}>
                 / one-time
               </span>
             </div>
 
-            {/* Premium Refined Credit Pill Badge */}
-            <div className={`px-3 py-1 rounded-full text-xs font-extrabold flex items-center gap-1.5 border shrink-0 ${
-              isSelected
-                ? "bg-white/20 dark:bg-black/10 text-white dark:text-[#0d0d0d] border-white/30 dark:border-black/20"
-                : "bg-[#1e2025]/5 dark:bg-white/10 text-[#1e2025] dark:text-white border-[#1e2025]/10 dark:border-white/15"
+            {/* Credit Info */}
+            <div className={`text-xs font-extrabold flex items-center gap-1.5 shrink-0 ${
+              isSelected ? "text-white" : "text-[#1E2224] dark:text-white"
             }`}>
-              <FiZap className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
+              <FiZap className={`w-3.5 h-3.5 ${isSelected ? "text-white" : "text-[#DA9B42] dark:text-amber-400"}`} />
               <span>{credits}</span>
             </div>
           </div>
@@ -318,8 +309,8 @@ function PricingCard({
         <ul className="space-y-2.5 pt-2">
           {features.map((feature, i) => (
             <li key={i} className="flex items-start gap-2.5 text-xs font-semibold">
-              <FiCheck className={`w-4 h-4 shrink-0 mt-0.5 ${isSelected ? "text-white dark:text-[#0d0d0d]" : "text-[#1e2025] dark:text-white"}`} />
-              <span className={isSelected ? "text-gray-200 dark:text-gray-800" : "text-[#52565c] dark:text-gray-400"}>
+              <FiCheck className={`w-4 h-4 shrink-0 mt-0.5 ${isSelected ? "text-[#EBD7BE] dark:text-gray-300" : "text-[#6B7B52] dark:text-emerald-400"}`} />
+              <span className={isSelected ? "text-white/90" : "text-[#5C6468] dark:text-gray-400"}>
                 {feature}
               </span>
             </li>
@@ -340,8 +331,8 @@ function PricingCard({
           ${isPayingThisCard
             ? "bg-gray-400 text-white cursor-not-allowed"
             : isSelected
-            ? "bg-white dark:bg-[#0d0d0d] text-[#1e2025] dark:text-white hover:bg-gray-100 dark:hover:bg-black"
-            : "bg-[#1e2025] dark:bg-white text-white dark:text-[#0d0d0d] hover:bg-black dark:hover:bg-gray-200"
+            ? "bg-[#DA9B42] dark:bg-white text-white dark:text-[#0d0d0d] hover:bg-[#C0842E] dark:hover:bg-gray-100"
+            : "bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d] hover:bg-[#B24B27] dark:hover:bg-gray-100"
           }
         `}
       >

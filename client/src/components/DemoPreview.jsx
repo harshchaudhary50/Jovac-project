@@ -34,20 +34,20 @@ export default function DemoPreview() {
   const [activeTab, setActiveTab] = useState('notes');
 
   return (
-    <div className="w-full max-w-5xl mx-auto rounded-3xl border border-[#B2B4B7]/40 dark:border-[#262626] bg-[#EDEBE0] dark:bg-[#161616] text-[#1e2025] dark:text-white trekt-card-shadow overflow-hidden transition-colors duration-300">
+    <div className="w-full max-w-5xl mx-auto rounded-3xl border border-[#E8DFD5] bg-white text-[#1E2224] trekt-card-shadow overflow-hidden transition-colors duration-300">
       
       {/* Clean Header Action Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 sm:px-8 py-5 border-b border-[#B2B4B7]/30 dark:border-[#262626]">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 sm:px-8 py-5 border-b border-[#E8DFD5]">
         
         {/* Header Title */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-extrabold uppercase tracking-wider text-[#52565c] dark:text-gray-400">
+          <span className="text-xs font-extrabold uppercase tracking-wider text-[#5C6468]">
             Interactive AI Output Preview
           </span>
         </div>
 
         {/* Clean Interactive Navigation Tabs */}
-        <div className="flex items-center gap-1 bg-white/80 dark:bg-[#222222] p-1.5 rounded-2xl border border-[#B2B4B7]/40 dark:border-[#303030]">
+        <div className="flex items-center gap-1 bg-[#FAF7F2] p-1.5 rounded-2xl border border-[#E8DFD5]">
           <TabButton 
             active={activeTab === 'notes'} 
             onClick={() => setActiveTab('notes')} 
@@ -80,19 +80,19 @@ export default function DemoPreview() {
       <div className="p-6 sm:p-8 min-h-[380px] space-y-6">
         
         {/* Chapter Header Metadata */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#B2B4B7]/30 dark:border-[#262626]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E8DFD5]">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#52565c] dark:text-gray-400">
+            <div className="flex items-center gap-2 text-xs font-semibold text-[#5C6468]">
               <span>{DEMO_DATA.level}</span>
               <span>•</span>
-              <span className="text-amber-600 dark:text-amber-400 font-extrabold">{DEMO_DATA.importance}</span>
+              <span className="text-[#DA9B42] font-extrabold">{DEMO_DATA.importance}</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-serif text-[#1e2025] dark:text-white tracking-tight">
+            <h3 className="text-xl sm:text-2xl font-serif text-[#1E2224] tracking-tight">
               {DEMO_DATA.topic}
             </h3>
           </div>
 
-          <button className="px-4 py-2 text-xs font-bold bg-[#1e2025] dark:bg-white text-white dark:text-[#0d0d0d] rounded-xl flex items-center gap-2 shadow-xs cursor-pointer hover:bg-black dark:hover:bg-gray-200 transition-all self-start sm:self-auto">
+          <button className="px-4 py-2 text-xs font-bold bg-[#C85A32] text-white rounded-xl flex items-center gap-2 shadow-xs cursor-pointer hover:bg-[#B24B27] transition-all self-start sm:self-auto">
             <FiDownload className="w-4 h-4" />
             <span>Download PDF</span>
           </button>
@@ -114,28 +114,28 @@ export default function DemoPreview() {
               {/* Priority Subtopics */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 {DEMO_DATA.subTopics.map((sub, i) => (
-                  <div key={i} className="p-4 rounded-2xl bg-white/80 dark:bg-[#222222] border border-[#B2B4B7]/30 dark:border-[#303030] text-xs space-y-1">
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#52565c] dark:text-gray-400 block">{sub.priority}</span>
-                    <span className="text-[#1e2025] dark:text-white font-extrabold">{sub.text}</span>
+                  <div key={i} className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#E8DFD5] text-xs space-y-1">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#C85A32] block">{sub.priority}</span>
+                    <span className="text-[#1E2224] font-extrabold">{sub.text}</span>
                   </div>
                 ))}
               </div>
 
               {/* Detailed Content Card */}
-              <div className="p-6 rounded-2xl bg-white/90 dark:bg-[#222222] border border-[#B2B4B7]/30 dark:border-[#303030] space-y-4 text-xs sm:text-sm text-[#1e2025] dark:text-gray-200 leading-relaxed font-sans">
+              <div className="p-6 rounded-2xl bg-[#FAF7F2] border border-[#E8DFD5] space-y-4 text-xs sm:text-sm text-[#1E2224] leading-relaxed font-sans">
                 <div className="space-y-1">
-                  <h4 className="text-base font-extrabold text-[#1e2025] dark:text-white">1. What is Process Synchronization?</h4>
-                  <p className="text-[#52565c] dark:text-gray-300 font-medium">
+                  <h4 className="text-base font-extrabold text-[#1E2224]">1. What is Process Synchronization?</h4>
+                  <p className="text-[#5C6468] font-medium">
                     Process Synchronization is the mechanism to ensure that two or more concurrent processes do not simultaneously execute in the critical section or modify shared data, avoiding data corruption.
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-[#B2B4B7]/30 dark:border-[#303030] space-y-2">
-                  <h4 className="text-base font-extrabold text-[#1e2025] dark:text-white">2. Critical Section Essential Conditions</h4>
-                  <ul className="space-y-1.5 pl-4 list-disc marker:text-[#1e2025] dark:marker:text-white text-[#52565c] dark:text-gray-300 font-medium">
-                    <li><strong className="text-[#1e2025] dark:text-white">Mutual Exclusion:</strong> Only one process inside CS at any time.</li>
-                    <li><strong className="text-[#1e2025] dark:text-white">Progress:</strong> Processes outside CS shouldn't delay waiting processes.</li>
-                    <li><strong className="text-[#1e2025] dark:text-white">Bounded Waiting:</strong> Must guarantee no process starves forever.</li>
+                <div className="pt-3 border-t border-[#E8DFD5] space-y-2">
+                  <h4 className="text-base font-extrabold text-[#1E2224]">2. Critical Section Essential Conditions</h4>
+                  <ul className="space-y-1.5 pl-4 list-disc marker:text-[#C85A32] text-[#5C6468] font-medium">
+                    <li><strong className="text-[#1E2224]">Mutual Exclusion:</strong> Only one process inside CS at any time.</li>
+                    <li><strong className="text-[#1E2224]">Progress:</strong> Processes outside CS shouldn't delay waiting processes.</li>
+                    <li><strong className="text-[#1E2224]">Bounded Waiting:</strong> Must guarantee no process starves forever.</li>
                   </ul>
                 </div>
               </div>
@@ -150,16 +150,16 @@ export default function DemoPreview() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
-              className="p-6 rounded-2xl bg-white/90 dark:bg-[#222222] border border-[#B2B4B7]/30 dark:border-[#303030] space-y-4"
+              className="p-6 rounded-2xl bg-[#FAF0DC] border border-[#DA9B42]/30 space-y-4"
             >
-              <div className="flex items-center gap-2 text-[#1e2025] dark:text-white font-extrabold text-sm border-b border-[#B2B4B7]/30 dark:border-[#303030] pb-3">
-                <FiZap className="w-4 h-4 text-amber-500" />
+              <div className="flex items-center gap-2 text-[#B86337] font-extrabold text-sm border-b border-[#DA9B42]/20 pb-3">
+                <FiZap className="w-4 h-4 text-[#DA9B42]" />
                 <span>5-Minute Rapid Revision Cheat Sheet</span>
               </div>
               <ul className="space-y-3">
                 {DEMO_DATA.revision.map((point, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm font-semibold text-[#1e2025] dark:text-gray-200">
-                    <FiCheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                  <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm font-semibold text-[#1E2224]">
+                    <FiCheckCircle className="w-4 h-4 text-[#6B7B52] mt-0.5 shrink-0" />
                     <span>{point}</span>
                   </li>
                 ))}
@@ -179,20 +179,20 @@ export default function DemoPreview() {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {DEMO_DATA.flowchartSteps.map((stepItem, idx) => (
-                  <div key={idx} className="p-5 rounded-2xl bg-white/90 dark:bg-[#222222] border border-[#B2B4B7]/30 dark:border-[#303030] space-y-2 flex flex-col justify-between">
+                  <div key={idx} className="p-5 rounded-2xl bg-[#FAF7F2] border border-[#E8DFD5] space-y-2 flex flex-col justify-between">
                     <div className="space-y-1">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#6B7B52] block">
                         {stepItem.status}
                       </span>
-                      <h4 className="text-sm font-extrabold text-[#1e2025] dark:text-white">
+                      <h4 className="text-sm font-extrabold text-[#1E2224]">
                         {stepItem.step}
                       </h4>
-                      <p className="text-xs text-[#52565c] dark:text-gray-300 font-medium leading-relaxed">
+                      <p className="text-xs text-[#5C6468] font-medium leading-relaxed">
                         {stepItem.desc}
                       </p>
                     </div>
                     {idx < 3 && (
-                      <div className="hidden sm:flex justify-end pt-2 text-[#52565c] dark:text-gray-400">
+                      <div className="hidden sm:flex justify-end pt-2 text-[#5C6468]">
                         <FiArrowRight className="w-4 h-4" />
                       </div>
                     )}
@@ -213,9 +213,9 @@ export default function DemoPreview() {
               className="space-y-3"
             >
               {DEMO_DATA.questions.map((q, idx) => (
-                <div key={idx} className="p-4 rounded-2xl bg-white/90 dark:bg-[#222222] border border-[#B2B4B7]/30 dark:border-[#303030] flex items-center justify-between gap-4">
-                  <p className="text-xs sm:text-sm font-bold text-[#1e2025] dark:text-gray-100">{q}</p>
-                  <span className="px-3 py-1 text-[10px] font-extrabold bg-[#1e2025] dark:bg-white text-white dark:text-[#0d0d0d] rounded-full shrink-0">
+                <div key={idx} className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#E8DFD5] flex items-center justify-between gap-4">
+                  <p className="text-xs sm:text-sm font-bold text-[#1E2224]">{q}</p>
+                  <span className="px-3 py-1 text-[10px] font-extrabold bg-[#2B5866] text-white rounded-full shrink-0">
                     High Yield
                   </span>
                 </div>
@@ -236,8 +236,8 @@ function TabButton({ active, onClick, icon, label }) {
       onClick={onClick}
       className={`px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition-all cursor-pointer ${
         active 
-          ? 'bg-[#1e2025] dark:bg-white text-white dark:text-[#0d0d0d] shadow-xs' 
-          : 'text-[#52565c] dark:text-gray-300 hover:text-[#1e2025] dark:hover:text-white'
+          ? 'bg-[#C85A32] text-white shadow-xs' 
+          : 'text-[#5C6468] hover:text-[#1E2224]'
       }`}
     >
       {icon}

@@ -41,39 +41,26 @@ function Onboarding() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompletedScreen, setIsCompletedScreen] = useState(false);
 
-  // Validation function: returns true ONLY if user has selected an option for current step
   const isCurrentStepValid = () => {
-    if (step === 1) {
-      return role !== '';
-    }
+    if (step === 1) return role !== '';
     if (step === 2) {
       if (role === 'Student') {
-        if (course === 'Custom Course / Subject') {
-          return customCourse.trim().length > 0;
-        }
+        if (course === 'Custom Course / Subject') return customCourse.trim().length > 0;
         return course !== '';
-      } else {
-        return teacherDept !== '';
       }
+      return teacherDept !== '';
     }
     if (step === 3) {
-      if (role === 'Student') {
-        return semester !== '';
-      } else {
-        return teacherAudience !== '';
-      }
+      if (role === 'Student') return semester !== '';
+      return teacherAudience !== '';
     }
     if (step === 4) {
-      if (role === 'Student') {
-        return preferredNoteType !== '';
-      } else {
-        return teacherMaterialType !== '';
-      }
+      if (role === 'Student') return preferredNoteType !== '';
+      return teacherMaterialType !== '';
     }
     return false;
   };
 
-  // Student Presets
   const studentCoursePresets = [
     'B.Tech Computer Science & IT',
     'B.Tech Electronics & Mechanical',
@@ -97,178 +84,193 @@ function Onboarding() {
   const studentNoteTypeOptions = [
     {
       title: 'Deep Concept Notes',
-      icon: <FiBookOpen className="w-4 h-4 text-[#1e2025]" />,
-      desc: 'Structured chapter explanations, key formulas, priority topic tags (⭐ to ⭐⭐⭐), and exam takeaways.'
+      icon: <FiBookOpen className="w-4 h-4 text-[#C85A32] dark:text-amber-400" />,
+      desc: 'Full chapter explanations with key definitions, formulas, priority tags, and exam takeaways.'
     },
     {
-      title: '5-Min Rapid Revision',
-      icon: <FiZap className="w-4 h-4 text-[#1e2025]" />,
-      desc: 'Ultra-short bullet points and definition cheat sheets engineered for last-night cramming.'
+      title: '5-Minute Rapid Revision Sheets',
+      icon: <FiZap className="w-4 h-4 text-[#DA9B42] dark:text-amber-400" />,
+      desc: 'Bulleted summary cheat sheets designed specifically for rapid review right before exams.'
     },
     {
-      title: 'Predicted Question Bank',
-      icon: <FiTarget className="w-4 h-4 text-[#1e2025]" />,
-      desc: 'Short, long, and diagram-based questions with estimated marks weightage allocation.'
+      title: 'Predicted Exam Question Banks',
+      icon: <FiTarget className="w-4 h-4 text-[#6B7B52] dark:text-emerald-400" />,
+      desc: 'Short, long, and diagram-based questions with estimated marks allocation.'
+    },
+    {
+      title: 'Visual Flowcharts & Diagrams',
+      icon: <FiShare2 className="w-4 h-4 text-[#2B5866] dark:text-teal-400" />,
+      desc: 'Mermaid code architecture diagrams & data charts to ace diagram-heavy questions.'
     }
   ];
 
-  // Teacher Presets
   const teacherDeptPresets = [
     'Computer Science & Engineering',
-    'Physics & Electrical Sciences',
+    'Electrical & Electronics',
+    'Mechanical & Civil Engineering',
+    'Physics & Chemistry Sciences',
     'Mathematics & Statistics',
-    'Chemistry & Chemical Sciences',
-    'Business & Finance Management',
-    'High School Science & Math',
-    'Humanities & Social Sciences'
+    'Management & Humanities',
+    'High School Science & Maths'
   ];
 
   const teacherAudiencePresets = [
-    'Undergraduate B.Tech / B.Sc Students',
-    'Postgraduate M.Tech / M.Sc Students',
-    'High School Students (Class 10-12)',
-    'Competitive Exam Aspirants (GATE/JEE)',
-    'Polytechnic & Diploma Students'
+    'Undergraduate College Students',
+    'Postgraduate / Masters Students',
+    'High School Students (Class 9-12)',
+    'Competitive Exam Aspirants',
+    'Corporate / Professional Learners'
   ];
 
   const teacherMaterialOptions = [
     {
-      title: 'Lecture Handouts & Summaries',
-      icon: <FiFileText className="w-4 h-4 text-[#1e2025]" />,
-      desc: 'Detailed lecture outlines, core definitions, and structured syllabus notes for distribution.'
+      title: 'Lecture Handouts & Concept Guides',
+      icon: <FiFileText className="w-4 h-4 text-[#2B5866] dark:text-teal-400" />,
+      desc: 'Clean, printable summary materials ready to distribute to students before classes.'
     },
     {
-      title: 'Visual Mermaid Flowcharts for Slides',
-      icon: <FiShare2 className="w-4 h-4 text-[#1e2025]" />,
-      desc: 'Process diagrams, architecture flowcharts, and visual topic weightage charts for presentation slides.'
+      title: 'Assignment & Exam Question Sets',
+      icon: <FiTarget className="w-4 h-4 text-[#C85A32] dark:text-amber-400" />,
+      desc: 'Predictive question sets categorized by marking weightage (2-15 marks).'
     },
     {
-      title: 'Homework & Quiz Question Banks',
-      icon: <FiTarget className="w-4 h-4 text-[#1e2025]" />,
-      desc: 'Auto-generated assignment question sets, model answers, and numerical practice sets.'
+      title: 'Classroom Flowcharts & Slide Diagrams',
+      icon: <FiShare2 className="w-4 h-4 text-[#6B7B52] dark:text-emerald-400" />,
+      desc: 'Interactive Mermaid diagrams ready for presentation slides and blackboards.'
+    },
+    {
+      title: 'Rapid Revision Cheat Sheets',
+      icon: <FiZap className="w-4 h-4 text-[#DA9B42] dark:text-amber-400" />,
+      desc: 'High-yield 1-pager formulas and summaries for quick pre-exam recap.'
     }
   ];
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (!isCurrentStepValid()) return;
+
     if (step < 4) {
       setStep(step + 1);
     } else {
-      handleSubmitOnboarding();
+      // Final Step Submission
+      setIsSubmitting(true);
+      try {
+        const payload = {
+          role,
+          course: role === 'Student' ? (course === 'Custom Course / Subject' ? customCourse : course) : '',
+          semester: role === 'Student' ? semester : '',
+          preferredNoteType: role === 'Student' ? preferredNoteType : '',
+          teacherDept: role === 'Teacher' ? teacherDept : '',
+          teacherAudience: role === 'Teacher' ? teacherAudience : '',
+          teacherMaterialType: role === 'Teacher' ? teacherMaterialType : ''
+        };
+
+        const res = await axios.post(`${serverUrl}/api/user/onboarding`, payload, {
+          withCredentials: true
+        });
+
+        if (res.data) {
+          dispatch(setUserData(res.data));
+        }
+        setIsCompletedScreen(true);
+      } catch (err) {
+        console.error('Onboarding Save Error:', err);
+        setIsCompletedScreen(true);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
   const handlePrevStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    }
-  };
-
-  const handleSubmitOnboarding = async () => {
-    try {
-      setIsSubmitting(true);
-
-      const finalCourse = role === 'Student' 
-        ? (course === 'Custom Course / Subject' ? customCourse : course)
-        : teacherDept;
-
-      const finalSemester = role === 'Student' ? semester : teacherAudience;
-      const finalNoteType = role === 'Student' ? preferredNoteType : teacherMaterialType;
-      
-      const payload = {
-        role,
-        course: finalCourse || 'General Studies',
-        semester: finalSemester || 'Current Term',
-        preferredNoteType: finalNoteType || 'Deep Concept Notes'
-      };
-
-      const res = await axios.post(serverUrl + '/api/user/onboarding', payload, { withCredentials: true });
-      if (res.data) {
-        dispatch(setUserData(res.data));
-      }
-      setIsCompletedScreen(true);
-    } catch (err) {
-      console.log('Error completing onboarding:', err);
-      setIsCompletedScreen(true);
-    } finally {
-      setIsSubmitting(false);
-    }
+    if (step > 1) setStep(step - 1);
   };
 
   return (
-    <div className="min-h-screen bg-[#EDEBE0] text-[#1e2025] flex items-center justify-center p-4 relative overflow-hidden font-sans selection:bg-[#EDEBE0]">
+    <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#0d0d0d] text-[#1E2224] dark:text-white flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans selection:bg-[#EBD7BE] transition-colors duration-300">
       
-      {/* Background Soft Blobs */}
+      {/* Background Soft Washes */}
       <div className="trekt-bg-blob-top" />
       <div className="trekt-bg-blob-bottom" />
 
-      {/* SLEEK & COMPACT THANK YOU COMPLETION CARD */}
+      {/* Brand Header */}
+      <header className="absolute top-6 left-6 sm:left-12 flex items-center gap-2.5 z-20">
+        <img 
+          src="/favicon.jpg" 
+          alt="PrepAI Logo" 
+          className="w-8 h-8 rounded-full object-cover shadow-xs border border-[#EBD7BE] dark:border-[#303030]" 
+        />
+        <span className="text-lg font-bold tracking-tight text-[#1E2224] dark:text-white font-sans">
+          Prep<span className="text-[#C85A32] dark:text-white font-extrabold">AI</span>
+        </span>
+      </header>
+
+      {/* THANK YOU COMPLETION SCREEN */}
       {isCompletedScreen ? (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md bg-white rounded-3xl border border-[#E0E3ED] trekt-card-shadow p-6 sm:p-7 text-center space-y-5 relative z-10 shadow-2xl"
+          className="w-full max-w-md bg-white dark:bg-[#161616] rounded-3xl border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow p-8 text-center space-y-6 relative z-10 shadow-2xl"
         >
-          {/* Sleek Green Badge */}
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+          {/* Green Badge */}
+          <div className="w-12 h-12 rounded-2xl bg-[#EDF2E8] dark:bg-emerald-950/40 border border-[#6B7B52]/30 dark:border-emerald-800/40 text-[#6B7B52] dark:text-emerald-400 flex items-center justify-center mx-auto shadow-xs">
             <FiCheckCircle className="w-6 h-6 stroke-[2.5]" />
           </div>
 
           <div className="space-y-1">
-            <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1e2025]">
+            <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1E2224] dark:text-white">
               Thank you for your time! 🎉
             </h2>
-            <p className="text-xs text-[#52565c] leading-relaxed max-w-xs mx-auto">
-              Your profile has been saved. AI generation is now customized for your <span className="font-bold text-[#1e2025]">{role}</span> profile.
+            <p className="text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed max-w-xs mx-auto">
+              Your profile has been saved. AI generation is now customized for your <span className="font-bold text-[#C85A32] dark:text-amber-400">{role}</span> profile.
             </p>
           </div>
 
-          {/* Compact Profile Summary Box */}
-          <div className="p-3.5 rounded-2xl bg-[#EDEBE0]/70 border border-[#B2B4B7]/40 space-y-1.5 text-xs text-[#1e2025]">
+          {/* Profile Summary Box */}
+          <div className="p-3.5 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] space-y-1.5 text-xs text-[#1E2224] dark:text-white">
             <div className="flex justify-between items-center text-[11px]">
-              <span className="text-[#52565c] font-medium">Role:</span>
+              <span className="text-[#5C6468] dark:text-gray-400 font-medium">Role:</span>
               <span className="font-bold">{role}</span>
             </div>
             <div className="flex justify-between items-center text-[11px]">
-              <span className="text-[#52565c] font-medium">{role === 'Student' ? 'Course:' : 'Department:'}</span>
+              <span className="text-[#5C6468] dark:text-gray-400 font-medium">{role === 'Student' ? 'Course:' : 'Department:'}</span>
               <span className="font-bold truncate max-w-[200px]">{role === 'Student' ? (course === 'Custom Course / Subject' ? customCourse : course) : teacherDept}</span>
             </div>
             <div className="flex justify-between items-center text-[11px]">
-              <span className="text-[#52565c] font-medium">{role === 'Student' ? 'Semester/Class:' : 'Audience:'}</span>
+              <span className="text-[#5C6468] dark:text-gray-400 font-medium">{role === 'Student' ? 'Semester/Class:' : 'Audience:'}</span>
               <span className="font-bold truncate max-w-[200px]">{role === 'Student' ? semester : teacherAudience}</span>
             </div>
-            <div className="flex justify-between items-center text-[11px] pt-1 border-t border-[#B2B4B7]/30">
-              <span className="text-[#52565c] font-medium">Credits Active:</span>
-              <span className="font-bold text-emerald-700">⚡ 50 Free Signup Credits</span>
+            <div className="flex justify-between items-center text-[11px] pt-1 border-t border-[#E8DFD5] dark:border-[#303030]">
+              <span className="text-[#5C6468] dark:text-gray-400 font-medium">Credits Active:</span>
+              <span className="font-bold text-[#6B7B52] dark:text-emerald-400">⚡ 50 Free Signup Credits</span>
             </div>
           </div>
 
           <button
             onClick={() => navigate('/')}
-            className="w-full py-3 rounded-full bg-[#1e2025] hover:bg-[#2d3037] text-white text-xs font-bold uppercase tracking-wider transition shadow-md shadow-[#1e2025]/10 flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-full bg-[#C85A32] dark:bg-white hover:bg-[#B24B27] dark:hover:bg-gray-100 text-white dark:text-[#0d0d0d] text-xs font-bold uppercase tracking-wider transition shadow-md shadow-[#C85A32]/20 dark:shadow-none flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>LAUNCH MY DASHBOARD</span>
             <FiArrowRight />
           </button>
         </motion.div>
       ) : (
-        /* COMPACT 4-STEP WIZARD */
-        <div className="w-full max-w-xl bg-white rounded-3xl border border-[#E0E3ED] trekt-card-shadow p-6 sm:p-9 relative z-10 space-y-6 shadow-2xl">
+        /* 4-STEP WIZARD */
+        <div className="w-full max-w-xl bg-white dark:bg-[#161616] rounded-3xl border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow p-6 sm:p-9 relative z-10 space-y-6 shadow-2xl">
           
           {/* Header & Step Indicator Bar */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#52565c]">
-              <span className="flex items-center gap-1.5 text-[#1e2025]">
-                <span className="w-2 h-2 rounded-full bg-[#1e2025]" />
+            <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#5C6468] dark:text-gray-400">
+              <span className="flex items-center gap-1.5 text-[#1E2224] dark:text-white">
+                <span className="w-2 h-2 rounded-full bg-[#C85A32] dark:bg-white" />
                 {role || 'Study'} Personalization Setup
               </span>
               <span>Step {step} of 4</span>
             </div>
 
             {/* Progress Indicator Line */}
-            <div className="w-full h-1.5 bg-[#F8F8F8] rounded-full overflow-hidden border border-[#E0E3ED]">
+            <div className="w-full h-1.5 bg-[#FAF7F2] dark:bg-[#222222] rounded-full overflow-hidden border border-[#E8DFD5] dark:border-[#303030]">
               <motion.div 
-                className="h-full bg-[#1e2025]"
+                className="h-full bg-[#C85A32] dark:bg-white"
                 animate={{ width: `${(step / 4) * 100}%` }}
                 transition={{ duration: 0.3 }}
               />
@@ -278,7 +280,7 @@ function Onboarding() {
           {/* Wizard Step Content Switcher */}
           <AnimatePresence mode="wait">
             
-            {/* STEP 1: Role Selection (Student vs Teacher) */}
+            {/* STEP 1: Role Selection */}
             {step === 1 && (
               <motion.div
                 key="step1"
@@ -288,10 +290,10 @@ function Onboarding() {
                 className="space-y-5"
               >
                 <div className="space-y-1">
-                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1e2025]">
+                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1E2224] dark:text-white">
                     What best describes your primary role?
                   </h2>
-                  <p className="text-xs text-[#52565c]">
+                  <p className="text-xs text-[#5C6468] dark:text-gray-400">
                     Please select an option below to continue.
                   </p>
                 </div>
@@ -300,36 +302,36 @@ function Onboarding() {
                   <button
                     type="button"
                     onClick={() => setRole('Student')}
-                    className={`p-5 rounded-2xl border text-left transition-all space-y-2 ${
+                    className={`p-5 rounded-2xl border text-left transition-all space-y-2 cursor-pointer ${
                       role === 'Student' 
-                        ? 'bg-[#EDEBE0] border-[#1e2025] shadow-xs' 
-                        : 'bg-[#F8F8F8] border-[#E0E3ED] hover:border-[#B2B4B7]'
+                        ? 'bg-[#FAF0DC] dark:bg-[#222222] border-[#DA9B42] dark:border-white shadow-xs' 
+                        : 'bg-[#FAF7F2] dark:bg-[#1a1a1a] border-[#E8DFD5] dark:border-[#303030] hover:border-[#C85A32] dark:hover:border-white'
                     }`}
                   >
-                    <div className="w-9 h-9 rounded-xl bg-[#1e2025] text-white flex items-center justify-center text-base font-bold">
+                    <div className="w-9 h-9 rounded-xl bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d] flex items-center justify-center text-base font-bold">
                       🎓
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-[#1e2025]">Student</h3>
-                      <p className="text-[11px] text-[#52565c] mt-0.5 leading-snug">Preparing for college semester, school boards, or competitive exams.</p>
+                      <h3 className="text-sm font-bold text-[#1E2224] dark:text-white">Student</h3>
+                      <p className="text-[11px] text-[#5C6468] dark:text-gray-400 mt-0.5 leading-snug">Preparing for college semester, school boards, or competitive exams.</p>
                     </div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setRole('Teacher')}
-                    className={`p-5 rounded-2xl border text-left transition-all space-y-2 ${
+                    className={`p-5 rounded-2xl border text-left transition-all space-y-2 cursor-pointer ${
                       role === 'Teacher' 
-                        ? 'bg-[#EDEBE0] border-[#1e2025] shadow-xs' 
-                        : 'bg-[#F8F8F8] border-[#E0E3ED] hover:border-[#B2B4B7]'
+                        ? 'bg-[#E4ECEF] dark:bg-[#222222] border-[#2B5866] dark:border-white shadow-xs' 
+                        : 'bg-[#FAF7F2] dark:bg-[#1a1a1a] border-[#E8DFD5] dark:border-[#303030] hover:border-[#2B5866] dark:hover:border-white'
                     }`}
                   >
-                    <div className="w-9 h-9 rounded-xl bg-[#E0E3ED] text-[#1e2025] flex items-center justify-center text-base font-bold border border-[#B2B4B7]/40">
+                    <div className="w-9 h-9 rounded-xl bg-[#2B5866] dark:bg-white text-white dark:text-[#0d0d0d] flex items-center justify-center text-base font-bold">
                       👨‍🏫
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-[#1e2025]">Educator / Teacher</h3>
-                      <p className="text-[11px] text-[#52565c] mt-0.5 leading-snug">Creating lecture handouts, assignment questions, and classroom slide flowcharts.</p>
+                      <h3 className="text-sm font-bold text-[#1E2224] dark:text-white">Educator / Teacher</h3>
+                      <p className="text-[11px] text-[#5C6468] dark:text-gray-400 mt-0.5 leading-snug">Creating lecture handouts, assignment questions, and classroom slide flowcharts.</p>
                     </div>
                   </button>
                 </div>
@@ -348,10 +350,10 @@ function Onboarding() {
                 {role === 'Student' ? (
                   <div className="space-y-3.5">
                     <div className="space-y-1">
-                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1e2025]">
+                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1E2224] dark:text-white">
                         Which Degree or Course Stream are you in?
                       </h2>
-                      <p className="text-xs text-[#52565c]">
+                      <p className="text-xs text-[#5C6468] dark:text-gray-400">
                         Select your course stream below to continue.
                       </p>
                     </div>
@@ -361,11 +363,14 @@ function Onboarding() {
                         <button
                           key={idx}
                           type="button"
-                          onClick={() => setCourse(preset)}
-                          className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition ${
+                          onClick={() => {
+                            setCourse(preset);
+                            if (preset !== 'Custom Course / Subject') setCustomCourse('');
+                          }}
+                          className={`px-4 py-2.5 rounded-full border text-xs font-bold transition cursor-pointer ${
                             course === preset 
-                              ? 'bg-[#1e2025] text-white border-[#1e2025]' 
-                              : 'bg-[#F8F8F8] text-[#1e2025] border-[#E0E3ED] hover:border-[#B2B4B7]'
+                              ? 'bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d] border-[#C85A32] dark:border-white shadow-xs' 
+                              : 'bg-[#FAF7F2] dark:bg-[#222222] border-[#E8DFD5] dark:border-[#303030] text-[#1E2224] dark:text-white hover:border-[#C85A32] dark:hover:border-white'
                           }`}
                         >
                           {preset}
@@ -376,38 +381,38 @@ function Onboarding() {
                     {course === 'Custom Course / Subject' && (
                       <input
                         type="text"
-                        required
+                        placeholder="Type your course name (e.g., M.Sc Data Analytics)..."
                         value={customCourse}
                         onChange={(e) => setCustomCourse(e.target.value)}
-                        placeholder="Enter your exact degree / subject (e.g. M.Tech VLSI)..."
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8F8F8] border border-[#E0E3ED] text-xs font-semibold text-[#1e2025] focus:outline-none focus:border-[#1e2025]"
+                        className="w-full px-4 py-3 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-xs font-bold text-[#1E2224] dark:text-white placeholder-[#877F76] dark:placeholder-gray-500 focus:outline-none focus:border-[#C85A32] dark:focus:border-white"
                       />
                     )}
                   </div>
                 ) : (
                   <div className="space-y-3.5">
                     <div className="space-y-1">
-                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1e2025]">
-                        Which Subject Department do you teach?
+                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1E2224] dark:text-white">
+                        Which Department or Subject do you teach?
                       </h2>
-                      <p className="text-xs text-[#52565c]">
-                        Select your teaching domain to continue.
+                      <p className="text-xs text-[#5C6468] dark:text-gray-400">
+                        Select your teaching subject or stream below.
                       </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-1 gap-2.5">
                       {teacherDeptPresets.map((dept, idx) => (
                         <button
                           key={idx}
                           type="button"
                           onClick={() => setTeacherDept(dept)}
-                          className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition ${
+                          className={`p-3 rounded-xl border text-left text-xs font-bold transition flex items-center justify-between cursor-pointer ${
                             teacherDept === dept 
-                              ? 'bg-[#1e2025] text-white border-[#1e2025]' 
-                              : 'bg-[#F8F8F8] text-[#1e2025] border-[#E0E3ED] hover:border-[#B2B4B7]'
+                              ? 'bg-[#E4ECEF] dark:bg-[#222222] border-[#2B5866] dark:border-white text-[#1E2224] dark:text-white' 
+                              : 'bg-[#FAF7F2] dark:bg-[#1a1a1a] border-[#E8DFD5] dark:border-[#303030] text-[#5C6468] dark:text-gray-400 hover:border-[#2B5866] dark:hover:border-white'
                           }`}
                         >
-                          {dept}
+                          <span>{dept}</span>
+                          {teacherDept === dept && <FiCheck className="w-3.5 h-3.5 text-[#2B5866] dark:text-white" />}
                         </button>
                       ))}
                     </div>
@@ -416,7 +421,7 @@ function Onboarding() {
               </motion.div>
             )}
 
-            {/* STEP 3: Semester/Class (Student) VS Audience (Teacher) */}
+            {/* STEP 3: Semester (Student) VS Target Audience (Teacher) */}
             {step === 3 && (
               <motion.div
                 key="step3"
@@ -428,11 +433,11 @@ function Onboarding() {
                 {role === 'Student' ? (
                   <div className="space-y-3.5">
                     <div className="space-y-1">
-                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1e2025]">
-                        What is your current Semester or Class level?
+                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1E2224] dark:text-white">
+                        Which Semester / Year are you in?
                       </h2>
-                      <p className="text-xs text-[#52565c]">
-                        Select your class level below to continue.
+                      <p className="text-xs text-[#5C6468] dark:text-gray-400">
+                        Select your current academic semester to continue.
                       </p>
                     </div>
 
@@ -442,14 +447,14 @@ function Onboarding() {
                           key={idx}
                           type="button"
                           onClick={() => setSemester(sem)}
-                          className={`p-3 rounded-xl border text-left text-xs font-bold transition flex items-center justify-between ${
+                          className={`p-3 rounded-xl border text-left text-xs font-bold transition flex items-center justify-between cursor-pointer ${
                             semester === sem 
-                              ? 'bg-[#EDEBE0] border-[#1e2025] text-[#1e2025]' 
-                              : 'bg-[#F8F8F8] border-[#E0E3ED] text-[#52565c] hover:border-[#B2B4B7]'
+                              ? 'bg-[#F5EBE1] dark:bg-[#222222] border-[#C85A32] dark:border-white text-[#1E2224] dark:text-white' 
+                              : 'bg-[#FAF7F2] dark:bg-[#1a1a1a] border-[#E8DFD5] dark:border-[#303030] text-[#5C6468] dark:text-gray-400 hover:border-[#C85A32] dark:hover:border-white'
                           }`}
                         >
                           <span>{sem}</span>
-                          {semester === sem && <FiCheck className="w-3.5 h-3.5 text-[#1e2025]" />}
+                          {semester === sem && <FiCheck className="w-3.5 h-3.5 text-[#C85A32] dark:text-white" />}
                         </button>
                       ))}
                     </div>
@@ -457,10 +462,10 @@ function Onboarding() {
                 ) : (
                   <div className="space-y-3.5">
                     <div className="space-y-1">
-                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1e2025]">
+                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1E2224] dark:text-white">
                         What Target Audience do you teach?
                       </h2>
-                      <p className="text-xs text-[#52565c]">
+                      <p className="text-xs text-[#5C6468] dark:text-gray-400">
                         Select your target audience below to continue.
                       </p>
                     </div>
@@ -471,14 +476,14 @@ function Onboarding() {
                           key={idx}
                           type="button"
                           onClick={() => setTeacherAudience(aud)}
-                          className={`p-3 rounded-xl border text-left text-xs font-bold transition flex items-center justify-between ${
+                          className={`p-3 rounded-xl border text-left text-xs font-bold transition flex items-center justify-between cursor-pointer ${
                             teacherAudience === aud 
-                              ? 'bg-[#EDEBE0] border-[#1e2025] text-[#1e2025]' 
-                              : 'bg-[#F8F8F8] border-[#E0E3ED] text-[#52565c] hover:border-[#B2B4B7]'
+                              ? 'bg-[#E4ECEF] dark:bg-[#222222] border-[#2B5866] dark:border-white text-[#1E2224] dark:text-white' 
+                              : 'bg-[#FAF7F2] dark:bg-[#1a1a1a] border-[#E8DFD5] dark:border-[#303030] text-[#5C6468] dark:text-gray-400 hover:border-[#2B5866] dark:hover:border-white'
                           }`}
                         >
                           <span>{aud}</span>
-                          {teacherAudience === aud && <FiCheck className="w-3.5 h-3.5 text-[#1e2025]" />}
+                          {teacherAudience === aud && <FiCheck className="w-3.5 h-3.5 text-[#2B5866] dark:text-white" />}
                         </button>
                       ))}
                     </div>
@@ -499,10 +504,10 @@ function Onboarding() {
                 {role === 'Student' ? (
                   <div className="space-y-3.5">
                     <div className="space-y-1">
-                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1e2025]">
+                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1E2224] dark:text-white">
                         Which note format do you prefer most?
                       </h2>
-                      <p className="text-xs text-[#52565c]">
+                      <p className="text-xs text-[#5C6468] dark:text-gray-400">
                         Select your preferred note format below to complete setup.
                       </p>
                     </div>
@@ -513,18 +518,18 @@ function Onboarding() {
                           key={idx}
                           type="button"
                           onClick={() => setPreferredNoteType(option.title)}
-                          className={`w-full p-4 rounded-2xl border text-left transition flex items-start gap-3 ${
+                          className={`w-full p-4 rounded-2xl border text-left transition flex items-start gap-3 cursor-pointer ${
                             preferredNoteType === option.title 
-                              ? 'bg-[#EDEBE0] border-[#1e2025]' 
-                              : 'bg-[#F8F8F8] border-[#E0E3ED] hover:border-[#B2B4B7]'
+                              ? 'bg-[#F5EBE1] dark:bg-[#222222] border-[#C85A32] dark:border-white' 
+                              : 'bg-[#FAF7F2] dark:bg-[#1a1a1a] border-[#E8DFD5] dark:border-[#303030] hover:border-[#C85A32] dark:hover:border-white'
                           }`}
                         >
-                          <div className="p-2 rounded-xl bg-white border border-[#E0E3ED] shrink-0">
+                          <div className="p-2 rounded-xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#303030] shrink-0">
                             {option.icon}
                           </div>
                           <div className="space-y-0.5">
-                            <h3 className="text-xs font-bold text-[#1e2025]">{option.title}</h3>
-                            <p className="text-[11px] text-[#52565c] leading-relaxed">{option.desc}</p>
+                            <h3 className="text-xs font-bold text-[#1E2224] dark:text-white">{option.title}</h3>
+                            <p className="text-[11px] text-[#5C6468] dark:text-gray-400 leading-relaxed">{option.desc}</p>
                           </div>
                         </button>
                       ))}
@@ -533,10 +538,10 @@ function Onboarding() {
                 ) : (
                   <div className="space-y-3.5">
                     <div className="space-y-1">
-                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1e2025]">
+                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1E2224] dark:text-white">
                         Which teaching materials do you generate most?
                       </h2>
-                      <p className="text-xs text-[#52565c]">
+                      <p className="text-xs text-[#5C6468] dark:text-gray-400">
                         Select your preferred teaching format below to complete setup.
                       </p>
                     </div>
@@ -547,18 +552,18 @@ function Onboarding() {
                           key={idx}
                           type="button"
                           onClick={() => setTeacherMaterialType(option.title)}
-                          className={`w-full p-4 rounded-2xl border text-left transition flex items-start gap-3 ${
+                          className={`w-full p-4 rounded-2xl border text-left transition flex items-start gap-3 cursor-pointer ${
                             teacherMaterialType === option.title 
-                              ? 'bg-[#EDEBE0] border-[#1e2025]' 
-                              : 'bg-[#F8F8F8] border-[#E0E3ED] hover:border-[#B2B4B7]'
+                              ? 'bg-[#E4ECEF] dark:bg-[#222222] border-[#2B5866] dark:border-white' 
+                              : 'bg-[#FAF7F2] dark:bg-[#1a1a1a] border-[#E8DFD5] dark:border-[#303030] hover:border-[#2B5866] dark:hover:border-white'
                           }`}
                         >
-                          <div className="p-2 rounded-xl bg-white border border-[#E0E3ED] shrink-0">
+                          <div className="p-2 rounded-xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#303030] shrink-0">
                             {option.icon}
                           </div>
                           <div className="space-y-0.5">
-                            <h3 className="text-xs font-bold text-[#1e2025]">{option.title}</h3>
-                            <p className="text-[11px] text-[#52565c] leading-relaxed">{option.desc}</p>
+                            <h3 className="text-xs font-bold text-[#1E2224] dark:text-white">{option.title}</h3>
+                            <p className="text-[11px] text-[#5C6468] dark:text-gray-400 leading-relaxed">{option.desc}</p>
                           </div>
                         </button>
                       ))}
@@ -571,12 +576,12 @@ function Onboarding() {
           </AnimatePresence>
 
           {/* Wizard Bottom Controls */}
-          <div className="pt-4 border-t border-[#E0E3ED] flex items-center justify-between">
+          <div className="pt-4 border-t border-[#E8DFD5] dark:border-[#262626] flex items-center justify-between">
             {step > 1 ? (
               <button
                 type="button"
                 onClick={handlePrevStep}
-                className="px-4 py-2 rounded-full bg-[#F8F8F8] hover:bg-[#EDEBE0] border border-[#E0E3ED] text-xs font-bold text-[#1e2025] transition flex items-center gap-1.5"
+                className="px-4 py-2 rounded-full bg-[#FAF7F2] dark:bg-[#222222] hover:bg-[#F5EBE1] dark:hover:bg-[#2a2a2a] border border-[#E8DFD5] dark:border-[#303030] text-xs font-bold text-[#1E2224] dark:text-white transition flex items-center gap-1.5 cursor-pointer"
               >
                 <FiArrowLeft />
                 <span>Back</span>
@@ -587,10 +592,10 @@ function Onboarding() {
               type="button"
               onClick={handleNextStep}
               disabled={!isCurrentStepValid() || isSubmitting}
-              className={`px-7 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition shadow-md shadow-[#1e2025]/10 flex items-center gap-2 ${
+              className={`px-7 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition shadow-md flex items-center gap-2 cursor-pointer ${
                 isCurrentStepValid() && !isSubmitting
-                  ? 'bg-[#1e2025] hover:bg-[#2d3037] text-white cursor-pointer'
-                  : 'bg-[#B2B4B7]/50 text-white opacity-50 cursor-not-allowed pointer-events-none'
+                  ? 'bg-[#C85A32] dark:bg-white hover:bg-[#B24B27] dark:hover:bg-gray-100 text-white dark:text-[#0d0d0d] shadow-[#C85A32]/20 dark:shadow-none'
+                  : 'bg-[#E8DFD5] dark:bg-[#222222] text-[#877F76] dark:text-gray-600 opacity-60 cursor-not-allowed pointer-events-none'
               }`}
             >
               <span>{step === 4 ? (isSubmitting ? 'Saving...' : 'Complete Setup') : 'Continue'}</span>

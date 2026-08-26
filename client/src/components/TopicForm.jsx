@@ -5,6 +5,7 @@ import { generateNotes } from '../services/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateCredits } from '../redux/userSlice';
 import { FiZap, FiBookOpen, FiShare2, FiCheck, FiCpu, FiTable } from 'react-icons/fi';
+import TextShimmerWave from './TextShimmerWave';
 
 function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) {
   const location = useLocation();
@@ -60,6 +61,24 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
     }
   }, [selectedTool]);
 
+  // Pre-fill form from user onboarding preferences saved in database
+  useEffect(() => {
+    if (userData) {
+      if (!classLevel && userData.semester) {
+        setClassLevel(userData.semester);
+      }
+      if (!examType && userData.course) {
+        setExamType(userData.course);
+      }
+      if (userData.preferredNoteType === '5-Minute Rapid Revision Sheets') {
+        setRevisionMode(true);
+      }
+      if (userData.preferredNoteType === 'Visual Flowcharts & Diagrams') {
+        setIncludeDiagram(true);
+      }
+    }
+  }, [userData]);
+
   const handleSubmit = async () => {
     if (userData?.isCreditAvailable === false || userData?.status === 'Disabled') {
       setError("Your user account has been disabled by Admin. Please contact support.");
@@ -85,21 +104,26 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
         includeDiagram,
         includeChart
       });
-      setResult(result.data);
-      setLoading(false);
-      setClassLevel("");
-      setTopic("");
-      setExamType("");
-      setIncludeChart(false);
-      setRevisionMode(false);
-      setIncludeDiagram(false);
+      
+      if (result && result.data) {
+        setResult(result.data);
+        setClassLevel("");
+        setTopic("");
+        setExamType("");
+        setIncludeChart(false);
+        setRevisionMode(false);
+        setIncludeDiagram(false);
 
-      if (typeof result.creditsLeft === "number") {
-        dispatch(updateCredits(result.creditsLeft));
+        if (typeof result.creditsLeft === "number") {
+          dispatch(updateCredits(result.creditsLeft));
+        }
+      } else {
+        throw new Error("Invalid response format received from AI server");
       }
+      setLoading(false);
     } catch (error) {
-      console.log(error);
-      setError("Failed to fetch notes from server. Please verify your connection.");
+      console.error("TopicForm Submit Error:", error);
+      setError(error.message || "Failed to generate notes. Please try again.");
       setLoading(false);
     }
   };
@@ -219,10 +243,12 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
         }`}
       >
         {loading ? (
-          <>
-            <div className="w-4 h-4 border-2 border-white dark:border-[#0d0d0d] border-t-transparent rounded-full animate-spin" />
-            <span>AI Engine Synthesizing Notes...</span>
-          </>
+          <div className="flex items-center gap-2.5">
+            <div className="w-3.5 h-3.5 border-2 border-white dark:border-[#0d0d0d] border-t-transparent rounded-full animate-spin shrink-0" />
+            <TextShimmerWave className="text-white dark:text-[#0d0d0d] font-bold text-xs uppercase tracking-wider">
+              Generating...
+            </TextShimmerWave>
+          </div>
         ) : isMaintenance ? (
           <>
             <FiCpu className="w-4 h-4" />
@@ -236,26 +262,21 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
         )}
       </button>
 
-      {/* Animated Progress Bar */}
+      {/* Pure Aesthetic TextShimmerWave Loading State */}
       {loading && (
-        <div className="mt-4 space-y-2.5 p-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#1a1a1a] border border-[#E8DFD5] dark:border-[#262626]">
-          <div className="w-full h-2.5 rounded-full bg-[#EBD7BE] dark:bg-[#333333] border border-[#E8DFD5] dark:border-[#262626] overflow-hidden p-0.5">
-            <motion.div 
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ ease: "easeOut", duration: 0.6 }}
-              className="h-full bg-[#C85A32] dark:bg-white rounded-full"
-            />
-          </div>
-
-          <div className="flex justify-between items-center text-xs font-semibold text-[#1E2224] dark:text-white">
-            <span>{progressText}</span>
-            <span className="font-extrabold text-[#C85A32] dark:text-amber-400">{progress}%</span>
-          </div>
-          <p className="text-[11px] text-[#5C6468] dark:text-gray-400 font-medium text-center">
-            AI is analyzing your topic and structuring formulas, key definitions, and exam takeaways.
-          </p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mt-6 py-10 px-6 rounded-3xl bg-[#FAF7F2] dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow flex items-center justify-center text-center"
+        >
+          <TextShimmerWave 
+            duration={1.2} 
+            spread={1.2}
+            className="text-2xl sm:text-3xl font-medium tracking-tight text-[#1E2224] dark:text-white"
+          >
+            Generating...
+          </TextShimmerWave>
+        </motion.div>
       )}
     </motion.div>
   );

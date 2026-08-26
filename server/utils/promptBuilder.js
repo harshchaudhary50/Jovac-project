@@ -2,136 +2,81 @@ export const buildPrompt = ({
   topic,
   classLevel,
   examType,
-  revisionMode,
-  includeDiagram,
-  includeChart,
+  revisionMode = false,
+  includeDiagram = false,
+  includeChart = false,
   userRole,
   userCourse,
-  userSemester,
-  preferredNoteType
+  userSemester
 }) => {
-  return `
-You are a STRICT JSON generator for an exam preparation system.
+  return `You are an expert exam co-pilot. Generate precise study content in strict JSON format.
 
-⚠️ VERY IMPORTANT:
-- Output MUST be valid JSON
-- Your response will be parsed using JSON.parse()
-- INVALID JSON will cause system failure
-- Use ONLY double quotes "
-- NO comments, NO trailing commas
-- Escape line breaks using \\n
-- Do NOT use emojis inside text values
+STUDENT PROFILE:
+- Level: ${classLevel || userSemester || "Undergraduate"}
+- Course / Exam: ${userCourse || examType || "Academic Studies"}
+- Topic: "${topic}"
 
-TASK:
-Convert the given topic into personalized exam-focused notes for a specific student/teacher profile.
-
-USER CONTEXT & PROFILE:
-Role: ${userRole || "Student"}
-Target Course / Subject: ${userCourse || classLevel || "General Studies"}
-Semester / Class: ${userSemester || "Current Term"}
-Preferred Note Format: ${preferredNoteType || "Deep Concept Notes"}
-
-INPUT:
-Topic: ${topic}
-Class Level: ${classLevel || userSemester || "University"}
-Exam Type: ${examType || "General"}
-Revision Mode: ${revisionMode ? "ON" : "OFF"}
-Include Diagram: ${includeDiagram ? "YES" : "NO"}
-Include Charts: ${includeChart ? "YES" : "NO"}
-
-GLOBAL CONTENT RULES:
-- Tailor tone and examples specifically to ${userCourse || "the subject"} at ${userSemester || "the student's level"}
-- Use clear, simple, exam-oriented language
-- Notes MUST be Markdown formatted
-- Headings and bullet points only
-
-REVISION MODE RULES (CRITICAL):
-- If REVISION MODE is ON:
-  - Notes must be VERY SHORT
-  - Only bullet points
-  - One-line answers only
-  - Definitions, formulas, keywords
-  - No paragraphs
-  - No explanations
-  - Content must feel like a 5-minute exam cheat sheet
-  - revisionPoints MUST summarize ALL important facts
-
-- If REVISION MODE is OFF:
-  - Notes must be DETAILED but exam-focused
-  - Each topic should include:
-    - definition
-    - short explanation
-    - examples (if applicable)
-  - Paragraph length: max 2–4 lines
-  - No storytelling, no extra theory
-
-IMPORTANCE RULES:
-- Divide sub-topics into THREE categories:
-  - ⭐ Very Important Topics
-  - ⭐⭐ Important Topics
-  - ⭐⭐⭐ Frequently Asked Topics
-- All three categories MUST be present
-- Base importance on exam frequency and weightage
-
-DIAGRAM RULES:
-- If INCLUDE DIAGRAM is YES:
-  - diagram.data MUST be a SINGLE STRING
-  - Valid Mermaid syntax only
-  - Must start with: graph TD
-  - Wrap EVERY node label in square brackets [ ]
-  - Do NOT use special characters inside labels
-- If INCLUDE DIAGRAM is NO:
-  - diagram.data MUST be ""
-
-CHART RULES (RECHARTS):
-- If INCLUDE CHARTS is YES:
-  - charts array MUST NOT be empty
-  - Generate at least ONE chart
-  - Choose chart based on topic type:
-    - THEORY topic → bar or pie (importance / weightage)
-    - PROCESS topic → bar or line (steps / stages)
-  - Use numeric values ONLY
-  - Labels must be short and exam-oriented
-- If INCLUDE CHARTS is NO:
-  - charts MUST be []
-
-CHART TYPES ALLOWED:
-- bar
-- line
-- pie
-
-CHART OBJECT FORMAT:
-{
-  "type": "bar | line | pie",
-  "title": "string",
-  "data": [
-    { "name": "string", "value": 10 }
-  ]
+STRICT GENERATION RULES:
+1. NOTES FIELD ("notes"):
+${
+  revisionMode
+    ? `- Mode: RAPID 5-MINUTE REVISION CHEAT SHEET
+- Provide ONLY high-yield bullet points: core definitions, formulas, and 1-line key facts.
+- DO NOT generate long paragraphs or comparison tables.`
+    : `- Mode: COMPREHENSIVE CONCEPT NOTES
+- Write detailed Markdown study notes:
+  # ${topic} - Exam Study Notes
+  ## Core Concept & Technical Explanation
+  ## Working Principles & Step-by-Step Breakdown
+  ## Key Comparison / Summary Table
+  ## Real-world Example / Code / Key Formulas
+  ## High-Yield Exam Tips & Scoring Points`
 }
 
-STRICT JSON FORMAT (DO NOT CHANGE):
+2. SUBTOPICS ("subTopics"):
+- Categorize 2-3 key subtopics into "⭐", "⭐⭐", "⭐⭐⭐" by exam priority.
 
+3. REVISION POINTS ("revisionPoints"):
+- 5 to 7 high-impact revision bullet points.
+
+4. QUESTIONS ("questions"):
+- "short": 3 concise questions (2-5 marks)
+- "long": 2 analytical questions (10-15 marks)
+- "diagram": "${includeDiagram ? "Draw and explain the architecture / process of " + topic : ""}"
+
+5. DIAGRAM ("diagram"):
+${
+  includeDiagram
+    ? `- Generate a valid Mermaid flowchart starting with graph TD using square bracket node labels:
+  {"type": "flowchart", "data": "graph TD\\n[A] --> [B]"}`
+    : `- STRICTLY SET EMPTY: {"type": "", "data": ""}`
+}
+
+6. CHARTS ("charts"):
+${
+  includeChart
+    ? `- Generate 1 chart object with topic weightage:
+  [{"type": "bar", "title": "Exam Weightage (%)", "data": [{"name": "Core Concept", "value": 40}, {"name": "Advanced Theory", "value": 60}]}]`
+    : `- STRICTLY SET EMPTY: []`
+}
+
+STRICT JSON OUTPUT SCHEMA:
 {
   "subTopics": {
-    "⭐": [],
-    "⭐⭐": [],
-    "⭐⭐⭐": []
+    "⭐": ["Subtopic 1"],
+    "⭐⭐": ["Subtopic 2"],
+    "⭐⭐⭐": ["Subtopic 3"]
   },
-  "importance": "⭐ | ⭐⭐ | ⭐⭐⭐",
-  "notes": "string",
-  "revisionPoints": [],
+  "importance": "⭐⭐⭐",
+  "notes": "Markdown formatted string...",
+  "revisionPoints": ["Revision point 1", "Revision point 2"],
   "questions": {
-    "short": [],
-    "long": [],
-    "diagram": ""
+    "short": ["Q1", "Q2", "Q3"],
+    "long": ["Long Q1", "Long Q2"],
+    "diagram": "${includeDiagram ? "Explain the diagram..." : ""}"
   },
-  "diagram": {
-    "type": "flowchart | graph | process",
-    "data": ""
-  },
-  "charts": []
+  "diagram": ${includeDiagram ? '{"type": "flowchart", "data": "graph TD\\n[Start] --> [End]"}' : '{"type": "", "data": ""}'},
+  "charts": ${includeChart ? '[{"type": "bar", "title": "Weightage", "data": [{"name": "Topic A", "value": 50}, {"name": "Topic B", "value": 50}]}]' : '[]'}
 }
-
-RETURN ONLY VALID JSON.
-`;
+RETURN VALID JSON ONLY.`;
 };

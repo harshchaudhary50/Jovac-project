@@ -246,7 +246,7 @@ function Onboarding() {
           </div>
 
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
             className="w-full py-3 rounded-full bg-[#C85A32] dark:bg-white hover:bg-[#B24B27] dark:hover:bg-gray-100 text-white dark:text-[#0d0d0d] text-xs font-bold uppercase tracking-wider transition shadow-md shadow-[#C85A32]/20 dark:shadow-none flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>LAUNCH MY DASHBOARD</span>

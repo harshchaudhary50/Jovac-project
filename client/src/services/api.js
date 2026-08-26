@@ -13,11 +13,12 @@ export const getCurrentUser = async (dispatch) => {
 
 export const generateNotes = async (payload) => {
     try {
-        const result = await axios.post(serverUrl+ "/api/notes/generate-notes" , payload , {withCredentials:true})
-        console.log(result.data)
-        return result.data
+        const result = await axios.post(serverUrl + "/api/notes/generate-notes", payload, { withCredentials: true });
+        return result.data;
     } catch (error) {
-        console.log(error)
+        console.error("Generate Notes API Error:", error);
+        const msg = error.response?.data?.message || error.response?.data?.error || error.message || "Note generation failed";
+        throw new Error(msg);
     }
 }
 

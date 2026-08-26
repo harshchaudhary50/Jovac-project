@@ -12,34 +12,84 @@ const markDownComponent = {
         </h1>
     ),
     h2: ({ children }) => (
-        <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#C85A32] dark:text-amber-400 mt-5 mb-3">
+        <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#C85A32] dark:text-amber-400 mt-6 mb-3">
             {children}
         </h2>
     ),
     h3: ({ children }) => (
-        <h3 className="text-lg font-serif font-bold text-[#2B5866] dark:text-teal-400 mt-4 mb-2">
+        <h3 className="text-base sm:text-lg font-serif font-bold text-[#2B5866] dark:text-teal-400 mt-5 mb-2">
             {children}
         </h3>
     ),
     p: ({ children }) => (
-        <p className="text-sm text-[#5C6468] dark:text-gray-300 leading-relaxed mb-3 font-normal">
+        <p className="text-xs sm:text-sm text-[#3E4549] dark:text-gray-300 leading-relaxed mb-4 font-normal">
             {children}
         </p>
     ),
     ul: ({ children }) => (
-        <ul className="list-disc ml-6 space-y-1.5 text-sm text-[#5C6468] dark:text-gray-300 mb-3">
+        <ul className="list-disc ml-6 space-y-2 text-xs sm:text-sm text-[#3E4549] dark:text-gray-300 mb-4">
             {children}
         </ul>
     ),
+    ol: ({ children }) => (
+        <ol className="list-decimal ml-6 space-y-2 text-xs sm:text-sm text-[#3E4549] dark:text-gray-300 mb-4">
+            {children}
+        </ol>
+    ),
     li: ({ children }) => (
-        <li className="marker:text-[#C85A32] dark:marker:text-amber-400">{children}</li>
+        <li className="marker:text-[#C85A32] dark:marker:text-amber-400 leading-relaxed">{children}</li>
     ),
     strong: ({ children }) => (
-        <strong className="font-bold text-[#1E2224] dark:text-white">{children}</strong>
+        <strong className="font-extrabold text-[#1E2224] dark:text-white">{children}</strong>
     ),
-    code: ({ children }) => (
-        <code className="px-1.5 py-0.5 rounded-md bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-xs font-mono text-[#C85A32] dark:text-amber-400">{children}</code>
+    code: ({ inline, children }) => (
+        <code className="px-1.5 py-0.5 rounded-md bg-[#FAF0DC] dark:bg-[#222222] border border-[#DA9B42]/30 dark:border-[#303030] text-xs font-mono text-[#B86337] dark:text-amber-400">
+            {children}
+        </code>
+    ),
+    pre: ({ children }) => (
+        <pre className="p-4 my-4 rounded-2xl bg-[#1a1a1a] text-amber-300 text-xs font-mono overflow-x-auto border border-[#303030]">
+            {children}
+        </pre>
+    ),
+    blockquote: ({ children }) => (
+        <blockquote className="p-4 my-4 rounded-2xl bg-[#FAF0DC] dark:bg-[#1a1a1a] border-l-4 border-[#DA9B42] text-xs font-semibold text-[#87532A] dark:text-amber-300">
+            {children}
+        </blockquote>
+    ),
+    table: ({ children }) => (
+        <div className="overflow-x-auto my-5 rounded-2xl border border-[#E8DFD5] dark:border-[#262626]">
+            <table className="w-full text-xs text-left text-[#1E2224] dark:text-white border-collapse">
+                {children}
+            </table>
+        </div>
+    ),
+    thead: ({ children }) => (
+        <thead className="bg-[#FAF7F2] dark:bg-[#222222] border-b border-[#E8DFD5] dark:border-[#262626] font-bold uppercase tracking-wider text-[11px] text-[#5C6468] dark:text-gray-400">
+            {children}
+        </thead>
+    ),
+    tbody: ({ children }) => (
+        <tbody className="divide-y divide-[#E8DFD5] dark:divide-[#262626]">
+            {children}
+        </tbody>
+    ),
+    th: ({ children }) => (
+        <th className="px-4 py-3 font-extrabold text-[#1E2224] dark:text-white">{children}</th>
+    ),
+    td: ({ children }) => (
+        <td className="px-4 py-2.5 text-[#3E4549] dark:text-gray-300 leading-normal">{children}</td>
     )
+};
+
+const cleanMarkdown = (text) => {
+    if (!text) return "";
+    if (typeof text !== "string") return String(text);
+    return text
+        .replace(/\\n/g, "\n")
+        .replace(/\\t/g, "  ")
+        .replace(/\\"/g, '"')
+        .trim();
 };
 
 function FinalResult({ result }) {
@@ -64,7 +114,7 @@ function FinalResult({ result }) {
                     <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1E2224] dark:text-white">
                         Generated Exam Notes
                     </h2>
-                    <p className="text-xs text-[#5C6468] dark:text-gray-400 font-medium">Ready for revision, testing, and printable export.</p>
+                    <p className="text-xs text-[#5C6468] dark:text-gray-400 font-medium">Detailed theoretical study notes with real-world examples, diagrams, and revision takeaways.</p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
@@ -90,34 +140,13 @@ function FinalResult({ result }) {
                 </div>
             </div>
 
-            {/* Sub Topics Summary */}
+            {/* Detailed Notes Markdown (Main Section) */}
             {!quickRevision && (
                 <section className="space-y-3">
-                    <SectionHeader icon={<FiBookOpen />} title="Priority Subtopics" color="terracotta" />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {Object.entries(result.subTopics).map(([star, topics]) => (
-                            <div key={star} className="p-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-1">
-                                <p className="text-xs font-extrabold text-[#C85A32] dark:text-amber-400">
-                                    {star} Priority
-                                </p>
-                                <ul className="list-disc ml-4 text-xs text-[#5C6468] dark:text-gray-400 space-y-1">
-                                    {topics.map((t, i) => (
-                                        <li key={i}>{t}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {/* Detailed Notes Markdown */}
-            {!quickRevision && (
-                <section className="space-y-3">
-                    <SectionHeader icon={<FiBookOpen />} title="Detailed Concept Notes" color="teal" />
-                    <div className="bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-6 sm:p-8">
+                    <SectionHeader icon={<FiBookOpen />} title="Detailed Chapter & Concept Notes" color="teal" />
+                    <div className="bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-6 sm:p-9 shadow-sm">
                         <ReactMarkdown components={markDownComponent}>
-                            {result.notes}
+                            {cleanMarkdown(result.notes)}
                         </ReactMarkdown>
                     </div>
                 </section>

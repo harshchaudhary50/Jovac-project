@@ -127,9 +127,9 @@ function SettingsTab({ initialSettings, refreshData }) {
                                 onChange={(e) => handleChange('selectedAiModel', e.target.value)}
                                 className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-[#1E2224] dark:text-white font-bold cursor-pointer"
                             >
-                                <option value="Gemini 2.5 Flash">Gemini 2.5 Flash (Ultra Fast)</option>
-                                <option value="Gemini 1.5 Pro">Gemini 1.5 Pro (Deep Reasoning)</option>
-                                <option value="GPT-4o Mini">GPT-4o Mini (Fallback)</option>
+                                <option value="Ollama Local (llama3.2:3b)">Ollama Local (llama3.2:3b - 100% Offline Dev Mode)</option>
+                                <option value="Groq Fast (GPT-OSS 120B / Llama)">Groq Fast (GPT-OSS 120B / Llama - 0.2s Ultra Fast)</option>
+                                <option value="Gemini 2.5 Flash">Gemini 2.5 Flash (Google AI Studio - Deep Reasoning)</option>
                             </select>
                         </div>
 

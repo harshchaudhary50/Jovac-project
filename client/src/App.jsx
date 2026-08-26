@@ -18,7 +18,7 @@ export const serverUrl = "http://localhost:8000";
 function App() {
   const dispatch = useDispatch();
 
-  // Try to fetch user from backend, but fallback gracefully if not authenticated
+  // Try to fetch user from backend
   useEffect(() => {
     getCurrentUser(dispatch);
   }, [dispatch]);
@@ -28,13 +28,74 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path='/' element={<Dashboard />} />
-        <Route path='/dashboard' element={<Dashboard />} />
+        {/* Root Route: If logged in, go to dashboard (or onboarding if pending); else landing page */}
+        <Route 
+          path='/' 
+          element={
+            !userData ? (
+              <Home />
+            ) : userData.onboardingCompleted === false ? (
+              <Navigate to="/onboarding" replace />
+            ) : (
+              <Dashboard />
+            )
+          } 
+        />
         <Route path='/landing' element={<Home />} />
-        <Route path='/onboarding' element={<Onboarding />} />
-        <Route path='/auth' element={<Auth />} />
-        <Route path='/history' element={<History />} />
-        <Route path='/notes' element={<Notes />} />
+        
+        {/* Onboarding Route: Only for users whose onboarding is pending */}
+        <Route 
+          path='/onboarding' 
+          element={<Onboarding />} 
+        />
+        
+        {/* Auth Route */}
+        <Route 
+          path='/auth' 
+          element={
+            userData ? (
+              userData.onboardingCompleted === false ? (
+                <Navigate to="/onboarding" replace />
+              ) : (
+                <Navigate to="/dashboard" replace />
+              )
+            ) : (
+              <Auth />
+            )
+          } 
+        />
+
+        {/* Protected App Routes */}
+        <Route 
+          path='/dashboard' 
+          element={
+            userData && userData.onboardingCompleted === false ? (
+              <Navigate to="/onboarding" replace />
+            ) : (
+              <Dashboard />
+            )
+          } 
+        />
+        <Route 
+          path='/notes' 
+          element={
+            userData && userData.onboardingCompleted === false ? (
+              <Navigate to="/onboarding" replace />
+            ) : (
+              <Notes />
+            )
+          } 
+        />
+        <Route 
+          path='/history' 
+          element={
+            userData && userData.onboardingCompleted === false ? (
+              <Navigate to="/onboarding" replace />
+            ) : (
+              <History />
+            )
+          } 
+        />
         <Route path='/pricing' element={<Pricing />} />
         <Route path='/admin' element={<Admin />} />
 
@@ -42,7 +103,7 @@ function App() {
         <Route path='/payment-failed' element={<PaymentFailed />} />
 
         {/* Fallback route */}
-        <Route path='*' element={<Navigate to="/dashboard" replace />} />
+        <Route path='*' element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

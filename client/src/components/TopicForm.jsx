@@ -38,46 +38,44 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
   const creditCost = adminSettings?.creditCostPerGeneration || 10;
   const activeModel = adminSettings?.selectedAiModel || 'Gemini 2.5 Flash';
 
-  // Auto pre-select settings based on clicked Dashboard tool
+  // Auto pre-select settings based on clicked Dashboard tool or fallback to onboarding preferences
   useEffect(() => {
     if (selectedTool) {
       if (selectedTool === 'concept') {
         setExamType('Deep Concept Notes');
         setRevisionMode(false);
         setIncludeDiagram(true);
+        setIncludeChart(false);
       } else if (selectedTool === 'revision') {
         setExamType('Rapid Revision Sheet');
         setRevisionMode(true);
         setIncludeDiagram(false);
+        setIncludeChart(false);
       } else if (selectedTool === 'questions') {
         setExamType('Predicted Question Bank');
         setRevisionMode(false);
         setIncludeDiagram(true);
+        setIncludeChart(true);
       } else if (selectedTool === 'diagrams') {
         setExamType('Visual Mermaid Flowchart');
         setIncludeDiagram(true);
         setIncludeChart(true);
+        setRevisionMode(false);
       }
-    }
-  }, [selectedTool]);
-
-  // Pre-fill form from user onboarding preferences saved in database
-  useEffect(() => {
-    if (userData) {
-      if (!classLevel && userData.semester) {
+      if (userData?.semester) {
         setClassLevel(userData.semester);
       }
-      if (!examType && userData.course) {
-        setExamType(userData.course);
-      }
+    } else if (userData) {
+      // Fallback only when no specific tool was clicked from Dashboard
+      if (userData.semester) setClassLevel(userData.semester);
+      if (userData.course) setExamType(userData.course);
       if (userData.preferredNoteType === '5-Minute Rapid Revision Sheets') {
         setRevisionMode(true);
-      }
-      if (userData.preferredNoteType === 'Visual Flowcharts & Diagrams') {
+      } else if (userData.preferredNoteType === 'Visual Flowcharts & Diagrams') {
         setIncludeDiagram(true);
       }
     }
-  }, [userData]);
+  }, [selectedTool, userData]);
 
   const handleSubmit = async () => {
     if (userData?.isCreditAvailable === false || userData?.status === 'Disabled') {

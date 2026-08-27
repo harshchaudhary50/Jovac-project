@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "Deep Concept Notes"
     },
+    themePreference: {
+        type: String,
+        default: "light"
+    },
     onboardingCompleted: {
         type: Boolean,
         default: false

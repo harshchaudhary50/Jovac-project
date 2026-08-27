@@ -22,6 +22,11 @@ const notesSchema = new mongoose.Schema({
     includeDiagram: Boolean,
     includeChart: Boolean,
 
+    monitoringStatus: {
+      type: String,
+      default: "Normal"
+    },
+
     content: {
       type: mongoose.Schema.Types.Mixed, // AI response (string / JSON)
       required: true

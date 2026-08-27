@@ -57,9 +57,6 @@ function Notes() {
         <div className="relative bg-white dark:bg-[#161616] px-8 sm:px-12 py-8 sm:py-10 rounded-[28px] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow trekt-card-hover flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
           
           <div className="space-y-2 z-10 max-w-2xl text-center md:text-left py-1">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-amber-400 block">
-              AI Exam Note Engine
-            </span>
             <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif text-[#1E2224] dark:text-white tracking-tight leading-tight">
               Generate Exam-Oriented Notes
             </h1>

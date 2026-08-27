@@ -10,6 +10,7 @@ import {
     getCreditLogs,
     addCredits,
     getContentMonitoring,
+    updateMonitoringStatus,
     getAdminSettings,
     updateAdminSettings
 } from "../controllers/admin.controller.js";
@@ -33,7 +34,9 @@ adminRouter.get("/notes", adminAuth, getNoteLogs);
 adminRouter.get("/payments", adminAuth, getPaymentLogs);
 adminRouter.get("/credits", adminAuth, getCreditLogs);
 adminRouter.post("/credits/add", adminAuth, addCredits);
+adminRouter.post("/grant-credits", adminAuth, addCredits);
 adminRouter.get("/content-monitoring", adminAuth, getContentMonitoring);
+adminRouter.post("/content-monitoring/update", adminAuth, updateMonitoringStatus);
 adminRouter.get("/settings", getAdminSettings);
 adminRouter.post("/settings/update", adminAuth, updateAdminSettings);
 

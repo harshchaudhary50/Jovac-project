@@ -1,67 +1,78 @@
 import UserModel from "../models/user.model.js";
-import mongoose from "mongoose";
 
 export const getCurrentUser = async (req, res) => {
     try {
         const userId = req.userId;
-        let user;
-        if (mongoose.connection.readyState === 1) {
-            user = await UserModel.findById(userId);
-            if (!user) {
-                return res.status(404).json({ message: "Current User is not found" });
-            }
-        } else {
-            user = { 
-                _id: userId || "64e0a1b2c3d4e5f678901234", 
-                name: "Student User", 
-                email: "student@examnotes.ai", 
-                credits: 50,
-                role: "Student",
-                course: "B.Tech Computer Science",
-                semester: "Semester 4",
-                preferredNoteType: "Deep Concept Notes",
-                onboardingCompleted: true
-            };
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized. Please log in." });
+        }
+
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User account not found." });
         }
         return res.status(200).json(user);
     } catch (error) {
-        return res.status(500).json({ message: `getCurrentUser error ${error}` });
+        return res.status(500).json({ message: `getCurrentUser error: ${error.message}` });
     }
 };
 
 export const updateOnboarding = async (req, res) => {
     try {
         const userId = req.userId;
-        const { role, course, semester, preferredNoteType } = req.body;
-
-        let user;
-        if (mongoose.connection.readyState === 1) {
-            user = await UserModel.findByIdAndUpdate(
-                userId,
-                {
-                    role: role || "Student",
-                    course: course || "General Studies",
-                    semester: semester || "Current Term",
-                    preferredNoteType: preferredNoteType || "Deep Concept Notes",
-                    onboardingCompleted: true
-                },
-                { new: true }
-            );
-        } else {
-            user = {
-                _id: userId || "64e0a1b2c3d4e5f678901234",
-                name: "Student User",
-                email: "student@examnotes.ai",
-                credits: 50,
-                role: role || "Student",
-                course: course || "B.Tech Computer Science",
-                semester: semester || "Semester 4",
-                preferredNoteType: preferredNoteType || "Deep Concept Notes",
-                onboardingCompleted: true
-            };
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized. Please log in." });
         }
+
+        const { role, course, semester, preferredNoteType, teacherDept, teacherAudience, teacherMaterialType } = req.body;
+
+        const finalCourse = course || teacherDept || "General Studies";
+        const finalSemester = semester || teacherAudience || "Current Term";
+        const finalNoteType = preferredNoteType || teacherMaterialType || "Deep Concept Notes";
+
+        const user = await UserModel.findByIdAndUpdate(
+            userId,
+            {
+                role: role || "Student",
+                course: finalCourse,
+                semester: finalSemester,
+                preferredNoteType: finalNoteType,
+                onboardingCompleted: true
+            },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
         return res.status(200).json(user);
     } catch (error) {
-        return res.status(500).json({ message: `updateOnboarding error ${error}` });
+        return res.status(500).json({ message: `updateOnboarding error: ${error.message}` });
+    }
+};
+
+export const updateThemePreference = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { theme } = req.body; // 'light' or 'dark'
+
+        if (!['light', 'dark'].includes(theme)) {
+            return res.status(400).json({ message: "Invalid theme value. Must be 'light' or 'dark'." });
+        }
+
+        const user = await UserModel.findByIdAndUpdate(
+            userId,
+            { themePreference: theme },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        return res.status(200).json({ success: true, themePreference: user.themePreference });
+    } catch (error) {
+        return res.status(500).json({ message: `updateThemePreference error: ${error.message}` });
     }
 };

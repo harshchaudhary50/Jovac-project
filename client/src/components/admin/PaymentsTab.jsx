@@ -6,16 +6,15 @@ function PaymentsTab({ payments = [] }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
 
-    const revenueChartData = [
-        { month: 'Jan', revenue: 1500, starter: 500, pro: 1000 },
-        { month: 'Feb', revenue: 3200, starter: 1200, pro: 2000 },
-        { month: 'Mar', revenue: 6400, starter: 2400, pro: 4000 },
-        { month: 'Apr', revenue: 8900, starter: 2900, pro: 6000 },
-        { month: 'May', revenue: 10800, starter: 3800, pro: 7000 },
-        { month: 'Jun', revenue: 12500, starter: 4500, pro: 8000 }
-    ];
-
     const safePayments = Array.isArray(payments) ? payments : [];
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    const revenueChartData = months.map(m => ({
+        month: m,
+        revenue: 0,
+        starter: 0,
+        pro: 0
+    }));
 
     const filteredPayments = safePayments.filter(p => {
         const userStr = (p?.user || '').toLowerCase();

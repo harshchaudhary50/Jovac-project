@@ -1,72 +1,69 @@
 import React, { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from "motion/react";
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import axios from 'axios';
 import { serverUrl } from '../App';
-import { setUserData } from '../redux/userSlice';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-    FiMenu, 
-    FiX, 
-    FiZap, 
-    FiLogOut, 
-    FiPlus, 
-    FiChevronDown, 
-    FiGrid, 
-    FiFolder, 
-    FiDollarSign, 
-    FiShield, 
-    FiSun, 
-    FiMoon 
+import { clearUserData, updateUserTheme } from '../redux/userSlice';
+import { saveThemePreference } from '../services/api';
+import {
+    FiZap,
+    FiGrid,
+    FiFolder,
+    FiDollarSign,
+    FiShield,
+    FiUser,
+    FiLogOut,
+    FiMenu,
+    FiX,
+    FiChevronDown,
+    FiPlus,
+    FiSun,
+    FiMoon
 } from 'react-icons/fi';
 
 function Navbar() {
     const { userData } = useSelector((state) => state.user);
     const credits = userData?.credits ?? 0;
-    const [showCredits, setShowCredits] = useState(false);
-    const [showProfile, setShowProfile] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-    // Dark Mode Theme State
-    const [isDark, setIsDark] = useState(() => {
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme) {
-            return savedTheme === "dark";
-        }
-        return false;
-    });
-
-    useEffect(() => {
-        if (isDark) {
-            document.documentElement.classList.add("dark");
-            document.body.classList.add("dark");
-            localStorage.setItem("theme", "dark");
-        } else {
-            document.documentElement.classList.remove("dark");
-            document.body.classList.remove("dark");
-            localStorage.setItem("theme", "light");
-        }
-    }, [isDark]);
-
-    const toggleTheme = () => {
-        setIsDark(prev => !prev);
-    };
-
-    const navigate = useNavigate();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const location = useLocation();
+
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [showProfile, setShowProfile] = useState(false);
+    const [showCredits, setShowCredits] = useState(false);
+
+    // Track active theme state from user profile or document
+    const isDark = userData?.themePreference === 'dark' || document.documentElement.classList.contains('dark');
+
+    const toggleTheme = async () => {
+        if (!userData) return; // Disabled for non-logged-in public visitors
+
+        const nextTheme = isDark ? 'light' : 'dark';
+        if (nextTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        dispatch(updateUserTheme(nextTheme));
+        await saveThemePreference(nextTheme);
+    };
 
     const handleSignOut = async () => {
         try {
-            await axios.get(serverUrl + "/api/auth/logout", { withCredentials: true });
-            dispatch(setUserData(null));
-            navigate("/auth");
+            await axios.post(`${serverUrl}/api/auth/logout`, {}, { withCredentials: true });
         } catch (error) {
-            console.log(error);
+            console.warn("Logout error:", error.message);
+        } finally {
+            // Enforce light mode on logout for landing & login page
+            document.documentElement.classList.remove('dark');
+            dispatch(clearUserData());
+            navigate("/");
         }
     };
 
-    // Public Navigation Links
+    // Public Landing Nav Links
     const publicNavLinks = [
         { label: "Home", href: "/" },
         { label: "Features", href: "#features" },
@@ -74,18 +71,26 @@ function Navbar() {
         { label: "Pricing", href: "/pricing" }
     ];
 
+    // Check if current user is admin
+    const isAdmin = userData?.role?.toLowerCase() === 'admin' || userData?.email?.toLowerCase() === 'jadounmadhav44@gmail.com';
+
     // Logged-in App Navigation Links
     const loggedInNavLinks = [
         { label: "Dashboard", href: "/dashboard", icon: <FiGrid className="w-3.5 h-3.5" /> },
         { label: "Notes", href: "/notes", icon: <FiZap className="w-3.5 h-3.5" /> },
         { label: "History", href: "/history", icon: <FiFolder className="w-3.5 h-3.5" /> },
         { label: "Pricing", href: "/pricing", icon: <FiDollarSign className="w-3.5 h-3.5" /> },
-        { label: "Admin", href: "/admin", icon: <FiShield className="w-3.5 h-3.5 text-[#DA9B42]" /> }
+        ...(isAdmin ? [{ label: "Admin", href: "/admin", icon: <FiShield className="w-3.5 h-3.5 text-[#DA9B42]" /> }] : [])
     ];
 
     const handleNavClick = (href) => {
         setMobileMenuOpen(false);
-        if (href.startsWith("#")) {
+        if (href === "/" || href === "#home" || href === "#top") {
+            if (location.pathname !== "/") {
+                navigate("/");
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (href.startsWith("#")) {
             if (location.pathname !== "/") {
                 navigate("/");
                 setTimeout(() => {
@@ -104,16 +109,22 @@ function Navbar() {
     return (
         <header className="fixed top-0 left-0 w-full z-50 px-4 sm:px-8 py-3 bg-[#FAF7F2]/90 dark:bg-[#0d0d0d]/90 backdrop-blur-md border-b border-[#E8DFD5] dark:border-[#262626] transition-colors duration-300">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
-                
+
                 {/* Brand Logo */}
-                <div 
-                    onClick={() => navigate(userData ? "/dashboard" : "/")} 
+                <div
+                    onClick={() => {
+                        if (location.pathname === "/") {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        } else {
+                            navigate(userData ? "/dashboard" : "/");
+                        }
+                    }}
                     className="flex items-center gap-2 cursor-pointer select-none group shrink-0"
                 >
-                    <img 
-                        src="/favicon.jpg" 
-                        alt="PrepAI Logo" 
-                        className="w-7 h-7 rounded-full object-cover shadow-xs border border-[#EBD7BE] dark:border-[#303030] group-hover:scale-105 transition-transform" 
+                    <img
+                        src="/favicon.jpg"
+                        alt="PrepAI Logo"
+                        className="w-7 h-7 rounded-full object-cover shadow-xs border border-[#EBD7BE] dark:border-[#303030] group-hover:scale-105 transition-transform"
                     />
                     <span className="text-lg font-bold tracking-tight text-[#1E2224] dark:text-white flex items-center gap-0.5 font-sans">
                         Prep<span className="text-[#C85A32] dark:text-white font-extrabold">AI</span>
@@ -122,12 +133,12 @@ function Navbar() {
 
                 {/* Right Group: Navigation Links + Theme Toggle + Credits + Profile */}
                 <div className="flex items-center gap-2 sm:gap-3 ml-auto">
-                    
+
                     {/* Logged-in Nav Links with Animated Sliding Pill */}
                     {userData ? (
                         <nav className="hidden md:flex items-center gap-1 relative">
                             {loggedInNavLinks.map((link) => {
-                                const isActive = location.pathname === link.href || (link.href === "/dashboard" && location.pathname === "/");
+                                const isActive = location.pathname === link.href;
                                 return (
                                     <button
                                         key={link.href}
@@ -141,11 +152,10 @@ function Navbar() {
                                                 className="absolute inset-0 bg-[#C85A32] dark:bg-white rounded-full shadow-sm"
                                             />
                                         )}
-                                        <span className={`relative z-10 flex items-center gap-1.5 ${
-                                            isActive 
-                                                ? "text-white dark:text-[#0d0d0d]" 
-                                                : "text-[#5C6468] dark:text-gray-400 hover:text-[#1E2224] dark:hover:text-white"
-                                        }`}>
+                                        <span className={`relative z-10 flex items-center gap-1.5 ${isActive
+                                            ? "text-white dark:text-[#0d0d0d]"
+                                            : "text-[#5C6468] dark:text-gray-400 hover:text-[#1E2224] dark:hover:text-white"
+                                            }`}>
                                             {link.icon}
                                             <span>{link.label}</span>
                                         </span>
@@ -168,20 +178,22 @@ function Navbar() {
                         </nav>
                     )}
 
-                    {/* Simple Clean Dark/Light Mode Switcher */}
-                    <motion.button
-                        onClick={toggleTheme}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                        className="w-9 h-9 rounded-full bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] text-[#1E2224] dark:text-white flex items-center justify-center shadow-xs transition-colors cursor-pointer"
-                    >
-                        {isDark ? (
-                            <FiSun className="w-4 h-4 text-amber-400" />
-                        ) : (
-                            <FiMoon className="w-4 h-4 text-[#2B5866]" />
-                        )}
-                    </motion.button>
+                    {/* Dark/Light Mode Switcher: Only active for logged-in users inside app */}
+                    {userData && (
+                        <motion.button
+                            onClick={toggleTheme}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                            className="w-9 h-9 rounded-full bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] text-[#1E2224] dark:text-white flex items-center justify-center shadow-xs transition-colors cursor-pointer"
+                        >
+                            {isDark ? (
+                                <FiSun className="w-4 h-4 text-amber-400" />
+                            ) : (
+                                <FiMoon className="w-4 h-4 text-[#2B5866]" />
+                            )}
+                        </motion.button>
+                    )}
 
                     {/* Action Controls */}
                     {userData ? (
@@ -217,22 +229,20 @@ function Navbar() {
                                                 <p className="text-2xl font-extrabold text-[#1E2224] dark:text-white flex items-center gap-1.5">
                                                     <span className="text-[#DA9B42] dark:text-amber-400"><FiZap className="inline" /></span> {credits}
                                                 </p>
+                                                <p className="text-[11px] text-[#5C6468] dark:text-gray-400 font-medium">10 Credits used per note generation.</p>
                                             </div>
-                                            <p className="text-[11px] text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
-                                                Each AI note generation costs 10 credits.
-                                            </p>
                                             <button
                                                 onClick={() => { setShowCredits(false); navigate("/pricing"); }}
-                                                className="w-full py-2.5 rounded-xl bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d] text-xs font-bold uppercase tracking-wider hover:bg-[#B24B27] transition-all shadow-xs cursor-pointer"
+                                                className="w-full py-2.5 rounded-xl bg-[#DA9B42] dark:bg-white text-white dark:text-[#0d0d0d] font-bold text-xs uppercase tracking-wider hover:bg-[#C0842E] dark:hover:bg-gray-100 transition cursor-pointer"
                                             >
-                                                Buy More Credits
+                                                Top Up Credits
                                             </button>
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
                             </div>
 
-                            {/* User Profile Pill */}
+                            {/* User Profile Avatar with Dropdown */}
                             <div className="relative">
                                 <button
                                     onClick={() => { setShowProfile(!showProfile); setShowCredits(false); }}
@@ -255,9 +265,25 @@ function Navbar() {
                                             className="absolute right-0 mt-3 w-56 p-3 bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] rounded-2xl shadow-xl z-50 text-left space-y-2"
                                         >
                                             <div className="p-2 space-y-0.5 border-b border-[#E8DFD5] dark:border-[#262626]">
-                                                <p className="text-xs font-bold text-[#1E2224] dark:text-white truncate">{userData?.name}</p>
+                                                <div className="flex items-center justify-between">
+                                                    <p className="text-xs font-bold text-[#1E2224] dark:text-white truncate">{userData?.name}</p>
+                                                    {isAdmin && (
+                                                        <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                                                            Admin
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <p className="text-[10px] text-[#5C6468] dark:text-gray-400 truncate">{userData?.email}</p>
                                             </div>
+                                            {isAdmin && (
+                                                <button
+                                                    onClick={() => { setShowProfile(false); navigate("/admin"); }}
+                                                    className="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-[#1E2224] dark:text-white hover:bg-[#FAF7F2] dark:hover:bg-[#222222] transition-all flex items-center gap-2 cursor-pointer"
+                                                >
+                                                    <FiShield className="w-3.5 h-3.5 text-[#DA9B42]" />
+                                                    <span>Admin Console</span>
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={handleSignOut}
                                                 className="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all flex items-center gap-2 cursor-pointer"

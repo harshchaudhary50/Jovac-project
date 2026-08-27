@@ -78,9 +78,6 @@ function History() {
         ) : (
           <div className="relative bg-white dark:bg-[#161616] px-8 sm:px-12 py-8 sm:py-10 rounded-[28px] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow trekt-card-hover flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
             <div className="space-y-2 z-10 max-w-2xl text-center md:text-left py-1">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-amber-400 block">
-                Personal Study Library
-              </span>
               <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif text-[#1E2224] dark:text-white tracking-tight leading-tight">
                 Generated Note History
               </h1>
@@ -150,11 +147,11 @@ function History() {
                     <div className="space-y-4">
                       {/* Top Badges */}
                       <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <span className="text-[10px] font-extrabold text-[#B86337] dark:text-amber-400 uppercase tracking-wider">
+                        <span className="text-[10px] font-extrabold text-[#B86337] dark:text-[#E6E2D3] uppercase tracking-wider">
                           {item.examType || "Concept Note"}
                         </span>
                         {item.createdAt && (
-                          <span className="text-[10px] text-[#5C6468] dark:text-gray-400 font-bold flex items-center gap-1">
+                          <span className="text-[10px] text-[#5C6468] dark:text-[#E6E2D3]/60 font-bold flex items-center gap-1">
                             <FiCalendar className="w-3 h-3" />
                             {new Date(item.createdAt).toLocaleDateString()}
                           </span>
@@ -163,7 +160,7 @@ function History() {
 
                       {/* Title & Course */}
                       <div className="space-y-1">
-                        <h3 className="text-lg font-extrabold tracking-tight text-[#1E2224] dark:text-white group-hover:text-[#C85A32] dark:group-hover:text-amber-400 transition-colors line-clamp-2">
+                        <h3 className="text-lg font-extrabold tracking-tight text-[#1E2224] dark:text-white group-hover:text-[#C85A32] dark:group-hover:text-[#E6E2D3] transition-colors line-clamp-2">
                           {item.topic}
                         </h3>
                         {item.classLevel && (

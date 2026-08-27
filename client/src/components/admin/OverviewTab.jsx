@@ -6,31 +6,31 @@ function OverviewTab({ data }) {
     const isDark = document.documentElement.classList.contains('dark');
 
     const stats = [
-        { title: 'Total Users', value: data?.totalUsers ? data.totalUsers.toLocaleString() : '1,284', icon: FiUsers, iconColor: 'text-[#2B5866] dark:text-white', iconBg: 'bg-[#E4ECEF] dark:bg-[#222222]' },
-        { title: 'Active Users', value: data?.activeUsers ? data.activeUsers.toLocaleString() : '842', icon: FiUserCheck, iconColor: 'text-[#6B7B52] dark:text-emerald-400', iconBg: 'bg-[#EDF2E8] dark:bg-[#222222]' },
-        { title: 'Notes Generated', value: data?.notesGenerated ? data.notesGenerated.toLocaleString() : '4,920', icon: FiFileText, iconColor: 'text-[#C85A32] dark:text-amber-400', iconBg: 'bg-[#F5EBE1] dark:bg-[#222222]' },
-        { title: 'Credits Used', value: data?.creditsUsed ? data.creditsUsed.toLocaleString() : '49,200', icon: FiZap, iconColor: 'text-[#DA9B42] dark:text-amber-400', iconBg: 'bg-[#FAF0DC] dark:bg-[#222222]' },
-        { title: 'Revenue', value: data?.revenue ? `₹${data.revenue.toLocaleString()}` : '₹94,800', icon: FiDollarSign, iconColor: 'text-[#B86337] dark:text-emerald-400', iconBg: 'bg-[#F6ECE4] dark:bg-[#222222]' }
+        { title: 'Total Users', value: (data?.totalUsers ?? 0).toLocaleString(), icon: FiUsers, iconColor: 'text-[#2B5866] dark:text-[#E6E2D3]', iconBg: 'bg-[#E4ECEF] dark:bg-[#222222]' },
+        { title: 'Active Users', value: (data?.activeUsers ?? 0).toLocaleString(), icon: FiUserCheck, iconColor: 'text-[#5C6468] dark:text-[#EEEEEE]', iconBg: 'bg-[#EDF2E8] dark:bg-[#222222]' },
+        { title: 'Notes Generated', value: (data?.notesGenerated ?? 0).toLocaleString(), icon: FiFileText, iconColor: 'text-[#C85A32] dark:text-[#E6E2D3]', iconBg: 'bg-[#F5EBE1] dark:bg-[#222222]' },
+        { title: 'Credits Used', value: (data?.creditsUsed ?? 0).toLocaleString(), icon: FiZap, iconColor: 'text-[#DA9B42] dark:text-[#E6E2D3]', iconBg: 'bg-[#FAF0DC] dark:bg-[#222222]' },
+        { title: 'Revenue', value: `₹${(data?.revenue ?? 0).toLocaleString()}`, icon: FiDollarSign, iconColor: 'text-[#B86337] dark:text-[#EEEEEE]', iconBg: 'bg-[#F6ECE4] dark:bg-[#222222]' }
     ];
 
-    const charts = data?.charts || {
-        userGrowth: [
-            { month: 'Jan', users: 120 },
-            { month: 'Feb', users: 310 },
-            { month: 'Mar', users: 540 },
-            { month: 'Apr', users: 780 },
-            { month: 'May', users: 1020 },
-            { month: 'Jun', users: 1284 }
-        ],
-        notesGenerated: [
-            { month: 'Jan', notes: 350 },
-            { month: 'Feb', notes: 820 },
-            { month: 'Mar', notes: 1410 },
-            { month: 'Apr', notes: 2190 },
-            { month: 'May', notes: 3450 },
-            { month: 'Jun', notes: 4920 }
-        ]
-    };
+    const userGrowthData = data?.userGrowth && data.userGrowth.length > 0 ? data.userGrowth : [
+        { month: 'Jan', users: data?.totalUsers || 0 },
+        { month: 'Feb', users: data?.totalUsers || 0 },
+        { month: 'Mar', users: data?.totalUsers || 0 },
+        { month: 'Apr', users: data?.totalUsers || 0 },
+        { month: 'May', users: data?.totalUsers || 0 },
+        { month: 'Jun', users: data?.totalUsers || 0 }
+    ];
+
+    const notesActivityData = data?.notesActivity && data.notesActivity.length > 0 ? data.notesActivity : [
+        { day: 'Mon', count: 0 },
+        { day: 'Tue', count: 0 },
+        { day: 'Wed', count: 0 },
+        { day: 'Thu', count: 0 },
+        { day: 'Fri', count: 0 },
+        { day: 'Sat', count: 0 },
+        { day: 'Sun', count: 0 }
+    ];
 
     return (
         <div className="space-y-6">
@@ -61,7 +61,7 @@ function OverviewTab({ data }) {
                     </div>
                     <div className="h-52 w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={charts.userGrowth}>
+                            <AreaChart data={userGrowthData}>
                                 <defs>
                                     <linearGradient id="userGrowthGlow" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#2B5866" stopOpacity={0.4}/>
@@ -95,7 +95,7 @@ function OverviewTab({ data }) {
                     </div>
                     <div className="h-52 w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={charts.notesGenerated}>
+                            <BarChart data={notesActivityData}>
                                 <defs>
                                     <linearGradient id="notesBarGlow" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="0%" stopColor="#C85A32" />
@@ -103,7 +103,7 @@ function OverviewTab({ data }) {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#888888" opacity={0.2} />
-                                <XAxis dataKey="month" stroke="#9ca3af" fontSize={11} />
+                                <XAxis dataKey="day" stroke="#9ca3af" fontSize={11} />
                                 <YAxis stroke="#9ca3af" fontSize={11} />
                                 <Tooltip 
                                     contentStyle={{ 
@@ -116,7 +116,7 @@ function OverviewTab({ data }) {
                                     }} 
                                     itemStyle={{ color: '#ffffff' }}
                                 />
-                                <Bar dataKey="notes" fill="url(#notesBarGlow)" radius={[6, 6, 0, 0]} />
+                                <Bar dataKey="count" fill="url(#notesBarGlow)" radius={[6, 6, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>

@@ -44,7 +44,11 @@ app.use("/api/admin", adminRouter)
 
 
 
-app.listen(PORT,()=>{
-    console.log(`✅ Server running on port ${PORT}`)
-    connectDb()
-})
+const startServer = async () => {
+    await connectDb();
+    app.listen(PORT, () => {
+        console.log(`✅ Server running on port ${PORT}`);
+    });
+};
+
+startServer();

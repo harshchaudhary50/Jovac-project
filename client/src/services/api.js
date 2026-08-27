@@ -1,15 +1,27 @@
 import axios from "axios"
 import { serverUrl } from "../App"
-import { setUserData } from "../redux/userSlice"
+import { setUserData, clearUserData } from "../redux/userSlice"
 
 export const getCurrentUser = async (dispatch) => {
     try {
-        const result = await axios.get(serverUrl + "/api/user/currentuser" , {withCredentials:true})
-        dispatch(setUserData(result.data))
+        const result = await axios.get(serverUrl + "/api/user/currentuser", { withCredentials: true });
+        if (result.data) {
+            dispatch(setUserData(result.data));
+        } else {
+            dispatch(clearUserData());
+        }
     } catch (error) {
-        console.log(error)
+        dispatch(clearUserData());
     }
-}
+};
+
+export const saveThemePreference = async (theme) => {
+    try {
+        await axios.post(serverUrl + "/api/user/theme", { theme }, { withCredentials: true });
+    } catch (error) {
+        console.warn("Theme save warning:", error.message);
+    }
+};
 
 export const generateNotes = async (payload) => {
     try {

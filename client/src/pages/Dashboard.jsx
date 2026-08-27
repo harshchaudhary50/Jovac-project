@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { serverUrl } from '../App';
+import { getNotesHistory } from '../services/api';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import LottiePlayer from '../components/LottiePlayer';
@@ -20,7 +21,8 @@ import {
   FiUser,
   FiTarget,
   FiShare2,
-  FiFolder
+  FiFolder,
+  FiCalendar
 } from 'react-icons/fi';
 
 function Dashboard() {
@@ -29,9 +31,13 @@ function Dashboard() {
 
   const credits = userData?.credits ?? 0;
   const userName = userData?.name || "Student";
-  const course = userData?.course || "B.Tech Computer Science";
-  const semester = userData?.semester || "Semester 4";
+  const course = userData?.course || "General Studies";
+  const semester = userData?.semester || "Current Term";
   const preferredNoteType = userData?.preferredNoteType || "Deep Concept Notes";
+  const userRole = userData?.role || "Student";
+
+  const [notesHistory, setNotesHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
 
   const [adminSettings, setAdminSettings] = useState(() => {
     const savedLocal = localStorage.getItem('adminSettings');
@@ -40,7 +46,7 @@ function Dashboard() {
     }
     return {
       isBannerActive: true,
-      announcementBanner: 'Welcome to PrepAI! Upgrade to Pro for priority note generation.'
+      announcementBanner: 'Welcome to PrepAI! Select any note format below to start studying.'
     };
   });
 
@@ -50,7 +56,7 @@ function Dashboard() {
     "Ready to master high-yield topics for your exams?",
     "Let's turn complex chapters into 5-minute revision sheets.",
     "Your personalized study co-pilot is ready.",
-    "Focus on high-weightage topics and save precious hours today."
+    "Focus on high-weightage topics and save precious study hours today."
   ];
 
   useEffect(() => {
@@ -59,6 +65,17 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
+    // Fetch live user note history
+    getNotesHistory()
+      .then(res => {
+        if (res?.data) {
+          setNotesHistory(res.data);
+        }
+      })
+      .catch(() => null)
+      .finally(() => setLoadingHistory(false));
+
+    // Fetch admin banner
     axios.get(`${serverUrl}/api/admin/settings`)
       .then(res => {
         if (res.data?.success && res.data.settings) {
@@ -68,6 +85,8 @@ function Dashboard() {
       })
       .catch(() => null);
   }, []);
+
+  const totalNotesCount = notesHistory.length;
 
   const aiNoteTools = [
     {
@@ -82,7 +101,7 @@ function Dashboard() {
       id: 'revision',
       title: '5-Minute Revision Sheets',
       desc: 'High-yield formula cards, bullet points, and cheat-sheets for rapid pre-exam recall.',
-      icon: <FiZap className="w-5 h-5 text-[#DA9B42] dark:text-amber-400" />,
+      icon: <FiZap className="w-5 h-5 text-[#DA9B42] dark:text-[#E6E2D3]" />,
       color: 'bg-[#FAF0DC] dark:bg-[#222222]',
       tag: 'Fast Recall'
     },
@@ -90,7 +109,7 @@ function Dashboard() {
       id: 'questions',
       title: 'Predicted Exam Question Banks',
       desc: 'Anticipate 2, 5, and 10 mark exam questions with structured answer frameworks.',
-      icon: <FiTarget className="w-5 h-5 text-[#6B7B52] dark:text-emerald-400" />,
+      icon: <FiTarget className="w-5 h-5 text-[#6B7B52] dark:text-[#EEEEEE]" />,
       color: 'bg-[#EDF2E8] dark:bg-[#222222]',
       tag: 'High Weightage'
     },
@@ -98,7 +117,7 @@ function Dashboard() {
       id: 'diagrams',
       title: 'Visual Flowcharts & Diagrams',
       desc: 'Generate interactive Mermaid architecture and process flowcharts for diagrams.',
-      icon: <FiShare2 className="w-5 h-5 text-[#2B5866] dark:text-teal-400" />,
+      icon: <FiShare2 className="w-5 h-5 text-[#2B5866] dark:text-[#E6E2D3]" />,
       color: 'bg-[#E4ECEF] dark:bg-[#222222]',
       tag: 'Visual Learning'
     }
@@ -122,14 +141,14 @@ function Dashboard() {
         {adminSettings?.isBannerActive !== false && adminSettings?.announcementBanner && (
           <div className="p-4 rounded-2xl bg-gradient-to-r from-[#DA9B42]/15 via-[#C85A32]/10 to-[#2B5866]/10 dark:from-[#1a1a1a] dark:to-[#161616] border border-[#DA9B42]/30 dark:border-[#262626] backdrop-blur-md flex items-center justify-between gap-4 text-[#1E2224] dark:text-white shadow-xs">
             <div className="flex items-center gap-3">
-              <span className="p-2 rounded-xl bg-[#DA9B42]/20 text-[#DA9B42] dark:text-amber-400 font-bold shrink-0">
+              <span className="p-2 rounded-xl bg-[#DA9B42]/20 text-[#DA9B42] dark:text-[#E6E2D3] font-bold shrink-0">
                 <FiRadio className="w-4 h-4 animate-pulse" />
               </span>
               <p className="text-xs sm:text-sm font-bold text-[#1E2224] dark:text-white">
                 {adminSettings.announcementBanner}
               </p>
             </div>
-            <span className="hidden sm:inline-block text-xs font-extrabold uppercase tracking-wider text-[#B86337] dark:text-amber-400 shrink-0">
+            <span className="hidden sm:inline-block text-xs font-extrabold uppercase tracking-wider text-[#B86337] dark:text-[#E6E2D3] shrink-0">
               Announcement
             </span>
           </div>
@@ -144,7 +163,7 @@ function Dashboard() {
               Welcome, <span className="text-[#C85A32] dark:text-white font-extrabold">{userName}</span> 👋
             </h1>
             <p className="text-xs sm:text-sm text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
-              {randomGreeting || `Ready to start your day with AI exam notes for ${course}`}
+              {randomGreeting || `Ready to start your preparation for ${course}`}
             </p>
           </div>
 
@@ -159,41 +178,45 @@ function Dashboard() {
 
         </div>
 
-        {/* 4 Analytical Performance Counter Cards */}
+        {/* 4 Analytical Real Performance Counter Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           
           <MetricRecordCard 
-            icon={<FiZap className="w-5 h-5 text-[#DA9B42] dark:text-amber-400" />}
+            icon={<FiZap className="w-5 h-5 text-[#DA9B42] dark:text-[#E6E2D3]" />}
             iconBg="bg-[#FAF0DC] dark:bg-[#222222]"
             value={`${credits}`}
             label="Available AI Credits"
             badge="Refill Anytime"
-            actionText="Buy Credits"
+            actionText="Refill Credits"
             onAction={() => navigate('/pricing')}
           />
 
           <MetricRecordCard 
-            icon={<FiLayers className="w-5 h-5 text-[#C85A32] dark:text-white" />}
+            icon={<FiBookOpen className="w-5 h-5 text-[#C85A32] dark:text-white" />}
             iconBg="bg-[#F5EBE1] dark:bg-[#222222]"
-            value="14"
-            label="Syllabus Chapters Covered"
-            badge="Exam Readiness"
+            value={`${totalNotesCount}`}
+            label="Notes Generated"
+            badge={totalNotesCount > 0 ? "Saved in Cloud" : "Start Creating"}
+            actionText="Create Note"
+            onAction={() => navigate('/notes')}
           />
 
           <MetricRecordCard 
-            icon={<FiTrendingUp className="w-5 h-5 text-[#6B7B52] dark:text-emerald-400" />}
+            icon={<FiUser className="w-5 h-5 text-[#6B7B52] dark:text-[#EEEEEE]" />}
             iconBg="bg-[#EDF2E8] dark:bg-[#222222]"
-            value="99.4%"
-            label="Syllabus Precision"
-            badge="Verified Pattern"
+            value={userRole}
+            label="Account Profile"
+            badge="Verified User"
           />
 
           <MetricRecordCard 
-            icon={<FiClock className="w-5 h-5 text-[#2B5866] dark:text-teal-400" />}
+            icon={<FiFolder className="w-5 h-5 text-[#2B5866] dark:text-[#E6E2D3]" />}
             iconBg="bg-[#E4ECEF] dark:bg-[#222222]"
-            value="18.5 hrs"
-            label="Study Time Saved"
-            badge="5-Min Revision"
+            value={totalNotesCount > 0 ? `${totalNotesCount} Topics` : "0 Topics"}
+            label="Cloud Study Library"
+            badge="Auto-Synced"
+            actionText={totalNotesCount > 0 ? "View History" : undefined}
+            onAction={() => navigate('/history')}
           />
 
         </div>
@@ -205,14 +228,11 @@ function Dashboard() {
           <div className="lg:col-span-2 p-7 sm:p-8 rounded-3xl bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] trekt-card-shadow trekt-card-hover space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#C85A32] dark:text-amber-400 block">
-                  Exam Syllabus Overview
-                </span>
                 <h3 className="text-xl font-extrabold tracking-tight text-[#1E2224] dark:text-white">
                   Active Course & Preparation Profile
                 </h3>
               </div>
-              <span className="text-xs font-bold text-[#6B7B52] dark:text-emerald-400">
+              <span className="text-xs font-bold text-[#6B7B52] dark:text-[#E6E2D3]">
                 Verified Account
               </span>
             </div>
@@ -220,7 +240,7 @@ function Dashboard() {
             {/* Course & Exam Readiness Breakdown Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5C6468] dark:text-gray-400">Registered Course</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5C6468] dark:text-gray-400">Registered Course / Stream</span>
                 <p className="text-sm font-extrabold text-[#1E2224] dark:text-white truncate">{course}</p>
                 <p className="text-[11px] text-[#5C6468] dark:text-gray-400 font-medium">{semester}</p>
               </div>
@@ -228,7 +248,7 @@ function Dashboard() {
               <div className="p-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#5C6468] dark:text-gray-400">Preferred Note Format</span>
                 <p className="text-sm font-extrabold text-[#1E2224] dark:text-white truncate">{preferredNoteType}</p>
-                <p className="text-[11px] text-[#5C6468] dark:text-gray-400 font-medium">Instant AI Generation Preset</p>
+                <p className="text-[11px] text-[#5C6468] dark:text-gray-400 font-medium">Auto-configured for Generation</p>
               </div>
             </div>
 
@@ -239,12 +259,12 @@ function Dashboard() {
                 <p className="text-xs font-extrabold text-[#1E2224] dark:text-white">{credits} Credits</p>
               </div>
               <div className="p-3.5 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5C6468] dark:text-gray-400">Student Status</span>
-                <p className="text-xs font-extrabold text-[#1E2224] dark:text-white">Active Member</p>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5C6468] dark:text-gray-400">Saved Study Notes</span>
+                <p className="text-xs font-extrabold text-[#1E2224] dark:text-white">{totalNotesCount} Notes</p>
               </div>
               <div className="p-3.5 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5C6468] dark:text-gray-400">Auto Cloud Backup</span>
-                <p className="text-xs font-extrabold text-[#1E2224] dark:text-white">Enabled in History</p>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5C6468] dark:text-gray-400">Account Role</span>
+                <p className="text-xs font-extrabold text-[#1E2224] dark:text-white">{userRole}</p>
               </div>
             </div>
           </div>
@@ -260,16 +280,26 @@ function Dashboard() {
                   Personal Study Library
                 </h3>
                 <p className="text-xs text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
-                  Access all your previously generated exam notes, flowcharts, and question banks in your dedicated history page.
+                  {totalNotesCount > 0 
+                    ? `You have ${totalNotesCount} note${totalNotesCount > 1 ? 's' : ''} saved in your library ready for instant review and export.`
+                    : 'Access all your generated notes, flowcharts, and question banks in your dedicated history page once generated.'}
                 </p>
               </div>
+
+              {/* Show Recent Note if available */}
+              {notesHistory.length > 0 && (
+                <div className="p-3 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-1">
+                  <span className="text-[10px] font-bold text-[#C85A32] dark:text-[#E6E2D3] uppercase tracking-wider block">Recent Note</span>
+                  <p className="text-xs font-extrabold text-[#1E2224] dark:text-white truncate">{notesHistory[0].topic}</p>
+                </div>
+              )}
             </div>
 
             <button
-              onClick={() => navigate('/history')}
+              onClick={() => navigate(totalNotesCount > 0 ? '/history' : '/notes')}
               className="w-full py-3 rounded-full bg-[#2B5866] dark:bg-white hover:bg-[#20444F] dark:hover:bg-gray-100 text-white dark:text-[#0d0d0d] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
             >
-              <span>GO TO NOTE HISTORY</span>
+              <span>{totalNotesCount > 0 ? 'GO TO NOTE HISTORY' : 'CREATE FIRST NOTE'}</span>
               <FiArrowRight />
             </button>
           </div>
@@ -283,7 +313,7 @@ function Dashboard() {
               AI Note Generation Formats
             </h3>
             <span className="text-xs font-semibold text-[#5C6468] dark:text-gray-400">
-              Click any tool to launch note generator
+              Click any format to launch note generator
             </span>
           </div>
 
@@ -304,7 +334,7 @@ function Dashboard() {
                     </span>
                   </div>
                   <div className="space-y-1">
-                    <h4 className="text-sm font-extrabold text-[#1E2224] dark:text-white group-hover:text-[#C85A32] dark:group-hover:text-amber-400 transition-colors">
+                    <h4 className="text-sm font-extrabold text-[#1E2224] dark:text-white group-hover:text-[#C85A32] dark:group-hover:text-[#E6E2D3] transition-colors">
                       {tool.title}
                     </h4>
                     <p className="text-xs text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
@@ -352,7 +382,7 @@ function MetricRecordCard({ icon, iconBg = "bg-[#FAF7F2]", value, label, badge, 
       {actionText && (
         <button 
           onClick={onAction}
-          className="text-[11px] font-bold text-[#C85A32] dark:text-amber-400 hover:underline pt-2 border-t border-[#E8DFD5] dark:border-[#262626] text-left flex items-center justify-between cursor-pointer"
+          className="text-[11px] font-bold text-[#C85A32] dark:text-[#E6E2D3] hover:underline pt-2 border-t border-[#E8DFD5] dark:border-[#262626] text-left flex items-center justify-between cursor-pointer"
         >
           <span>{actionText}</span>
           <FiArrowRight />

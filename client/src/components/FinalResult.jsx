@@ -12,12 +12,12 @@ const markDownComponent = {
         </h1>
     ),
     h2: ({ children }) => (
-        <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#C85A32] dark:text-amber-400 mt-6 mb-3">
+        <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#C85A32] dark:text-[#E6E2D3] mt-6 mb-3">
             {children}
         </h2>
     ),
     h3: ({ children }) => (
-        <h3 className="text-base sm:text-lg font-serif font-bold text-[#2B5866] dark:text-teal-400 mt-5 mb-2">
+        <h3 className="text-base sm:text-lg font-serif font-bold text-[#2B5866] dark:text-[#EEEEEE] mt-5 mb-2">
             {children}
         </h3>
     ),
@@ -37,23 +37,23 @@ const markDownComponent = {
         </ol>
     ),
     li: ({ children }) => (
-        <li className="marker:text-[#C85A32] dark:marker:text-amber-400 leading-relaxed">{children}</li>
+        <li className="marker:text-[#C85A32] dark:marker:text-[#E6E2D3] leading-relaxed">{children}</li>
     ),
     strong: ({ children }) => (
         <strong className="font-extrabold text-[#1E2224] dark:text-white">{children}</strong>
     ),
     code: ({ inline, children }) => (
-        <code className="px-1.5 py-0.5 rounded-md bg-[#FAF0DC] dark:bg-[#222222] border border-[#DA9B42]/30 dark:border-[#303030] text-xs font-mono text-[#B86337] dark:text-amber-400">
+        <code className="px-1.5 py-0.5 rounded-md bg-[#FAF0DC] dark:bg-[#222222] border border-[#DA9B42]/30 dark:border-[#303030] text-xs font-mono text-[#B86337] dark:text-[#E6E2D3]">
             {children}
         </code>
     ),
     pre: ({ children }) => (
-        <pre className="p-4 my-4 rounded-2xl bg-[#1a1a1a] text-amber-300 text-xs font-mono overflow-x-auto border border-[#303030]">
+        <pre className="p-4 my-4 rounded-2xl bg-[#1a1a1a] text-[#E6E2D3] text-xs font-mono overflow-x-auto border border-[#303030]">
             {children}
         </pre>
     ),
     blockquote: ({ children }) => (
-        <blockquote className="p-4 my-4 rounded-2xl bg-[#FAF0DC] dark:bg-[#1a1a1a] border-l-4 border-[#DA9B42] text-xs font-semibold text-[#87532A] dark:text-amber-300">
+        <blockquote className="p-4 my-4 rounded-2xl bg-[#FAF0DC] dark:bg-[#1a1a1a] border-l-4 border-[#DA9B42] dark:border-[#E6E2D3] text-xs font-semibold text-[#87532A] dark:text-[#E6E2D3]">
             {children}
         </blockquote>
     ),
@@ -122,8 +122,8 @@ function FinalResult({ result }) {
                         onClick={() => setQuickRevision(!quickRevision)} 
                         className={`px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition flex items-center gap-2 cursor-pointer ${
                             quickRevision
-                                ? "bg-[#DA9B42] text-white shadow-sm"
-                                : "bg-[#FAF0DC] dark:bg-[#222222] text-[#B86337] dark:text-amber-400 border border-[#DA9B42]/30 dark:border-[#303030] hover:bg-[#DA9B42] hover:text-white"
+                                ? "bg-[#1E2224] dark:bg-white text-white dark:text-black shadow-sm"
+                                : "bg-[#FAF0DC] dark:bg-[#222222] text-[#B86337] dark:text-[#E6E2D3] border border-[#DA9B42]/30 dark:border-[#303030] hover:bg-[#1E2224] dark:hover:bg-white hover:text-white dark:hover:text-black"
                         }`}
                     >
                         <FiZap className="w-3.5 h-3.5" />
@@ -155,15 +155,15 @@ function FinalResult({ result }) {
             {/* Quick Revision Sheet */}
             {quickRevision && (
                 <section className="rounded-3xl bg-[#FAF0DC] dark:bg-[#1e1e1e] border border-[#DA9B42]/40 dark:border-[#303030] p-6 sm:p-8 space-y-4">
-                    <div className="flex items-center gap-2 text-[#B86337] dark:text-amber-400">
-                        <FiZap className="w-5 h-5 text-[#DA9B42]" />
+                    <div className="flex items-center gap-2 text-[#B86337] dark:text-[#E6E2D3]">
+                        <FiZap className="w-5 h-5 text-[#DA9B42] dark:text-[#E6E2D3]" />
                         <h3 className="font-serif font-bold text-xl text-[#1E2224] dark:text-white">
                             5-Minute Exam Revision Cheat Sheet
                         </h3>
                     </div>
                     <ul className="list-disc ml-6 space-y-2 text-xs sm:text-sm text-[#5C6468] dark:text-gray-300 leading-relaxed">
                         {result.revisionPoints.map((p, i) => (
-                            <li key={i} className="marker:text-[#DA9B42]">{p}</li>
+                            <li key={i} className="marker:text-[#DA9B42] dark:marker:text-[#E6E2D3]">{p}</li>
                         ))}
                     </ul>
                 </section>
@@ -198,7 +198,7 @@ function FinalResult({ result }) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-5 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-2">
-                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#2B5866] dark:text-teal-400">Short Answer Questions</p>
+                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#2B5866] dark:text-[#EEEEEE]">Short Answer Questions</p>
                         <ul className="list-disc ml-4 text-xs text-[#5C6468] dark:text-gray-400 space-y-1.5 leading-relaxed">
                             {result.questions.short.map((q, i) => (
                                 <li key={i}>{q}</li>
@@ -207,7 +207,7 @@ function FinalResult({ result }) {
                     </div>
 
                     <div className="p-5 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-2">
-                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-amber-400">Long Answer / Essay Questions</p>
+                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-[#E6E2D3]">Long Answer / Essay Questions</p>
                         <ul className="list-disc ml-4 text-xs text-[#5C6468] dark:text-gray-400 space-y-1.5 leading-relaxed">
                             {result.questions.long.map((q, i) => (
                                 <li key={i}>{q}</li>
@@ -218,7 +218,7 @@ function FinalResult({ result }) {
 
                 {result.questions.diagram && (
                     <div className="p-5 rounded-2xl bg-[#EDF2E8] dark:bg-[#1e1e1e] border border-[#6B7B52]/30 dark:border-[#303030] space-y-1">
-                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#6B7B52] dark:text-emerald-400">Diagram-Based Question</p>
+                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#6B7B52] dark:text-[#EEEEEE]">Diagram-Based Question</p>
                         <p className="text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed font-medium">{result.questions.diagram}</p>
                     </div>
                 )}
@@ -230,11 +230,11 @@ function FinalResult({ result }) {
 
 function SectionHeader({ icon, title, color = "terracotta" }) {
     const colorStyles = {
-        terracotta: "bg-[#F5EBE1] dark:bg-[#222222] text-[#C85A32] dark:text-white border-[#EBD7BE] dark:border-[#303030]",
-        teal: "bg-[#E4ECEF] dark:bg-[#222222] text-[#2B5866] dark:text-teal-400 border-[#2B5866]/20 dark:border-[#303030]",
-        olive: "bg-[#EDF2E8] dark:bg-[#222222] text-[#6B7B52] dark:text-emerald-400 border-[#6B7B52]/20 dark:border-[#303030]",
-        ochre: "bg-[#FAF0DC] dark:bg-[#222222] text-[#B86337] dark:text-amber-400 border-[#DA9B42]/30 dark:border-[#303030]",
-        sienna: "bg-[#F6ECE4] dark:bg-[#222222] text-[#B86337] dark:text-amber-400 border-[#E8DFD5] dark:border-[#303030]"
+        terracotta: "bg-[#F5EBE1] dark:bg-[#222222] text-[#C85A32] dark:text-[#E6E2D3] border-[#EBD7BE] dark:border-[#303030]",
+        teal: "bg-[#E4ECEF] dark:bg-[#222222] text-[#2B5866] dark:text-[#EEEEEE] border-[#2B5866]/20 dark:border-[#303030]",
+        olive: "bg-[#EDF2E8] dark:bg-[#222222] text-[#6B7B52] dark:text-[#EEEEEE] border-[#6B7B52]/20 dark:border-[#303030]",
+        ochre: "bg-[#FAF0DC] dark:bg-[#222222] text-[#B86337] dark:text-[#E6E2D3] border-[#DA9B42]/30 dark:border-[#303030]",
+        sienna: "bg-[#F6ECE4] dark:bg-[#222222] text-[#B86337] dark:text-[#E6E2D3] border-[#E8DFD5] dark:border-[#303030]"
     };
 
     return (

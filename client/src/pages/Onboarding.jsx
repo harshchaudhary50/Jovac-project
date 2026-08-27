@@ -154,14 +154,18 @@ function Onboarding() {
       // Final Step Submission
       setIsSubmitting(true);
       try {
+        const finalCourse = role === 'Student' ? (course === 'Custom Course / Subject' ? customCourse : course) : teacherDept;
+        const finalSemester = role === 'Student' ? semester : teacherAudience;
+        const finalNoteType = role === 'Student' ? preferredNoteType : teacherMaterialType;
+
         const payload = {
           role,
-          course: role === 'Student' ? (course === 'Custom Course / Subject' ? customCourse : course) : '',
-          semester: role === 'Student' ? semester : '',
-          preferredNoteType: role === 'Student' ? preferredNoteType : '',
-          teacherDept: role === 'Teacher' ? teacherDept : '',
-          teacherAudience: role === 'Teacher' ? teacherAudience : '',
-          teacherMaterialType: role === 'Teacher' ? teacherMaterialType : ''
+          course: finalCourse,
+          semester: finalSemester,
+          preferredNoteType: finalNoteType,
+          teacherDept,
+          teacherAudience,
+          teacherMaterialType
         };
 
         const res = await axios.post(`${serverUrl}/api/user/onboarding`, payload, {
@@ -169,11 +173,31 @@ function Onboarding() {
         });
 
         if (res.data) {
-          dispatch(setUserData(res.data));
+          dispatch(setUserData({ ...res.data, onboardingCompleted: true }));
+        } else {
+          dispatch(setUserData({
+            ...userData,
+            role,
+            course: finalCourse,
+            semester: finalSemester,
+            preferredNoteType: finalNoteType,
+            onboardingCompleted: true
+          }));
         }
         setIsCompletedScreen(true);
       } catch (err) {
         console.error('Onboarding Save Error:', err);
+        const fallbackCourse = role === 'Student' ? (course === 'Custom Course / Subject' ? customCourse : course) : teacherDept;
+        const fallbackSemester = role === 'Student' ? semester : teacherAudience;
+        const fallbackNoteType = role === 'Student' ? preferredNoteType : teacherMaterialType;
+        dispatch(setUserData({
+          ...userData,
+          role: role || "Student",
+          course: fallbackCourse || "General Studies",
+          semester: fallbackSemester || "Current Term",
+          preferredNoteType: fallbackNoteType || "Deep Concept Notes",
+          onboardingCompleted: true
+        }));
         setIsCompletedScreen(true);
       } finally {
         setIsSubmitting(false);
@@ -221,7 +245,7 @@ function Onboarding() {
               Thank you for your time! 🎉
             </h2>
             <p className="text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed max-w-xs mx-auto">
-              Your profile has been saved. AI generation is now customized for your <span className="font-bold text-[#C85A32] dark:text-amber-400">{role}</span> profile.
+              Your profile has been saved. AI generation is now customized for your <span className="font-bold text-[#C85A32] dark:text-amber-400">{role || "Student"}</span> profile.
             </p>
           </div>
 
@@ -229,15 +253,15 @@ function Onboarding() {
           <div className="p-3.5 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] space-y-1.5 text-xs text-[#1E2224] dark:text-white">
             <div className="flex justify-between items-center text-[11px]">
               <span className="text-[#5C6468] dark:text-gray-400 font-medium">Role:</span>
-              <span className="font-bold">{role}</span>
+              <span className="font-bold">{role || "Student"}</span>
             </div>
             <div className="flex justify-between items-center text-[11px]">
-              <span className="text-[#5C6468] dark:text-gray-400 font-medium">{role === 'Student' ? 'Course:' : 'Department:'}</span>
-              <span className="font-bold truncate max-w-[200px]">{role === 'Student' ? (course === 'Custom Course / Subject' ? customCourse : course) : teacherDept}</span>
+              <span className="text-[#5C6468] dark:text-gray-400 font-medium">{role === 'Teacher' ? 'Department:' : 'Course:'}</span>
+              <span className="font-bold truncate max-w-[200px]">{role === 'Teacher' ? teacherDept : (course === 'Custom Course / Subject' ? customCourse : course) || "General Studies"}</span>
             </div>
             <div className="flex justify-between items-center text-[11px]">
-              <span className="text-[#5C6468] dark:text-gray-400 font-medium">{role === 'Student' ? 'Semester/Class:' : 'Audience:'}</span>
-              <span className="font-bold truncate max-w-[200px]">{role === 'Student' ? semester : teacherAudience}</span>
+              <span className="text-[#5C6468] dark:text-gray-400 font-medium">{role === 'Teacher' ? 'Audience:' : 'Semester/Class:'}</span>
+              <span className="font-bold truncate max-w-[200px]">{role === 'Teacher' ? teacherAudience : semester || "Current Term"}</span>
             </div>
             <div className="flex justify-between items-center text-[11px] pt-1 border-t border-[#E8DFD5] dark:border-[#303030]">
               <span className="text-[#5C6468] dark:text-gray-400 font-medium">Credits Active:</span>
@@ -246,7 +270,20 @@ function Onboarding() {
           </div>
 
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => {
+              const finalCourse = role === 'Student' ? (course === 'Custom Course / Subject' ? customCourse : course) : teacherDept;
+              const finalSemester = role === 'Student' ? semester : teacherAudience;
+              const finalNoteType = role === 'Student' ? preferredNoteType : teacherMaterialType;
+              dispatch(setUserData({
+                ...userData,
+                role: role || "Student",
+                course: finalCourse || "General Studies",
+                semester: finalSemester || "Current Term",
+                preferredNoteType: finalNoteType || "Deep Concept Notes",
+                onboardingCompleted: true
+              }));
+              navigate('/dashboard');
+            }}
             className="w-full py-3 rounded-full bg-[#C85A32] dark:bg-white hover:bg-[#B24B27] dark:hover:bg-gray-100 text-white dark:text-[#0d0d0d] text-xs font-bold uppercase tracking-wider transition shadow-md shadow-[#C85A32]/20 dark:shadow-none flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>LAUNCH MY DASHBOARD</span>

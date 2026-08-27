@@ -59,64 +59,6 @@ function Admin() {
 
     const [activeTab, setActiveTab] = useState('overview');
     const [loading, setLoading] = useState(false);
-    
-    // Default fallback datasets
-    const defaultOverview = {
-        totalUsers: 1284,
-        activeUsers: 842,
-        notesGenerated: 4920,
-        creditsUsed: 49200,
-        revenue: 94800,
-        userGrowth: [
-            { month: 'Jan', users: 120 },
-            { month: 'Feb', users: 310 },
-            { month: 'Mar', users: 540 },
-            { month: 'Apr', users: 780 },
-            { month: 'May', users: 1020 },
-            { month: 'Jun', users: 1284 }
-        ],
-        notesActivity: [
-            { day: 'Mon', count: 140 },
-            { day: 'Tue', count: 230 },
-            { day: 'Wed', count: 310 },
-            { day: 'Thu', count: 280 },
-            { day: 'Fri', count: 420 },
-            { day: 'Sat', count: 590 },
-            { day: 'Sun', count: 680 }
-        ]
-    };
-
-    const defaultUsers = [
-        { _id: 'u1', name: 'Madhav Pratap', email: 'madhav@gmail.com', role: 'Student', credits: 35, status: 'Active' },
-        { _id: 'u2', name: 'Rahul Sharma', email: 'rahul@gmail.com', role: 'Student', credits: 12, status: 'Active' },
-        { _id: 'u3', name: 'Aman Verma', email: 'aman@gmail.com', role: 'Teacher', credits: 80, status: 'Active' },
-        { _id: 'u4', name: 'Priya Singh', email: 'priya@gmail.com', role: 'Student', credits: 45, status: 'Active' },
-        { _id: 'u5', name: 'Rohan Patel', email: 'rohan@gmail.com', role: 'Admin', credits: 500, status: 'Active' },
-        { _id: 'u6', name: 'Neha Gupta', email: 'neha@gmail.com', role: 'Student', credits: 0, status: 'Disabled' }
-    ];
-
-    const defaultNotes = [
-        { id: 'n1', user: 'Madhav Pratap', topic: 'Thermodynamics & Heat Engines', type: 'Concept Notes', creditsUsed: 10, date: '2026-08-22 14:20' },
-        { id: 'n2', user: 'Rahul Sharma', topic: 'Data Structures & Trees', type: 'Revision Sheet', creditsUsed: 10, date: '2026-08-22 13:10' },
-        { id: 'n3', user: 'Priya Singh', topic: 'Organic Chemistry Reactions', type: 'Question Bank', creditsUsed: 10, date: '2026-08-22 11:45' }
-    ];
-
-    const defaultPayments = [
-        { id: 'p1', user: 'Madhav Pratap', plan: 'Starter Pack', amount: '₹49', status: 'Success', date: '2026-08-22 14:00' },
-        { id: 'p2', user: 'Aman Verma', plan: 'Pro Semester Pass', amount: '₹199', status: 'Success', date: '2026-08-21 18:30' },
-        { id: 'p3', user: 'Neha Gupta', plan: 'Starter Pack', amount: '₹49', status: 'Pending', date: '2026-08-20 12:15' }
-    ];
-
-    const defaultCredits = [
-        { id: 'c1', user: 'Madhav Pratap', action: 'Bonus Signup Grant', credits: 50, date: '2026-08-20 10:00' },
-        { id: 'c2', user: 'Rahul Sharma', action: 'Note Generation Spend', credits: -10, date: '2026-08-22 13:10' },
-        { id: 'c3', user: 'Aman Verma', action: 'Admin Manual Grant', credits: 100, date: '2026-08-21 18:00' }
-    ];
-
-    const defaultContent = [
-        { id: 'cm1', topic: 'Quantum Physics Principles', user: 'Rohan Patel', similarity: '2%', flag: 'Clean', date: '2026-08-22 15:00' },
-        { id: 'cm2', topic: 'Calculus Derivatives', user: 'Priya Singh', similarity: '5%', flag: 'Clean', date: '2026-08-22 12:30' }
-    ];
 
     const defaultSettings = {
         creditCostPerGeneration: 10,
@@ -124,29 +66,38 @@ function Admin() {
         proPlanPrice: 199,
         maintenanceMode: false,
         selectedAiModel: 'Gemini 2.5 Flash',
-        announcementBanner: 'Welcome to PrepAI! Upgrade to Pro for priority note generation.',
+        announcementBanner: 'Welcome to PrepAI! Select any note format below to start studying.',
         isBannerActive: true
     };
 
-    const [overviewData, setOverviewData] = useState(defaultOverview);
-    const [usersList, setUsersList] = useState(defaultUsers);
-    const [notesLogs, setNotesLogs] = useState(defaultNotes);
-    const [paymentLogs, setPaymentLogs] = useState(defaultPayments);
-    const [creditLogs, setCreditLogs] = useState(defaultCredits);
-    const [contentLogs, setContentLogs] = useState(defaultContent);
+    const [overviewData, setOverviewData] = useState({
+        totalUsers: 0,
+        activeUsers: 0,
+        notesGenerated: 0,
+        creditsUsed: 0,
+        totalRemainingCredits: 0,
+        revenue: 0,
+        userGrowth: [],
+        notesActivity: []
+    });
+    const [usersList, setUsersList] = useState([]);
+    const [notesLogs, setNotesLogs] = useState([]);
+    const [paymentLogs, setPaymentLogs] = useState([]);
+    const [creditLogs, setCreditLogs] = useState([]);
+    const [contentLogs, setContentLogs] = useState([]);
     const [adminSettings, setAdminSettings] = useState(defaultSettings);
 
     const fetchAllAdminData = async (showSpinner = false) => {
         if (showSpinner) setLoading(true);
         try {
             const [overviewRes, usersRes, notesRes, paymentsRes, creditsRes, contentRes, settingsRes] = await Promise.all([
-                axios.get(`${serverUrl}/api/admin/overview`).catch(() => null),
-                axios.get(`${serverUrl}/api/admin/users`).catch(() => null),
-                axios.get(`${serverUrl}/api/admin/notes`).catch(() => null),
-                axios.get(`${serverUrl}/api/admin/payments`).catch(() => null),
-                axios.get(`${serverUrl}/api/admin/credits`).catch(() => null),
-                axios.get(`${serverUrl}/api/admin/content-monitoring`).catch(() => null),
-                axios.get(`${serverUrl}/api/admin/settings`).catch(() => null)
+                axios.get(`${serverUrl}/api/admin/overview`, { withCredentials: true }).catch(() => null),
+                axios.get(`${serverUrl}/api/admin/users`, { withCredentials: true }).catch(() => null),
+                axios.get(`${serverUrl}/api/admin/notes`, { withCredentials: true }).catch(() => null),
+                axios.get(`${serverUrl}/api/admin/payments`, { withCredentials: true }).catch(() => null),
+                axios.get(`${serverUrl}/api/admin/credits`, { withCredentials: true }).catch(() => null),
+                axios.get(`${serverUrl}/api/admin/content-monitoring`, { withCredentials: true }).catch(() => null),
+                axios.get(`${serverUrl}/api/admin/settings`, { withCredentials: true }).catch(() => null)
             ]);
 
             if (overviewRes?.data?.success && overviewRes.data.data) setOverviewData(overviewRes.data.data);
@@ -168,91 +119,125 @@ function Admin() {
     }, []);
 
     const navTabs = [
-        { id: 'overview', label: 'Overview', icon: FiHome },
-        { id: 'users', label: 'Users', icon: FiUsers },
-        { id: 'notes', label: 'Notes', icon: FiFileText },
-        { id: 'payments', label: 'Payments', icon: FiCreditCard },
-        { id: 'credits', label: 'Credits', icon: FiZap },
-        { id: 'content', label: 'Monitoring', icon: FiAlertTriangle },
-        { id: 'settings', label: 'Settings', icon: FiSettings }
+        { id: 'overview', label: 'Overview', icon: <FiHome className="w-4 h-4" /> },
+        { id: 'users', label: 'Users', icon: <FiUsers className="w-4 h-4" /> },
+        { id: 'notes', label: 'Notes', icon: <FiFileText className="w-4 h-4" /> },
+        { id: 'payments', label: 'Payments', icon: <FiCreditCard className="w-4 h-4" /> },
+        { id: 'credits', label: 'Credits', icon: <FiZap className="w-4 h-4" /> },
+        { id: 'monitoring', label: 'Monitoring', icon: <FiAlertTriangle className="w-4 h-4" /> },
+        { id: 'settings', label: 'Settings', icon: <FiSettings className="w-4 h-4" /> }
     ];
 
     return (
-        <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#0d0d0d] text-[#1E2224] dark:text-white flex flex-col justify-between selection:bg-[#EBD7BE] transition-colors duration-300">
+        <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#0d0d0d] text-[#1E2224] dark:text-white relative overflow-hidden font-sans selection:bg-[#EBD7BE] selection:text-[#1E2224] transition-colors duration-300">
+            
+            {/* Background Soft Organic Washes */}
+            <div className="trekt-bg-blob-top" />
+            <div className="trekt-bg-blob-bottom" />
+
+            {/* Global Navbar */}
             <Navbar />
 
-            <div className="pt-24 pb-16 px-4 sm:px-8 max-w-6xl mx-auto w-full space-y-6 flex-1">
+            {/* Main Admin Console Container */}
+            <main className="max-w-7xl mx-auto px-6 sm:px-12 pt-28 sm:pt-32 pb-16 relative z-10 space-y-8 font-sans">
                 
-                {/* Header */}
-                <div className="flex items-center justify-between pt-4">
+                {/* Header Strip */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-2xl bg-[#2B5866] dark:bg-white text-white dark:text-[#0d0d0d] flex items-center justify-center font-bold text-sm shadow-xs">
-                            <FiShield className="w-4 h-4" />
+                        <div className="w-10 h-10 rounded-2xl bg-[#2B5866] text-white flex items-center justify-center shadow-xs">
+                            <FiShield className="w-5 h-5" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-bold text-[#1E2224] dark:text-white font-serif-title">
+                            <h1 className="text-2xl sm:text-3xl font-serif text-[#1E2224] dark:text-white tracking-tight">
                                 Admin Console
                             </h1>
+                            <p className="text-xs text-[#5C6468] dark:text-gray-400 font-medium">
+                                Real-time system analytics, user management, and AI credit balances.
+                            </p>
                         </div>
                     </div>
 
                     <button
                         onClick={() => fetchAllAdminData(true)}
-                        className="px-4 py-2 rounded-full bg-white dark:bg-[#161616] text-[#1E2224] dark:text-white border border-[#E8DFD5] dark:border-[#262626] text-xs font-bold hover:border-[#C85A32] dark:hover:border-white transition cursor-pointer shadow-xs"
+                        disabled={loading}
+                        className="px-4 py-2 rounded-full bg-white dark:bg-[#1e1e1e] hover:bg-[#FAF7F2] dark:hover:bg-[#282828] border border-[#E8DFD5] dark:border-[#303030] text-xs font-bold text-[#1E2224] dark:text-white transition shadow-xs cursor-pointer flex items-center gap-2"
                     >
-                        Refresh Data
+                        <span>{loading ? 'Refreshing...' : 'Refresh Live Data'}</span>
                     </button>
                 </div>
 
-                {/* Minimal Tab Bar with Sliding Underline */}
-                <div className="border-b border-[#E8DFD5] dark:border-[#262626] flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar">
+                {/* Tab Navigation Pill Bar */}
+                <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-2 border-b border-[#E8DFD5] dark:border-[#262626] no-scrollbar">
                     {navTabs.map((tab) => {
-                        const Icon = tab.icon;
                         const isActive = activeTab === tab.id;
                         return (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`relative px-3 sm:px-4 py-3 text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer select-none shrink-0 ${
-                                    isActive 
-                                        ? "text-[#C85A32] dark:text-white" 
-                                        : "text-[#5C6468] dark:text-gray-400 hover:text-[#1E2224] dark:hover:text-white"
+                                className={`px-4 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+                                    isActive
+                                        ? 'bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d] shadow-sm shadow-[#C85A32]/20 dark:shadow-none'
+                                        : 'bg-white dark:bg-[#161616] text-[#5C6468] dark:text-gray-400 hover:text-[#1E2224] dark:hover:text-white border border-[#E8DFD5] dark:border-[#262626]'
                                 }`}
                             >
-                                <Icon className="w-4 h-4" />
+                                {tab.icon}
                                 <span>{tab.label}</span>
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="activeAdminTabUnderline"
-                                        transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                                        className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#C85A32] dark:bg-white rounded-full"
-                                    />
-                                )}
                             </button>
                         );
                     })}
                 </div>
 
-                {/* Main Content Area */}
-                {loading ? (
-                    <div className="py-20 text-center space-y-2">
-                        <div className="w-8 h-8 border-3 border-[#C85A32] dark:border-white border-t-transparent rounded-full animate-spin mx-auto" />
-                        <p className="text-xs text-[#5C6468] dark:text-gray-400 font-bold">Loading console...</p>
-                    </div>
-                ) : (
-                    <AdminTabBoundary key={activeTab}>
-                        {activeTab === 'overview' && <OverviewTab data={overviewData} />}
-                        {activeTab === 'users' && <UsersTab users={usersList} refreshData={fetchAllAdminData} />}
-                        {activeTab === 'notes' && <NotesTab logs={notesLogs} />}
-                        {activeTab === 'payments' && <PaymentsTab payments={paymentLogs} />}
-                        {activeTab === 'credits' && <CreditsTab creditLogs={creditLogs} users={usersList} refreshData={fetchAllAdminData} />}
-                        {activeTab === 'content' && <ContentMonitoringTab contentLogs={contentLogs} />}
-                        {activeTab === 'settings' && <SettingsTab initialSettings={adminSettings} refreshData={fetchAllAdminData} />}
-                    </AdminTabBoundary>
-                )}
-            </div>
+                {/* Tab Content Display with Clean Error Boundary */}
+                <AdminTabBoundary key={activeTab}>
+                    <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="space-y-6"
+                    >
+                        {activeTab === 'overview' && (
+                            <OverviewTab data={overviewData} onTabChange={setActiveTab} />
+                        )}
 
+                        {activeTab === 'users' && (
+                            <UsersTab users={usersList} refreshData={() => fetchAllAdminData(false)} />
+                        )}
+
+                        {activeTab === 'notes' && (
+                            <NotesTab notes={notesLogs} />
+                        )}
+
+                        {activeTab === 'payments' && (
+                            <PaymentsTab payments={paymentLogs} />
+                        )}
+
+                        {activeTab === 'credits' && (
+                            <CreditsTab 
+                                creditLogs={creditLogs} 
+                                users={usersList} 
+                                refreshData={() => fetchAllAdminData(false)} 
+                            />
+                        )}
+
+                        {activeTab === 'monitoring' && (
+                            <ContentMonitoringTab contentLogs={contentLogs} />
+                        )}
+
+                        {activeTab === 'settings' && (
+                            <SettingsTab 
+                                settings={adminSettings} 
+                                refreshData={() => fetchAllAdminData(false)} 
+                            />
+                        )}
+                    </motion.div>
+                </AdminTabBoundary>
+
+            </main>
+
+            {/* Footer */}
             <Footer />
+
         </div>
     );
 }

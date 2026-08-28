@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { generateNotes } from '../services/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateCredits } from '../redux/userSlice';
-import { FiZap, FiBookOpen, FiShare2, FiCheck, FiCpu, FiTable } from 'react-icons/fi';
+import { FiZap, FiBookOpen, FiShare2, FiCheck, FiCpu, FiTable, FiTarget } from 'react-icons/fi';
 import TextShimmerWave from './TextShimmerWave';
 
 function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) {
@@ -16,11 +16,10 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
   const [topic, setTopic] = useState("");
   const [classLevel, setClassLevel] = useState("");
   const [examType, setExamType] = useState("");
+  const [formatMode, setFormatMode] = useState("concept");
   const [revisionMode, setRevisionMode] = useState(false);
   const [includeDiagram, setIncludeDiagram] = useState(false);
   const [includeChart, setIncludeChart] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [progressText, setProgressText] = useState("");
   const dispatch = useDispatch();
 
   const [adminSettings, setAdminSettings] = useState(() => {
@@ -36,28 +35,31 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
   });
 
   const creditCost = adminSettings?.creditCostPerGeneration || 10;
-  const activeModel = adminSettings?.selectedAiModel || 'Gemini 2.5 Flash';
 
   // Auto pre-select settings based on clicked Dashboard tool or fallback to onboarding preferences
   useEffect(() => {
     if (selectedTool) {
       if (selectedTool === 'concept') {
+        setFormatMode('concept');
         setExamType('Deep Concept Notes');
         setRevisionMode(false);
         setIncludeDiagram(true);
         setIncludeChart(false);
       } else if (selectedTool === 'revision') {
-        setExamType('Rapid Revision Sheet');
+        setFormatMode('revision');
+        setExamType('5-Minute Revision Sheet');
         setRevisionMode(true);
         setIncludeDiagram(false);
         setIncludeChart(false);
       } else if (selectedTool === 'questions') {
+        setFormatMode('questions');
         setExamType('Predicted Question Bank');
         setRevisionMode(false);
         setIncludeDiagram(true);
         setIncludeChart(true);
       } else if (selectedTool === 'diagrams') {
-        setExamType('Visual Mermaid Flowchart');
+        setFormatMode('diagrams');
+        setExamType('Visual Flowchart & Architecture');
         setIncludeDiagram(true);
         setIncludeChart(true);
         setRevisionMode(false);
@@ -66,16 +68,40 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
         setClassLevel(userData.semester);
       }
     } else if (userData) {
-      // Fallback only when no specific tool was clicked from Dashboard
       if (userData.semester) setClassLevel(userData.semester);
       if (userData.course) setExamType(userData.course);
       if (userData.preferredNoteType === '5-Minute Rapid Revision Sheets') {
+        setFormatMode('revision');
         setRevisionMode(true);
       } else if (userData.preferredNoteType === 'Visual Flowcharts & Diagrams') {
+        setFormatMode('diagrams');
         setIncludeDiagram(true);
+      } else if (userData.preferredNoteType === 'Predicted Exam Question Banks') {
+        setFormatMode('questions');
+      } else {
+        setFormatMode('concept');
       }
     }
   }, [selectedTool, userData]);
+
+  const handleSelectMode = (mode) => {
+    setFormatMode(mode);
+    if (mode === 'questions') {
+      setExamType('Predicted Question Bank');
+      setRevisionMode(false);
+      setIncludeDiagram(true);
+    } else if (mode === 'revision') {
+      setExamType('5-Minute Revision Sheet');
+      setRevisionMode(true);
+    } else if (mode === 'diagrams') {
+      setExamType('Visual Flowchart & Architecture');
+      setIncludeDiagram(true);
+      setRevisionMode(false);
+    } else {
+      setExamType('Deep Concept Notes');
+      setRevisionMode(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (userData?.isCreditAvailable === false || userData?.status === 'Disabled') {
@@ -98,6 +124,7 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
         topic,
         classLevel,
         examType,
+        formatMode,
         revisionMode,
         includeDiagram,
         includeChart
@@ -126,63 +153,65 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
     }
   };
 
-  useEffect(() => {
-    if (!loading) {
-      setProgress(0);
-      setProgressText("");
-      return;
-    }
-    let value = 0;
-
-    const interval = setInterval(() => {
-      value += Math.random() * 8;
-
-      if (value >= 95) {
-        value = 95;
-        setProgressText("Finalizing high-yield takeaways...");
-        clearInterval(interval);
-      } else if (value > 70) {
-        setProgressText("Generating visual diagrams & charts...");
-      } else if (value > 40) {
-        setProgressText("Processing exam weightage patterns...");
-      } else {
-        setProgressText("Synthesizing concept notes...");
-      }
-
-      setProgress(Math.floor(value));
-    }, 700);
-
-    return () => clearInterval(interval);
-  }, [loading]);
+  const formatPresets = [
+    { id: 'concept', label: 'Deep Concept Notes', icon: FiBookOpen, desc: 'Detailed theory, formulas, and comparison table' },
+    { id: 'questions', label: 'Predicted Question Bank', icon: FiTarget, desc: '2, 5 & 10 mark questions with complete model solutions' },
+    { id: 'revision', label: '5-Min Revision Sheet', icon: FiZap, desc: 'Rapid 1-line definitions, mnemonics & exam takeaways' },
+    { id: 'diagrams', label: 'Visual Flowcharts', icon: FiShare2, desc: 'Interactive Mermaid diagrams & architecture walkthrough' }
+  ];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-7 sm:p-10 trekt-card-shadow space-y-7 text-[#1E2224] dark:text-white transition-colors duration-300"
+      className="bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-7 sm:p-10 trekt-card-shadow space-y-7 text-[#1E2224] dark:text-white transition-colors duration-300 font-sans"
     >
-      {/* Active Pre-selected Preset Banner */}
-      {toolTitle && (
-        <div className="flex items-center justify-between p-4 rounded-2xl bg-[#FAF0DC] dark:bg-[#1e1e1e] border border-[#DA9B42]/30 dark:border-[#303030] text-[#1E2224] dark:text-white text-xs font-bold shadow-xs">
-          <span className="flex items-center gap-2">
-            <FiZap className="w-4 h-4 text-[#DA9B42] dark:text-amber-400" />
-            <span>Active Format Preset: <strong className="underline text-[#B86337] dark:text-amber-400">{toolTitle}</strong></span>
-          </span>
-          <span className="text-[10px] uppercase tracking-wider text-[#2B5866] dark:text-gray-300 font-extrabold">
-            Pre-Configured
-          </span>
+      {/* Format Selector Tabs */}
+      <div className="space-y-2">
+        <label className="text-xs font-extrabold uppercase tracking-wider text-[#1E2224] dark:text-white block">
+          Generation Format & Structure
+        </label>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {formatPresets.map((preset) => {
+            const Icon = preset.icon;
+            const isSelected = formatMode === preset.id;
+            return (
+              <div
+                key={preset.id}
+                onClick={() => handleSelectMode(preset.id)}
+                className={`p-3.5 rounded-2xl border cursor-pointer select-none transition-all flex flex-col justify-between space-y-1.5 ${
+                  isSelected
+                    ? "bg-[#1E2224] dark:bg-white text-white dark:text-[#000000] border-[#1E2224] dark:border-white shadow-xs"
+                    : "bg-[#FAF7F2] dark:bg-[#222222] text-[#1E2224] dark:text-[#EEEEEE] border-[#E8DFD5] dark:border-[#333333] hover:border-[#C85A32] dark:hover:border-[#E6E2D3]"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <Icon className="w-4 h-4 shrink-0" />
+                  {isSelected && <FiCheck className="w-3.5 h-3.5" />}
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold leading-tight">{preset.label}</h4>
+                  <p className={`text-[10px] leading-tight line-clamp-1 mt-0.5 ${
+                    isSelected ? "text-[#E6E2D3] dark:text-[#333333]" : "text-[#5C6468] dark:text-[#E6E2D3]/60"
+                  }`}>
+                    {preset.desc}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      )}
+      </div>
 
       {/* Input Fields Section */}
       <div className="space-y-5">
         <div className="space-y-2">
           <label className="text-xs font-extrabold uppercase tracking-wider text-[#1E2224] dark:text-white block">
-            Chapter or Subject Topic <span className="text-[#C85A32] dark:text-amber-400">*</span>
+            Chapter or Subject Topic <span className="text-[#C85A32] dark:text-[#E6E2D3]">*</span>
           </label>
           <input 
             type="text" 
-            className="w-full px-5 py-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-sm font-semibold text-[#1E2224] dark:text-white placeholder-[#877F76] dark:placeholder-gray-500 focus:outline-none focus:border-[#C85A32] dark:focus:border-white shadow-xs transition-all" 
+            className="w-full px-5 py-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#333333] text-sm font-semibold text-[#1E2224] dark:text-white placeholder-[#877F76] dark:placeholder-[#E6E2D3]/40 focus:outline-none focus:border-[#C85A32] dark:focus:border-[#E6E2D3] shadow-xs transition-all" 
             placeholder="e.g., Operating Systems: Process Synchronization and Semaphores"
             onChange={(e) => setTopic(e.target.value)}
             value={topic}
@@ -196,7 +225,7 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
             </label>
             <input 
               type="text" 
-              className="w-full px-5 py-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-sm font-semibold text-[#1E2224] dark:text-white placeholder-[#877F76] dark:placeholder-gray-500 focus:outline-none focus:border-[#C85A32] dark:focus:border-white shadow-xs transition-all"
+              className="w-full px-5 py-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#333333] text-sm font-semibold text-[#1E2224] dark:text-white placeholder-[#877F76] dark:placeholder-[#E6E2D3]/40 focus:outline-none focus:border-[#C85A32] dark:focus:border-[#E6E2D3] shadow-xs transition-all"
               placeholder="e.g., B.Tech Computer Science (Semester 4)"
               onChange={(e) => setClassLevel(e.target.value)}
               value={classLevel}
@@ -205,12 +234,12 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
 
           <div className="space-y-2">
             <label className="text-xs font-extrabold uppercase tracking-wider text-[#1E2224] dark:text-white block">
-              Note Format Preset (Optional)
+              Exam Type / Scope (Optional)
             </label>
             <input 
               type="text" 
-              className="w-full px-5 py-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-sm font-semibold text-[#1E2224] dark:text-white placeholder-[#877F76] dark:placeholder-gray-500 focus:outline-none focus:border-[#C85A32] dark:focus:border-white shadow-xs transition-all"
-              placeholder="e.g., Comprehensive Concept Notes or Rapid Revision"
+              className="w-full px-5 py-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#333333] text-sm font-semibold text-[#1E2224] dark:text-white placeholder-[#877F76] dark:placeholder-[#E6E2D3]/40 focus:outline-none focus:border-[#C85A32] dark:focus:border-[#E6E2D3] shadow-xs transition-all"
+              placeholder="e.g., University Mid-Term / Final Exam"
               onChange={(e) => setExamType(e.target.value)}
               value={examType}
             />
@@ -224,9 +253,24 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
           Output Enhancements
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-          <ToggleCard label="Rapid Revision Format" checked={revisionMode} onChange={() => setRevisionMode(!revisionMode)} icon={<FiZap className="w-4 h-4 text-[#DA9B42] dark:text-amber-400" />} />
-          <ToggleCard label="Mermaid Flowcharts" checked={includeDiagram} onChange={() => setIncludeDiagram(!includeDiagram)} icon={<FiShare2 className="w-4 h-4 text-[#2B5866] dark:text-teal-400" />} />
-          <ToggleCard label="Summary Tables" checked={includeChart} onChange={() => setIncludeChart(!includeChart)} icon={<FiTable className="w-4 h-4 text-[#6B7B52] dark:text-emerald-400" />} />
+          <ToggleCard 
+            label="Rapid Revision Sheet" 
+            checked={revisionMode} 
+            onChange={() => setRevisionMode(!revisionMode)} 
+            icon={<FiZap className="w-4 h-4 text-[#DA9B42] dark:text-[#E6E2D3]" />} 
+          />
+          <ToggleCard 
+            label="Mermaid Flowcharts" 
+            checked={includeDiagram} 
+            onChange={() => setIncludeDiagram(!includeDiagram)} 
+            icon={<FiShare2 className="w-4 h-4 text-[#2B5866] dark:text-[#EEEEEE]" />} 
+          />
+          <ToggleCard 
+            label="Summary Tables" 
+            checked={includeChart} 
+            onChange={() => setIncludeChart(!includeChart)} 
+            icon={<FiTable className="w-4 h-4 text-[#5C6468] dark:text-[#E6E2D3]" />} 
+          />
         </div>
       </div>
 
@@ -255,12 +299,12 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
         ) : (
           <>
             <FiCpu className="w-4 h-4" />
-            <span>Generate Exam Notes ({creditCost} Credits)</span>
+            <span>Generate {formatMode === 'questions' ? 'Predicted Question Bank' : formatMode === 'revision' ? '5-Min Revision Sheet' : formatMode === 'diagrams' ? 'Visual Diagrams' : 'Exam Notes'} ({creditCost} Credits)</span>
           </>
         )}
       </button>
 
-      {/* Pure Aesthetic TextShimmerWave Loading State */}
+      {/* Aesthetic TextShimmerWave Loading State */}
       {loading && (
         <motion.div 
           initial={{ opacity: 0, scale: 0.98 }}
@@ -286,20 +330,20 @@ function ToggleCard({ label, checked, onChange, icon }) {
       onClick={onChange}
       className={`p-4 rounded-2xl border cursor-pointer select-none transition-all flex items-center justify-between gap-3 ${
         checked 
-          ? "bg-[#2B5866] dark:bg-[#222222] text-white border-[#2B5866] dark:border-white shadow-xs" 
-          : "bg-[#FAF7F2] dark:bg-[#1e1e1e] text-[#1E2224] dark:text-white border-[#E8DFD5] dark:border-[#303030] hover:border-[#C85A32] dark:hover:border-white"
+          ? "bg-[#1E2224] dark:bg-[#222222] text-white border-[#1E2224] dark:border-[#333333] shadow-xs" 
+          : "bg-[#FAF7F2] dark:bg-[#1e1e1e] text-[#1E2224] dark:text-[#EEEEEE] border-[#E8DFD5] dark:border-[#303030] hover:border-[#C85A32] dark:hover:border-[#E6E2D3]"
       }`}
     >
-      <div className="flex items-center gap-2.5 text-xs font-extrabold">
+      <div className="flex items-center gap-2.5 text-xs font-semibold">
         {icon}
         <span>{label}</span>
       </div>
       <div className={`w-4 h-4 rounded-md border flex items-center justify-center text-[10px] ${
         checked 
-          ? "bg-white text-[#2B5866] dark:text-[#0d0d0d] border-white font-bold" 
+          ? "bg-white text-[#1E2224] dark:text-[#000000] border-white font-bold" 
           : "border-[#E8DFD5] dark:border-[#303030] bg-white dark:bg-[#161616]"
       }`}>
-        {checked && <FiCheck className="w-3 h-3 text-[#2B5866] dark:text-[#0d0d0d]" />}
+        {checked && <FiCheck className="w-3 h-3 text-[#1E2224] dark:text-[#000000]" />}
       </div>
     </div>
   );

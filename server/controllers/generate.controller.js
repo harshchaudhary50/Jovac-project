@@ -13,6 +13,7 @@ export const generateNotes = async (req, res) => {
             topic,
             classLevel,
             examType,
+            formatMode,
             revisionMode = false,
             includeDiagram = false,
             includeChart = false
@@ -63,6 +64,7 @@ export const generateNotes = async (req, res) => {
             topic,
             classLevel: classLevel || user.semester || user.course,
             examType: examType || user.course,
+            formatMode: formatMode || user.preferredNoteType,
             revisionMode,
             includeDiagram,
             includeChart,

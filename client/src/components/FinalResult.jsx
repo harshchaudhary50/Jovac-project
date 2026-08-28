@@ -89,6 +89,7 @@ const cleanMarkdown = (text) => {
         .replace(/\\n/g, "\n")
         .replace(/\\t/g, "  ")
         .replace(/\\"/g, '"')
+        .replace(/\|\|\s*/g, "|\n|")
         .trim();
 };
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import MermaidSetup from './MermaidSetup';
 import RechartSetUp from './RechartSetUp';
 import { downloadPdf } from '../services/api';
@@ -58,39 +59,56 @@ const markDownComponent = {
         </blockquote>
     ),
     table: ({ children }) => (
-        <div className="overflow-x-auto my-5 rounded-2xl border border-[#E8DFD5] dark:border-[#262626]">
-            <table className="w-full text-xs text-left text-[#1E2224] dark:text-white border-collapse">
+        <div className="overflow-x-auto my-6 rounded-2xl border border-[#E8DFD5] dark:border-[#333333] shadow-xs">
+            <table className="w-full text-xs text-left text-[#1E2224] dark:text-[#EEEEEE] border-collapse bg-white dark:bg-[#161616]">
                 {children}
             </table>
         </div>
     ),
     thead: ({ children }) => (
-        <thead className="bg-[#FAF7F2] dark:bg-[#222222] border-b border-[#E8DFD5] dark:border-[#262626] font-bold uppercase tracking-wider text-[11px] text-[#5C6468] dark:text-gray-400">
+        <thead className="bg-[#FAF7F2] dark:bg-[#222222] border-b border-[#E8DFD5] dark:border-[#333333] font-bold text-[11px] text-[#1E2224] dark:text-[#FFFFFF]">
             {children}
         </thead>
     ),
     tbody: ({ children }) => (
-        <tbody className="divide-y divide-[#E8DFD5] dark:divide-[#262626]">
+        <tbody className="divide-y divide-[#E8DFD5]/60 dark:divide-[#262626]">
             {children}
         </tbody>
     ),
+    tr: ({ children }) => (
+        <tr className="hover:bg-[#FAF7F2]/50 dark:hover:bg-[#1f1f1f] transition-colors">
+            {children}
+        </tr>
+    ),
     th: ({ children }) => (
-        <th className="px-4 py-3 font-extrabold text-[#1E2224] dark:text-white">{children}</th>
+        <th className="px-4 py-3 font-extrabold text-[#1E2224] dark:text-[#FFFFFF] border-r border-[#E8DFD5]/40 dark:border-[#262626] last:border-r-0">
+            {children}
+        </th>
     ),
     td: ({ children }) => (
-        <td className="px-4 py-2.5 text-[#3E4549] dark:text-gray-300 leading-normal">{children}</td>
+        <td className="px-4 py-3 text-[#3E4549] dark:text-[#E6E2D3] leading-relaxed border-r border-[#E8DFD5]/40 dark:border-[#262626] last:border-r-0">
+            {children}
+        </td>
     )
 };
 
 const cleanMarkdown = (text) => {
     if (!text) return "";
     if (typeof text !== "string") return String(text);
-    return text
+    
+    let cleaned = text
         .replace(/\\n/g, "\n")
         .replace(/\\t/g, "  ")
-        .replace(/\\"/g, '"')
-        .replace(/\|\|\s*/g, "|\n|")
-        .trim();
+        .replace(/\\"/g, '"');
+
+    // Fix double pipes and pipe spaces | | into newlines
+    cleaned = cleaned.replace(/\|\s*\|\s*/g, "|\n|");
+
+    // Ensure proper newlines around markdown table structures
+    cleaned = cleaned.replace(/([^\n])\n(\|.*\|)/g, "$1\n\n$2");
+    cleaned = cleaned.replace(/(\|.*\|)\n([^\n|])/g, "$1\n\n$2");
+
+    return cleaned.trim();
 };
 
 function FinalResult({ result }) {
@@ -146,7 +164,7 @@ function FinalResult({ result }) {
                 <section className="space-y-3">
                     <SectionHeader icon={<FiBookOpen />} title="Detailed Chapter & Concept Notes" color="teal" />
                     <div className="bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-6 sm:p-9 shadow-sm">
-                        <ReactMarkdown components={markDownComponent}>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markDownComponent}>
                             {cleanMarkdown(result.notes)}
                         </ReactMarkdown>
                     </div>

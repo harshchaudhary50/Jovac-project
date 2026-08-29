@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import axios from 'axios';
 import { serverUrl } from '../App';
 import { clearUserData, updateUserTheme } from '../redux/userSlice';
-import { saveThemePreference } from '../services/api';
+import { saveThemePreference, logoutUser } from '../services/api';
+import { ToggleTheme } from './lightswind/toggle-theme';
 import {
     FiZap,
     FiGrid,
@@ -17,9 +18,7 @@ import {
     FiMenu,
     FiX,
     FiChevronDown,
-    FiPlus,
-    FiSun,
-    FiMoon
+    FiPlus
 } from 'react-icons/fi';
 
 function Navbar() {
@@ -52,7 +51,7 @@ function Navbar() {
 
     const handleSignOut = async () => {
         try {
-            await axios.post(`${serverUrl}/api/auth/logout`, {}, { withCredentials: true });
+            await logoutUser(dispatch);
         } catch (error) {
             console.warn("Logout error:", error.message);
         } finally {
@@ -122,12 +121,12 @@ function Navbar() {
                     className="flex items-center gap-2 cursor-pointer select-none group shrink-0"
                 >
                     <img
-                        src="/favicon.jpg"
-                        alt="PrepAI Logo"
-                        className="w-7 h-7 rounded-full object-cover shadow-xs border border-[#EBD7BE] dark:border-[#303030] group-hover:scale-105 transition-transform"
+                        src="/logo.png"
+                        alt="NoteX Logo"
+                        className="w-8 h-8 rounded-xl object-contain shadow-xs border border-[#EBD7BE] dark:border-[#303030] group-hover:scale-105 transition-transform"
                     />
                     <span className="text-lg font-bold tracking-tight text-[#1E2224] dark:text-white flex items-center gap-0.5 font-sans">
-                        Prep<span className="text-[#C85A32] dark:text-white font-extrabold">AI</span>
+                        Note<span className="text-[#C85A32] dark:text-white font-extrabold">X</span>
                     </span>
                 </div>
 
@@ -178,21 +177,17 @@ function Navbar() {
                         </nav>
                     )}
 
-                    {/* Dark/Light Mode Switcher: Only active for logged-in users inside app */}
+                    {/* Dark/Light Mode Switcher: View Transition Toggle from Lightswind UI */}
                     {userData && (
-                        <motion.button
-                            onClick={toggleTheme}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                            className="w-9 h-9 rounded-full bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] text-[#1E2224] dark:text-white flex items-center justify-center shadow-xs transition-colors cursor-pointer"
-                        >
-                            {isDark ? (
-                                <FiSun className="w-4 h-4 text-amber-400" />
-                            ) : (
-                                <FiMoon className="w-4 h-4 text-[#2B5866]" />
-                            )}
-                        </motion.button>
+                        <ToggleTheme
+                            animationType="shrink-grow"
+                            duration={550}
+                            className="w-9 h-9 p-0 rounded-full bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] shadow-xs hover:border-[#C85A32] dark:hover:border-white transition-all cursor-pointer shrink-0"
+                            onThemeChange={(newTheme) => {
+                                dispatch(updateUserTheme(newTheme));
+                                saveThemePreference(newTheme);
+                            }}
+                        />
                     )}
 
                     {/* Action Controls */}
@@ -208,7 +203,7 @@ function Navbar() {
                                 >
                                     <span className="flex items-center gap-1.5">
                                         <FiZap className="w-3.5 h-3.5 text-[#DA9B42] dark:text-amber-400" />
-                                        <span>{credits} Credits</span>
+                                        <span>{credits} <span className="hidden sm:inline">Credits</span></span>
                                     </span>
                                     <span className="w-4 h-4 rounded-full bg-[#DA9B42] dark:bg-white text-white dark:text-[#0d0d0d] flex items-center justify-center text-[10px]">
                                         <FiPlus />

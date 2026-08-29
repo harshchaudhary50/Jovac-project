@@ -3,25 +3,65 @@ import { FiCheck, FiSave, FiCpu, FiZap, FiAlertCircle, FiRadio } from 'react-ico
 import axios from 'axios';
 import { serverUrl } from '../../App';
 
+const DEFAULTS = {
+    creditCostPerGeneration: 10,
+    starterPlanPrice: 49,
+    proPlanPrice: 199,
+    maintenanceMode: false,
+    selectedAiModel: 'Gemini 2.5 Flash',
+    announcementBanner: 'Welcome to NoteX! Upgrade to Pro for priority note generation.',
+    isBannerActive: true
+};
+
 function SettingsTab({ initialSettings, refreshData }) {
     const [settings, setSettings] = useState(() => {
         const savedLocal = localStorage.getItem('adminSettings');
         if (savedLocal) {
-            try { return JSON.parse(savedLocal); } catch (e) {}
+            try { 
+                const parsed = JSON.parse(savedLocal);
+                return {
+                    ...DEFAULTS,
+                    ...parsed,
+                    creditCostPerGeneration: Number(parsed.creditCostPerGeneration) || DEFAULTS.creditCostPerGeneration,
+                    starterPlanPrice: Number(parsed.starterPlanPrice) || DEFAULTS.starterPlanPrice,
+                    proPlanPrice: Number(parsed.proPlanPrice) || DEFAULTS.proPlanPrice,
+                };
+            } catch (e) {}
         }
-        return initialSettings || {
-            creditCostPerGeneration: 10,
-            starterPlanPrice: 49,
-            proPlanPrice: 199,
-            maintenanceMode: false,
-            selectedAiModel: 'Gemini 2.5 Flash',
-            announcementBanner: 'Welcome to PrepAI! Upgrade to Pro for priority note generation.',
-            isBannerActive: true
+        return {
+            ...DEFAULTS,
+            ...(initialSettings || {})
         };
     });
 
     const [savedMessage, setSavedMessage] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    // Allow backspace to completely clear the box while typing
+    const handleNumberChange = (field, rawVal) => {
+        if (rawVal === '') {
+            setSettings(prev => ({ ...prev, [field]: '' }));
+            return;
+        }
+        // Remove leading zeroes
+        const clean = rawVal.replace(/^0+(?=\d)/, '');
+        const val = clean === '' ? '' : Math.max(0, parseInt(clean, 10));
+        setSettings(prev => ({ ...prev, [field]: isNaN(val) ? '' : val }));
+    };
+
+    // On blur, if empty or invalid, fallback to healthy default
+    const handleNumberBlur = (field, defaultVal) => {
+        const currentVal = settings[field];
+        if (currentVal === '' || currentVal === null || currentVal === undefined || Number(currentVal) <= 0) {
+            const updated = { ...settings, [field]: defaultVal };
+            setSettings(updated);
+            localStorage.setItem('adminSettings', JSON.stringify(updated));
+        } else {
+            const updated = { ...settings, [field]: Number(currentVal) };
+            setSettings(updated);
+            localStorage.setItem('adminSettings', JSON.stringify(updated));
+        }
+    };
 
     const handleChange = (field, value) => {
         const updated = { ...settings, [field]: value };
@@ -32,9 +72,19 @@ function SettingsTab({ initialSettings, refreshData }) {
     const handleSave = async (e) => {
         e.preventDefault();
         setLoading(true);
-        localStorage.setItem('adminSettings', JSON.stringify(settings));
+
+        const payload = {
+            ...settings,
+            creditCostPerGeneration: Number(settings.creditCostPerGeneration) || DEFAULTS.creditCostPerGeneration,
+            starterPlanPrice: Number(settings.starterPlanPrice) || DEFAULTS.starterPlanPrice,
+            proPlanPrice: Number(settings.proPlanPrice) || DEFAULTS.proPlanPrice,
+        };
+
+        setSettings(payload);
+        localStorage.setItem('adminSettings', JSON.stringify(payload));
+
         try {
-            const res = await axios.post(`${serverUrl}/api/admin/settings/update`, settings);
+            const res = await axios.post(`${serverUrl}/api/admin/settings/update`, payload);
             if (res.data?.settings) {
                 setSettings(res.data.settings);
                 localStorage.setItem('adminSettings', JSON.stringify(res.data.settings));
@@ -51,6 +101,14 @@ function SettingsTab({ initialSettings, refreshData }) {
         }
     };
 
+    const preventNegativeKey = (e) => {
+        if (e.key === '-' || e.key === '+' || e.key === 'e' || e.key === 'E' || e.key === '.') {
+            e.preventDefault();
+        }
+    };
+
+    const inputClasses = "w-full px-4 py-2.5 rounded-xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-[#1E2224] dark:text-white font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-hidden focus:border-[#C85A32] dark:focus:border-white transition-colors placeholder:text-gray-400";
+
     return (
         <form onSubmit={handleSave} className="space-y-6">
             {/* Header Action */}
@@ -66,8 +124,11 @@ function SettingsTab({ initialSettings, refreshData }) {
 
             {/* Toast Notification */}
             {savedMessage && (
-                <div className="p-4 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
-                    <FiCheck className="w-4 h-4" /> System configuration updated successfully!
+                <div className="p-4 rounded-2xl bg-white dark:bg-[#181818] border border-[#E8DFD5] dark:border-[#2e2e2e] text-[#1E2224] dark:text-white text-xs font-semibold flex items-center gap-3 shadow-xs animate-fade-in">
+                    <div className="w-6 h-6 rounded-full bg-[#FAF0DC] dark:bg-[#252525] border border-[#DA9B42]/30 dark:border-[#333333] flex items-center justify-center text-[#B86337] dark:text-[#E6E2D3] shrink-0">
+                        <FiCheck className="w-3.5 h-3.5" />
+                    </div>
+                    <span>System configuration updated successfully!</span>
                 </div>
             )}
 
@@ -83,10 +144,15 @@ function SettingsTab({ initialSettings, refreshData }) {
                         <div>
                             <label className="text-[#5C6468] dark:text-gray-400 font-bold block mb-1">Credit Cost Per Note Generation</label>
                             <input
-                                type="number"
+                                type="text"
+                                inputMode="numeric"
+                                placeholder="10"
                                 value={settings.creditCostPerGeneration}
-                                onChange={(e) => handleChange('creditCostPerGeneration', Number(e.target.value))}
-                                className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-[#1E2224] dark:text-white font-bold"
+                                onChange={(e) => handleNumberChange('creditCostPerGeneration', e.target.value)}
+                                onBlur={() => handleNumberBlur('creditCostPerGeneration', 10)}
+                                onKeyDown={preventNegativeKey}
+                                onWheel={(e) => e.currentTarget.blur()}
+                                className={inputClasses}
                             />
                         </div>
 
@@ -94,19 +160,29 @@ function SettingsTab({ initialSettings, refreshData }) {
                             <div>
                                 <label className="text-[#5C6468] dark:text-gray-400 font-bold block mb-1">Starter Pack Price (₹)</label>
                                 <input
-                                    type="number"
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="49"
                                     value={settings.starterPlanPrice}
-                                    onChange={(e) => handleChange('starterPlanPrice', Number(e.target.value))}
-                                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-[#1E2224] dark:text-white font-bold"
+                                    onChange={(e) => handleNumberChange('starterPlanPrice', e.target.value)}
+                                    onBlur={() => handleNumberBlur('starterPlanPrice', 49)}
+                                    onKeyDown={preventNegativeKey}
+                                    onWheel={(e) => e.currentTarget.blur()}
+                                    className={inputClasses}
                                 />
                             </div>
                             <div>
                                 <label className="text-[#5C6468] dark:text-gray-400 font-bold block mb-1">Pro Plan Price (₹)</label>
                                 <input
-                                    type="number"
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="199"
                                     value={settings.proPlanPrice}
-                                    onChange={(e) => handleChange('proPlanPrice', Number(e.target.value))}
-                                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-[#1E2224] dark:text-white font-bold"
+                                    onChange={(e) => handleNumberChange('proPlanPrice', e.target.value)}
+                                    onBlur={() => handleNumberBlur('proPlanPrice', 199)}
+                                    onKeyDown={preventNegativeKey}
+                                    onWheel={(e) => e.currentTarget.blur()}
+                                    className={inputClasses}
                                 />
                             </div>
                         </div>
@@ -179,7 +255,7 @@ function SettingsTab({ initialSettings, refreshData }) {
                                 value={settings.announcementBanner}
                                 onChange={(e) => handleChange('announcementBanner', e.target.value)}
                                 className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F2] dark:bg-[#222222] border border-[#E8DFD5] dark:border-[#303030] text-[#1E2224] dark:text-white font-bold"
-                                placeholder="e.g., Welcome to PrepAI! Upgrade to Pro for priority note generation."
+                                placeholder="e.g., Welcome to NoteX! Upgrade to Pro for priority note generation."
                             />
                         </div>
                     </div>

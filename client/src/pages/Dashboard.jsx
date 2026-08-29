@@ -10,7 +10,7 @@ import LottiePlayer from '../components/LottiePlayer';
 import { 
   FiZap, 
   FiFileText, 
-  FiClock, 
+  FiClock,
   FiTrendingUp, 
   FiArrowRight, 
   FiLayers, 
@@ -46,7 +46,7 @@ function Dashboard() {
     }
     return {
       isBannerActive: true,
-      announcementBanner: 'Welcome to PrepAI! Select any note format below to start studying.'
+      announcementBanner: 'Welcome to NoteX! Select any note format below to start studying.'
     };
   });
 

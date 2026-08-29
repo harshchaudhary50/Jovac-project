@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from "motion/react";
 import { useLocation } from 'react-router-dom';
-import { generateNotes } from '../services/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCredits } from '../redux/userSlice';
+import { runBackgroundGeneration } from '../redux/generatorSlice';
 import { FiZap, FiBookOpen, FiShare2, FiCheck, FiCpu, FiTable, FiTarget } from 'react-icons/fi';
 import TextShimmerWave from './TextShimmerWave';
 
-function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) {
+function TopicForm({ isMaintenance }) {
   const location = useLocation();
   const selectedTool = location.state?.selectedTool;
   const toolTitle = location.state?.toolTitle;
+  const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
+  const { isGenerating, generationError } = useSelector((state) => state.generator);
 
   const [topic, setTopic] = useState("");
   const [classLevel, setClassLevel] = useState("");
@@ -20,7 +21,7 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
   const [revisionMode, setRevisionMode] = useState(false);
   const [includeDiagram, setIncludeDiagram] = useState(false);
   const [includeChart, setIncludeChart] = useState(false);
-  const dispatch = useDispatch();
+  const [localError, setLocalError] = useState("");
 
   const [adminSettings, setAdminSettings] = useState(() => {
     const savedLocal = localStorage.getItem('adminSettings');
@@ -38,48 +39,57 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
 
   // Auto pre-select settings based on clicked Dashboard tool or fallback to onboarding preferences
   useEffect(() => {
+    if (userData) {
+      if (userData.role === 'Student' || !userData.role) {
+        // For Students: Automatically fill their exact Course and Semester into Academic Level
+        const fullCourseString = userData.course 
+          ? (userData.semester ? `${userData.course} (${userData.semester})` : userData.course)
+          : (userData.semester || '');
+        
+        setClassLevel(fullCourseString);
+        setExamType(prev => prev || 'Semester / University Exam');
+      } else {
+        // For Teachers / Educators
+        setClassLevel(userData.semester || userData.course || 'Undergraduate College Students');
+        setExamType(prev => prev || userData.course || 'University Curriculum Exam');
+      }
+
+      if (!selectedTool) {
+        if (userData.preferredNoteType === '5-Minute Rapid Revision Sheets') {
+          setFormatMode('revision');
+          setRevisionMode(true);
+        } else if (userData.preferredNoteType === 'Visual Flowcharts & Diagrams') {
+          setFormatMode('diagrams');
+          setIncludeDiagram(true);
+        } else if (userData.preferredNoteType === 'Predicted Exam Question Banks') {
+          setFormatMode('questions');
+        } else {
+          setFormatMode('concept');
+        }
+      }
+    }
+
     if (selectedTool) {
       if (selectedTool === 'concept') {
         setFormatMode('concept');
-        setExamType('Deep Concept Notes');
         setRevisionMode(false);
         setIncludeDiagram(true);
         setIncludeChart(false);
       } else if (selectedTool === 'revision') {
         setFormatMode('revision');
-        setExamType('5-Minute Revision Sheet');
         setRevisionMode(true);
         setIncludeDiagram(false);
         setIncludeChart(false);
       } else if (selectedTool === 'questions') {
         setFormatMode('questions');
-        setExamType('Predicted Question Bank');
         setRevisionMode(false);
         setIncludeDiagram(true);
         setIncludeChart(true);
       } else if (selectedTool === 'diagrams') {
         setFormatMode('diagrams');
-        setExamType('Visual Flowchart & Architecture');
         setIncludeDiagram(true);
         setIncludeChart(true);
         setRevisionMode(false);
-      }
-      if (userData?.semester) {
-        setClassLevel(userData.semester);
-      }
-    } else if (userData) {
-      if (userData.semester) setClassLevel(userData.semester);
-      if (userData.course) setExamType(userData.course);
-      if (userData.preferredNoteType === '5-Minute Rapid Revision Sheets') {
-        setFormatMode('revision');
-        setRevisionMode(true);
-      } else if (userData.preferredNoteType === 'Visual Flowcharts & Diagrams') {
-        setFormatMode('diagrams');
-        setIncludeDiagram(true);
-      } else if (userData.preferredNoteType === 'Predicted Exam Question Banks') {
-        setFormatMode('questions');
-      } else {
-        setFormatMode('concept');
       }
     }
   }, [selectedTool, userData]);
@@ -87,70 +97,47 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
   const handleSelectMode = (mode) => {
     setFormatMode(mode);
     if (mode === 'questions') {
-      setExamType('Predicted Question Bank');
       setRevisionMode(false);
       setIncludeDiagram(true);
+      setIncludeChart(true);
     } else if (mode === 'revision') {
-      setExamType('5-Minute Revision Sheet');
       setRevisionMode(true);
+      setIncludeDiagram(false);
+      setIncludeChart(false);
     } else if (mode === 'diagrams') {
-      setExamType('Visual Flowchart & Architecture');
       setIncludeDiagram(true);
+      setIncludeChart(true);
       setRevisionMode(false);
     } else {
-      setExamType('Deep Concept Notes');
       setRevisionMode(false);
     }
   };
 
   const handleSubmit = async () => {
     if (userData?.isCreditAvailable === false || userData?.status === 'Disabled') {
-      setError("Your user account has been disabled by Admin. Please contact support.");
+      setLocalError("Your user account has been disabled by Admin. Please contact support.");
       return;
     }
     if (isMaintenance || adminSettings?.maintenanceMode) {
-      setError("AI Note Generation is temporarily paused for scheduled system maintenance. Please check back shortly.");
+      setLocalError("AI Note Generation is temporarily paused for scheduled system maintenance. Please check back shortly.");
       return;
     }
     if (!topic.trim()) {
-      setError("Please enter a valid subject or chapter topic");
+      setLocalError("Please enter a valid subject or chapter topic");
       return;
     }
-    setError("");
-    setLoading(true);
-    setResult(null);
-    try {
-      const result = await generateNotes({
-        topic,
-        classLevel,
-        examType,
-        formatMode,
-        revisionMode,
-        includeDiagram,
-        includeChart
-      });
-      
-      if (result && result.data) {
-        setResult(result.data);
-        setClassLevel("");
-        setTopic("");
-        setExamType("");
-        setIncludeChart(false);
-        setRevisionMode(false);
-        setIncludeDiagram(false);
-
-        if (typeof result.creditsLeft === "number") {
-          dispatch(updateCredits(result.creditsLeft));
-        }
-      } else {
-        throw new Error("Invalid response format received from AI server");
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("TopicForm Submit Error:", error);
-      setError(error.message || "Failed to generate notes. Please try again.");
-      setLoading(false);
-    }
+    setLocalError("");
+    
+    // Dispatch background generation that persists across page switches
+    dispatch(runBackgroundGeneration({
+      topic,
+      classLevel,
+      examType,
+      formatMode,
+      revisionMode,
+      includeDiagram,
+      includeChart
+    }));
   };
 
   const formatPresets = [
@@ -179,20 +166,26 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
               <div
                 key={preset.id}
                 onClick={() => handleSelectMode(preset.id)}
-                className={`p-3.5 rounded-2xl border cursor-pointer select-none transition-all flex flex-col justify-between space-y-1.5 ${
+                className={`p-3.5 rounded-2xl border cursor-pointer select-none transition-all flex flex-col justify-between space-y-2.5 ${
                   isSelected
-                    ? "bg-[#1E2224] dark:bg-white text-white dark:text-[#000000] border-[#1E2224] dark:border-white shadow-xs"
-                    : "bg-[#FAF7F2] dark:bg-[#222222] text-[#1E2224] dark:text-[#EEEEEE] border-[#E8DFD5] dark:border-[#333333] hover:border-[#C85A32] dark:hover:border-[#E6E2D3]"
+                    ? "bg-[#1E2224] dark:bg-[#252525] border-[#1E2224] dark:border-[#E6E2D3] ring-1 ring-[#1E2224] dark:ring-[#E6E2D3] shadow-md"
+                    : "bg-[#FAF7F2] dark:bg-[#161616] border-[#E8DFD5] dark:border-[#2a2a2a] hover:border-[#877F76] dark:hover:border-[#555555]"
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <Icon className="w-4 h-4 shrink-0" />
-                  {isSelected && <FiCheck className="w-3.5 h-3.5" />}
+                  <Icon className={`w-4 h-4 shrink-0 ${
+                    isSelected ? "text-white dark:text-[#E6E2D3]" : "text-[#5C6468] dark:text-[#888888]"
+                  }`} />
+                  {isSelected && <FiCheck className="w-4 h-4 text-white dark:text-[#E6E2D3] stroke-[3]" />}
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold leading-tight">{preset.label}</h4>
-                  <p className={`text-[10px] leading-tight line-clamp-1 mt-0.5 ${
-                    isSelected ? "text-[#E6E2D3] dark:text-[#333333]" : "text-[#5C6468] dark:text-[#E6E2D3]/60"
+                <div className="space-y-0.5">
+                  <h4 className={`text-xs font-bold leading-tight block ${
+                    isSelected ? "text-white dark:text-white" : "text-[#1E2224] dark:text-[#CCCCCC]"
+                  }`}>
+                    {preset.label}
+                  </h4>
+                  <p className={`text-[10px] leading-snug line-clamp-1 block font-medium ${
+                    isSelected ? "text-[#E6E2D3] dark:text-[#E6E2D3]/80" : "text-[#5C6468] dark:text-[#888888]"
                   }`}>
                     {preset.desc}
                   </p>
@@ -274,17 +267,24 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
         </div>
       </div>
 
+      {/* Local / Global Error Alert */}
+      {(localError || generationError) && (
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center gap-2">
+          <span>{localError || generationError}</span>
+        </div>
+      )}
+
       {/* Generate Action Button */}
       <button
         onClick={handleSubmit}
-        disabled={loading || isMaintenance}
+        disabled={isGenerating || isMaintenance}
         className={`w-full py-4 rounded-full font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer ${
           isMaintenance
             ? "bg-[#DA9B42] text-white opacity-80 cursor-not-allowed"
             : "bg-[#C85A32] dark:bg-white hover:bg-[#B24B27] dark:hover:bg-gray-100 text-white dark:text-[#0d0d0d] shadow-[#C85A32]/25 dark:shadow-none"
         }`}
       >
-        {loading ? (
+        {isGenerating ? (
           <div className="flex items-center gap-2.5">
             <div className="w-3.5 h-3.5 border-2 border-white dark:border-[#0d0d0d] border-t-transparent rounded-full animate-spin shrink-0" />
             <TextShimmerWave className="text-white dark:text-[#0d0d0d] font-bold text-xs uppercase tracking-wider">
@@ -305,7 +305,7 @@ function TopicForm({ setResult, setLoading, loading, setError, isMaintenance }) 
       </button>
 
       {/* Aesthetic TextShimmerWave Loading State */}
-      {loading && (
+      {isGenerating && (
         <motion.div 
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}

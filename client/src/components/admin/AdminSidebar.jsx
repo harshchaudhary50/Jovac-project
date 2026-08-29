@@ -36,7 +36,7 @@ function AdminSidebar({ activeTab, setActiveTab }) {
                         </div>
                         <div>
                             <h2 className="text-sm font-extrabold tracking-wide text-white flex items-center gap-1.5">
-                                PrepAI <span className="text-amber-400 text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-400/10 border border-amber-400/20">ADMIN</span>
+                                NoteX <span className="text-amber-400 text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-400/10 border border-amber-400/20">ADMIN</span>
                             </h2>
                             <p className="text-[11px] text-gray-400">Control & Monitoring</p>
                         </div>

@@ -235,7 +235,7 @@ function Home() {
         
         <div className="text-center space-y-2 max-w-xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-serif text-[#1E2224] dark:text-white">
-            How PrepAI Works
+            How NoteX Works
           </h2>
           <p className="text-xs sm:text-sm text-[#5C6468] dark:text-gray-400">
             From dense textbook syllabus to exam-ready mastery in seconds.
@@ -419,7 +419,7 @@ function Home() {
             openFaq={openFaq}
             toggleFaq={toggleFaq}
             question="How accurate are the generated exam notes?"
-            answer="PrepAI notes are powered by advanced academic LLM prompts that strictly stick to structured textbook definitions, formulas, and syllabus requirements without hallucinating facts."
+            answer="NoteX notes are powered by advanced academic LLM prompts that strictly stick to structured textbook definitions, formulas, and syllabus requirements without hallucinating facts."
           />
           <FaqItem 
             index={1}
@@ -433,7 +433,7 @@ function Home() {
             openFaq={openFaq}
             toggleFaq={toggleFaq}
             question="Are Mermaid diagrams supported in all notes?"
-            answer="Yes! Whenever a topic involves processes, cycles, algorithms, or architectures, PrepAI automatically generates an interactive visual flowchart using Mermaid.js."
+            answer="Yes! Whenever a topic involves processes, cycles, algorithms, or architectures, NoteX automatically generates an interactive visual flowchart using Mermaid.js."
           />
           <FaqItem 
             index={3}
@@ -453,7 +453,7 @@ function Home() {
             Ready to Ace Your Exams?
           </h2>
           <p className="text-xs sm:text-sm text-[#EBD7BE] dark:text-gray-300 max-w-xl mx-auto font-normal">
-            Join thousands of university and high school students who are saving hundreds of study hours and scoring higher marks with PrepAI.
+            Join thousands of university and high school students who are saving hundreds of study hours and scoring higher marks with NoteX.
           </p>
           <div className="pt-2">
             <button

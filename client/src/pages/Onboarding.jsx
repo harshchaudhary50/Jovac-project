@@ -219,12 +219,12 @@ function Onboarding() {
       {/* Brand Header */}
       <header className="absolute top-6 left-6 sm:left-12 flex items-center gap-2.5 z-20">
         <img 
-          src="/favicon.jpg" 
-          alt="PrepAI Logo" 
-          className="w-8 h-8 rounded-full object-cover shadow-xs border border-[#EBD7BE] dark:border-[#303030]" 
+          src="/logo.png" 
+          alt="NoteX Logo" 
+          className="w-8 h-8 rounded-xl object-contain shadow-xs border border-[#EBD7BE] dark:border-[#303030]" 
         />
         <span className="text-lg font-bold tracking-tight text-[#1E2224] dark:text-white font-sans">
-          Prep<span className="text-[#C85A32] dark:text-white font-extrabold">AI</span>
+          Note<span className="text-[#C85A32] dark:text-white font-extrabold">X</span>
         </span>
       </header>
 

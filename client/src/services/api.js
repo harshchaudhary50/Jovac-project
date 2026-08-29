@@ -23,6 +23,20 @@ export const saveThemePreference = async (theme) => {
     }
 };
 
+export const logoutUser = async (dispatch) => {
+    try {
+        await axios.post(`${serverUrl}/api/auth/logout`, {}, { withCredentials: true });
+    } catch (e) {
+        try {
+            await axios.get(`${serverUrl}/api/auth/logout`, { withCredentials: true });
+        } catch (err) {}
+    } finally {
+        if (dispatch) {
+            dispatch(clearUserData());
+        }
+    }
+};
+
 export const generateNotes = async (payload) => {
     try {
         const result = await axios.post(serverUrl + "/api/notes/generate-notes", payload, { withCredentials: true });
@@ -39,32 +53,30 @@ export const getNotesHistory = async () => {
         const result = await axios.get(serverUrl + "/api/notes/get-notes", { withCredentials: true });
         return result.data;
     } catch (error) {
-        console.log(error);
-        return { data: [] };
+        return { success: false, data: [] };
     }
-}
+};
+
+export const deleteNoteApi = async (noteId) => {
+    try {
+        const result = await axios.delete(`${serverUrl}/api/notes/${noteId}`, { withCredentials: true });
+        return result.data;
+    } catch (error) {
+        console.error("Delete note error:", error);
+        throw error;
+    }
+};
+
+import { exportNotesToPdf } from '../utils/pdfExport';
 
 export const downloadPdf = async (result) => {
     try {
-        const response = await axios.post(serverUrl+ "/api/pdf/generate-pdf" , {result} , {
-            responseType:"blob" , withCredentials:true
-        })
-
-        const blob = new Blob([response.data], {
-            type: "application/pdf"
-        });
-
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "PrepAI_ExamNotes.pdf";
-        link.click();
-
-        window.URL.revokeObjectURL(url);
+        await exportNotesToPdf(result);
     } catch (error) {
-         throw new Error("PDF download failed");
+        console.error("PDF export error:", error);
+        throw new Error("PDF download failed");
     }
-}
+};
 
 export const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -81,7 +93,6 @@ export const createRazorpayOrder = async (amount) => {
         const response = await axios.post(serverUrl + "/api/payment/create-order", { amount }, { withCredentials: true });
         return response.data;
     } catch (error) {
-        console.log(error);
         throw error;
     }
 };
@@ -91,7 +102,6 @@ export const verifyPayment = async (paymentData) => {
         const response = await axios.post(serverUrl + "/api/payment/verify-payment", paymentData, { withCredentials: true });
         return response.data;
     } catch (error) {
-        console.log(error);
         throw error;
     }
 };

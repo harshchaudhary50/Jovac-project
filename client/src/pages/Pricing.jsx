@@ -1,20 +1,75 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { motion } from "motion/react";
-import { useSelector } from 'react-redux';
+import { motion, AnimatePresence } from "motion/react";
+import { useSelector, useDispatch } from 'react-redux';
+import { updateCredits } from '../redux/userSlice';
 import { loadRazorpayScript, createRazorpayOrder, verifyPayment } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { serverUrl } from '../App';
-import { FiCheck, FiZap, FiShield, FiArrowRight, FiCreditCard } from 'react-icons/fi';
+import { FiCheck, FiZap, FiShield, FiArrowRight, FiCreditCard, FiCheckCircle, FiX } from 'react-icons/fi';
+import confetti from 'canvas-confetti';
+
+const triggerPartyPoppers = () => {
+  try {
+    // 1. Center explosion
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#C85A32', '#DA9B42', '#2B5866', '#6B7B52', '#FFD700']
+    });
+
+    // 2. Left cannon popper
+    confetti({
+      particleCount: 55,
+      angle: 60,
+      spread: 60,
+      origin: { x: 0.15, y: 0.75 },
+      colors: ['#C85A32', '#DA9B42', '#FFD700', '#FFFFFF']
+    });
+
+    // 3. Right cannon popper
+    confetti({
+      particleCount: 55,
+      angle: 120,
+      spread: 60,
+      origin: { x: 0.85, y: 0.75 },
+      colors: ['#C85A32', '#DA9B42', '#FFD700', '#FFFFFF']
+    });
+
+    // 4. Secondary delayed golden star shower
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        spread: 110,
+        origin: { y: 0.45 },
+        shapes: ['star', 'circle'],
+        colors: ['#DA9B42', '#FFB800', '#C85A32', '#2B5866']
+      });
+    }, 280);
+  } catch (e) {
+    console.warn("Confetti error:", e);
+  }
+};
 
 function Pricing() {
+  const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
   const [selectedPrice, setSelectedPrice] = useState(199);
   const [paying, setPaying] = useState(false);
   const [payingAmount, setPayingAmount] = useState(null);
+  const [successModal, setSuccessModal] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+
+  // Fire celebratory party poppers when success modal opens
+  useEffect(() => {
+    if (successModal) {
+      triggerPartyPoppers();
+    }
+  }, [successModal]);
 
   const [adminSettings, setAdminSettings] = useState(() => {
     const savedLocal = localStorage.getItem('adminSettings');
@@ -52,10 +107,11 @@ function Pricing() {
     try {
       setPaying(true);
       setPayingAmount(amount);
+      setErrorMessage("");
 
       const res = await loadRazorpayScript();
       if (!res) {
-        alert('Razorpay SDK failed to load. Check your internet connection.');
+        setErrorMessage('Razorpay SDK failed to load. Check your internet connection.');
         setPaying(false);
         setPayingAmount(null);
         return;
@@ -67,22 +123,28 @@ function Pricing() {
         key: orderData.key,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: "PrepAI",
+        name: "NoteX",
         description: `Exam AI Credit Pack (₹${amount})`,
-        image: "/favicon.jpg",
         order_id: orderData.id,
         handler: async function (response) {
           try {
             const verification = await verifyPayment(response);
             if (verification.success) {
-              alert(`Payment successful! ${verification.creditsAdded} credits added to your account.`);
-              window.location.reload();
+              if (verification.totalCredits !== undefined) {
+                dispatch(updateCredits(verification.totalCredits));
+              } else {
+                dispatch(updateCredits((userData?.credits || 0) + (verification.creditsAdded || 0)));
+              }
+              setSuccessModal({
+                creditsAdded: verification.creditsAdded,
+                totalCredits: verification.totalCredits || ((userData?.credits || 0) + verification.creditsAdded),
+                amount
+              });
             } else {
-              alert('Payment verification failed.');
+              setErrorMessage('Payment verification failed. Please contact support.');
             }
           } catch (err) {
-            console.error(err);
-            alert('Error verifying payment.');
+            setErrorMessage('Error verifying payment.');
           } finally {
             setPaying(false);
             setPayingAmount(null);
@@ -101,8 +163,7 @@ function Pricing() {
       paymentObject.open();
 
     } catch (error) {
-      console.error(error);
-      alert('Could not initialize payment. Please try again.');
+      setErrorMessage(error.response?.data?.message || 'Could not initialize payment. Please try again.');
     } finally {
       setPaying(false);
       setPayingAmount(null);
@@ -119,17 +180,75 @@ function Pricing() {
       {/* Clean Navbar */}
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-6 sm:px-12 pt-28 sm:pt-32 pb-20 relative z-10 space-y-12">
-        
-        {/* Page Title & Subtitle */}
-        <div className="text-center max-w-2xl mx-auto space-y-3">
-          <h1 className="text-4xl sm:text-5xl font-serif text-[#1E2224] dark:text-white tracking-tight">
-            Simple, Transparent <br />
-            <span className="italic font-normal text-[#C85A32] dark:text-white">Pay-As-You-Study</span> Pricing
-          </h1>
+      {/* Payment Success Modal */}
+      <AnimatePresence>
+        {successModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.25 }}
+              className="bg-white dark:bg-[#141414] border border-[#E8DFD5] dark:border-[#2a2a2a] rounded-3xl p-7 max-w-md w-full shadow-2xl space-y-6 text-center"
+            >
+              <motion.div 
+                animate={{ scale: [0.8, 1.15, 1], rotate: [0, -8, 8, 0] }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="w-16 h-16 rounded-3xl bg-[#FAF0DC] dark:bg-[#222222] border border-[#DA9B42]/40 dark:border-[#333333] flex items-center justify-center text-[#B86337] dark:text-[#E6E2D3] mx-auto shadow-md"
+              >
+                <FiZap className="w-8 h-8 text-[#DA9B42] dark:text-amber-400" />
+              </motion.div>
 
-          <p className="text-xs sm:text-sm text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
-            No monthly subscriptions. Buy credits when you need them for your exam prep and use them at your own pace.
+              <div className="space-y-2">
+                <h3 className="text-2xl font-serif font-bold text-[#1E2224] dark:text-white">
+                  +{successModal.creditsAdded} Credits Added!
+                </h3>
+                <p className="text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed font-normal">
+                  Your payment of ₹{successModal.amount} was successfully verified. Your new balance is <strong className="text-[#1E2224] dark:text-white font-bold">{successModal.totalCredits} Credits</strong>.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={() => setSuccessModal(null)}
+                  className="flex-1 py-3 rounded-full text-xs font-semibold text-[#5C6468] dark:text-gray-300 hover:bg-[#FAF7F2] dark:hover:bg-[#222222] border border-[#E8DFD5] dark:border-[#333333] transition cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => navigate('/notes')}
+                  className="flex-1 py-3 rounded-full text-xs font-semibold bg-[#1E2224] dark:bg-white text-white dark:text-black hover:bg-[#333333] dark:hover:bg-neutral-200 transition shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Generate Notes</span>
+                  <FiArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Error Message Toast */}
+      {errorMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#1E2224] dark:bg-white text-white dark:text-[#000000] px-4 py-3 rounded-2xl shadow-xl border border-[#E8DFD5] dark:border-[#333333] flex items-center gap-3 text-xs font-semibold animate-fade-in">
+          <span>{errorMessage}</span>
+          <button onClick={() => setErrorMessage("")} className="cursor-pointer hover:opacity-70">
+            <FiX className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16 space-y-12 sm:space-y-16">
+        
+        {/* Header Section */}
+        <div className="text-center max-w-3xl mx-auto space-y-4">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-[#1E2224] dark:text-white tracking-tight leading-tight">
+            Invest in High-Yield <br />
+            <span className="italic font-normal">Exam Excellence</span>
+          </h1>
+          
+          <p className="text-xs sm:text-sm text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed max-w-xl mx-auto">
+            Pay only for the notes you synthesize. No monthly lock-ins, no subscriptions. Credits never expire and carry over across semesters.
           </p>
         </div>
 

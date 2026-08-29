@@ -134,6 +134,10 @@ JSON FIELD DEFINITIONS:
 1. "subTopics": Categorize 3 key subtopics by exam priority into "⭐" (Good to know), "⭐⭐" (Frequently Asked), and "⭐⭐⭐" (Must-Study / High Weightage).
 2. "importance": Overall exam weightage ("⭐", "⭐⭐", or "⭐⭐⭐").
 3. "notes": The complete rich Markdown formatted string following the format instructions above.
+   - Use clear markdown headers (##, ###), bullet points, and bold text for key terms.
+   - TABLE FORMATTING: When writing markdown comparison tables, every single row MUST be separated by a real newline (\\n). Example:
+     "| Feature | Type A | Type B |\\n| :--- | :--- | :--- |\\n| Speed | Fast | Slow |\\n| Space | O(1) | O(n) |"
+     NEVER put multiple table rows on the same line.
 4. "revisionPoints": 5 to 7 high-impact revision takeaway bullet points.
 5. "questions":
    - "short": 3 concise questions with typical 2-5 mark weightage.

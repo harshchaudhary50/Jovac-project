@@ -1,6 +1,8 @@
+import { parseAiJson } from "../utils/parseAiJson.js";
+
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-export const generateGroqResponse = async (prompt) => {
+export const generateGroqResponse = async (prompt, defaultTopic = "Exam Notes") => {
     try {
         const apiKey = process.env.GROQ_API_KEY;
         if (!apiKey) {
@@ -14,7 +16,7 @@ export const generateGroqResponse = async (prompt) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "openai/gpt-oss-120b",
+                model: "llama-3.1-8b-instant",
                 messages: [
                     {
                         role: "system",
@@ -39,15 +41,10 @@ export const generateGroqResponse = async (prompt) => {
         const content = data.choices?.[0]?.message?.content;
 
         if (!content) {
-            throw new Error("No text returned from Groq");
+            throw new Error("No text returned from Groq API");
         }
 
-        const cleanText = content
-            .replace(/```json/g, "")
-            .replace(/```/g, "")
-            .trim();
-
-        return JSON.parse(cleanText);
+        return parseAiJson(content, defaultTopic);
 
     } catch (error) {
         console.error("❌ Groq Fetch Error:", error.message);

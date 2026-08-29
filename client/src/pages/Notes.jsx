@@ -1,24 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from "motion/react";
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { serverUrl } from '../App';
+import { clearGeneratedResult } from '../redux/generatorSlice';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import TopicForm from '../components/TopicForm';
 import Sidebar from '../components/Sidebar';
 import FinalResult from '../components/FinalResult';
-import { FiBookOpen, FiArrowRight, FiAlertCircle, FiTool } from 'react-icons/fi';
+import { FiBookOpen, FiArrowRight, FiAlertCircle, FiTool, FiPlus, FiCpu } from 'react-icons/fi';
 
 function Notes() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
-  const credits = userData?.credits ?? 0;
-  
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState("");
+  const { isGenerating, generatedResult, generationError, activeTopic } = useSelector((state) => state.generator);
 
   const [adminSettings, setAdminSettings] = useState(() => {
     const savedLocal = localStorage.getItem('adminSettings');
@@ -61,18 +59,30 @@ function Notes() {
               Generate Exam-Oriented Notes
             </h1>
             <p className="text-xs sm:text-sm text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
-              Enter your chapter or syllabus topic below. AI will synthesize structured conceptual explanations, key formulas, priority topic highlights, and visual diagrams tailored for semester exams.
+              Enter your chapter or syllabus topic below. AI synthesizes in-depth conceptual notes, question banks, formulas, and visual diagrams in the background even if you switch pages.
             </p>
           </div>
 
-          {/* Direct History Quick Link */}
-          <button
-            onClick={() => navigate('/history')}
-            className="px-6 py-3.5 rounded-full bg-[#FAF7F2] dark:bg-[#222222] hover:bg-[#2B5866] dark:hover:bg-white text-[#2B5866] dark:text-white hover:text-white dark:hover:text-[#0d0d0d] border border-[#E8DFD5] dark:border-[#303030] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs shrink-0 cursor-pointer"
-          >
-            <span>Saved Note History</span>
-            <FiArrowRight className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-3 shrink-0">
+            {generatedResult && (
+              <button
+                onClick={() => dispatch(clearGeneratedResult())}
+                className="px-5 py-3.5 rounded-full bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d] hover:bg-[#B24B27] dark:hover:bg-gray-100 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs cursor-pointer"
+              >
+                <FiPlus className="w-4 h-4" />
+                <span>Create New Note</span>
+              </button>
+            )}
+
+            {/* Direct History Quick Link */}
+            <button
+              onClick={() => navigate('/history')}
+              className="px-5 py-3.5 rounded-full bg-[#FAF7F2] dark:bg-[#222222] hover:bg-[#2B5866] dark:hover:bg-white text-[#2B5866] dark:text-white hover:text-white dark:hover:text-[#0d0d0d] border border-[#E8DFD5] dark:border-[#303030] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs cursor-pointer"
+            >
+              <span>Saved Notes</span>
+              <FiArrowRight className="w-4 h-4" />
+            </button>
+          </div>
 
         </div>
 
@@ -95,25 +105,23 @@ function Notes() {
           </div>
         )}
 
-        {/* Note Topic Input Form */}
-        <TopicForm 
-          loading={loading} 
-          setResult={setResult} 
-          setLoading={setLoading} 
-          setError={setError}
-          isMaintenance={adminSettings?.maintenanceMode === true}
-        />
+        {/* Note Topic Input Form (Only shown when not showing result, or can be toggled) */}
+        {!generatedResult && (
+          <TopicForm 
+            isMaintenance={adminSettings?.maintenanceMode === true}
+          />
+        )}
 
-        {/* Error Alert Box */}
-        {error && (
+        {/* Global Error Alert Box */}
+        {generationError && (
           <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-bold flex items-center gap-2.5">
             <FiAlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
-            <span>{error}</span>
+            <span>{generationError}</span>
           </div>
         )}
 
         {/* Empty Placeholder before generation */}
-        {!result && !loading && (
+        {!generatedResult && !isGenerating && (
           <motion.div 
             whileHover={{ scale: 1.01 }}
             className="p-12 sm:p-16 rounded-3xl bg-white dark:bg-[#161616] border border-dashed border-[#E8DFD5] dark:border-[#262626] flex flex-col items-center justify-center text-center space-y-3 trekt-card-shadow"
@@ -124,14 +132,14 @@ function Notes() {
             <div className="space-y-1 max-w-sm">
               <h3 className="text-base font-extrabold text-[#1E2224] dark:text-white">Generated Notes Will Appear Here</h3>
               <p className="text-xs text-[#5C6468] dark:text-gray-400 font-medium leading-relaxed">
-                Fill in the form above and click "Generate Exam Notes" to instantly produce your exam study material.
+                Fill in the form above and click "Generate Exam Notes" to synthesize your study guide in the background.
               </p>
             </div>
           </motion.div>
         )}
 
         {/* Generated Result View Layout */}
-        {result && (
+        {generatedResult && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -140,12 +148,12 @@ function Notes() {
           >
             {/* Left Sidebar Table of Contents / Highlights */}
             <div className="lg:col-span-1">
-              <Sidebar result={result} />
+              <Sidebar result={generatedResult} />
             </div>
 
             {/* Right Main Note Output */}
             <div className="lg:col-span-3 bg-white dark:bg-[#161616] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-6 sm:p-8 trekt-card-shadow">
-              <FinalResult result={result} />
+              <FinalResult result={generatedResult} />
             </div>
           </motion.div>
         )}

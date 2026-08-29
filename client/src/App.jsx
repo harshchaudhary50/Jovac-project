@@ -12,6 +12,7 @@ import Pricing from './pages/Pricing';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
 import Admin from './pages/Admin';
+import GlobalGenerationIndicator from './components/GlobalGenerationIndicator';
 
 export const serverUrl = "http://localhost:8000";
 
@@ -162,6 +163,9 @@ function App() {
         {/* Fallback route */}
         <Route path='*' element={<Navigate to="/" replace />} />
       </Routes>
+
+      {/* Global Background Generation Indicator Floating Widget */}
+      <GlobalGenerationIndicator />
     </>
   );
 }

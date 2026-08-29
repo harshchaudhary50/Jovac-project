@@ -143,9 +143,20 @@ export const emailAuth = async (req, res) => {
 
 export const logOut = async (req, res) => {
     try {
-        res.clearCookie("token");
-        return res.status(200).json({ message: "Logged out successfully" });
+        const isProd = process.env.NODE_ENV === "production";
+        const cookieOptions = {
+            httpOnly: true,
+            secure: isProd,
+            sameSite: isProd ? "none" : "lax"
+        };
+        res.clearCookie("token", cookieOptions);
+        res.cookie("token", "", {
+            ...cookieOptions,
+            expires: new Date(0),
+            maxAge: 0
+        });
+        return res.status(200).json({ success: true, message: "Logged out successfully" });
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
 };

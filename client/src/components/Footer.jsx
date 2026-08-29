@@ -35,17 +35,17 @@ function Footer() {
                             className="flex items-center gap-2.5 cursor-pointer select-none group"
                         >
                             <img 
-                                src="/favicon.jpg" 
-                                alt="PrepAI Logo" 
-                                className="w-8 h-8 rounded-xl object-cover shadow-xs border border-[#EBD7BE] dark:border-[#303030] group-hover:scale-105 transition-transform" 
+                                src="/logo.png" 
+                                alt="NoteX Logo" 
+                                className="w-8 h-8 rounded-xl object-contain shadow-xs border border-[#EBD7BE] dark:border-[#303030] group-hover:scale-105 transition-transform" 
                             />
                             <span className="text-xl font-bold tracking-tight text-[#1E2224] dark:text-white">
-                                Prep<span className="text-[#C85A32] dark:text-white font-extrabold">AI</span>
+                                Note<span className="text-[#C85A32] dark:text-white font-extrabold">X</span>
                             </span>
                         </div>
 
                         <p className="text-xs sm:text-sm text-[#5C6468] dark:text-gray-400 leading-relaxed max-w-sm font-medium">
-                            PrepAI untangles complex syllabi into clear, high-yield exam notes, 5-minute revision sheets, and visual flowcharts in seconds.
+                            NoteX untangles complex syllabi into clear, high-yield exam notes, 5-minute revision sheets, and visual flowcharts in seconds.
                         </p>
 
                         <div className="flex items-center gap-3 pt-1">
@@ -133,7 +133,7 @@ function Footer() {
 
                 {/* Bottom Copyright & Rights Bar */}
                 <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-[#5C6468] dark:text-gray-400">
-                    <p>© {new Date().getFullYear()} PrepAI — All Rights Reserved.</p>
+                    <p>© {new Date().getFullYear()} NoteX — All Rights Reserved.</p>
                     <div className="flex items-center gap-6">
                         <button onClick={() => setModalContent('privacy')} className="hover:text-[#C85A32] dark:hover:text-white cursor-pointer transition">Privacy Policy</button>
                         <button onClick={() => setModalContent('terms')} className="hover:text-[#C85A32] dark:hover:text-white cursor-pointer transition">Terms of Service</button>
@@ -165,7 +165,7 @@ function Footer() {
                             {modalContent === 'howItWorks' && (
                                 <div className="space-y-4">
                                     <FiZap className="w-8 h-8 text-[#DA9B42] dark:text-amber-400" />
-                                    <h3 className="text-xl font-extrabold font-serif text-[#1E2224] dark:text-white">How PrepAI Works</h3>
+                                    <h3 className="text-xl font-extrabold font-serif text-[#1E2224] dark:text-white">How NoteX Works</h3>
                                     <div className="space-y-3 text-xs font-medium text-[#5C6468] dark:text-gray-400 leading-relaxed">
                                         <div className="p-3 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626]">
                                             <strong className="block text-[#1E2224] dark:text-white mb-0.5">1. Enter Syllabus Topic</strong>
@@ -221,7 +221,7 @@ function Footer() {
                                 <div className="space-y-3">
                                     <h3 className="text-xl font-extrabold font-serif text-[#1E2224] dark:text-white">Terms of Service</h3>
                                     <p className="text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed">
-                                        PrepAI is designed to assist students with high-yield exam preparation. Users retain full rights to export and study their generated notes.
+                                        NoteX is designed to assist students with high-yield exam preparation. Users retain full rights to export and study their generated notes.
                                     </p>
                                 </div>
                             )}

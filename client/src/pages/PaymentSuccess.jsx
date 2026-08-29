@@ -1,26 +1,50 @@
-import React, { useEffect } from 'react'
-import { motion } from "motion/react"
+import React, { useEffect } from 'react';
+import { motion } from "motion/react";
 import { FiCheckCircle } from "react-icons/fi";
 import { getCurrentUser } from '../services/api';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-function PaymentSuccess() {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    useEffect(()=>{
+import confetti from 'canvas-confetti';
 
-        getCurrentUser(dispatch)
+function PaymentSuccess() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        getCurrentUser(dispatch);
+
+        // Celebratory Party Popper Burst
+        try {
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#C85A32', '#DA9B42', '#2B5866', '#6B7B52', '#FFD700']
+            });
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 60,
+                    spread: 60,
+                    origin: { x: 0.15, y: 0.75 },
+                    colors: ['#C85A32', '#DA9B42', '#FFD700', '#FFFFFF']
+                });
+                confetti({
+                    particleCount: 50,
+                    angle: 120,
+                    spread: 60,
+                    origin: { x: 0.85, y: 0.75 },
+                    colors: ['#C85A32', '#DA9B42', '#FFD700', '#FFFFFF']
+                });
+            }, 250);
+        } catch (e) {}
 
         const t = setTimeout(() => {
-
-            navigate("/")
-
-            
+            navigate("/");
         }, 5000);
 
-        return ()=> clearTimeout(t)
-
-    },[])
+        return () => clearTimeout(t);
+    }, [dispatch, navigate]);
     return (
         <div className='min-h-screen flex flex-col items-center justify-center p-4 gap-4'>
             <motion.div

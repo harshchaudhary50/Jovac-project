@@ -141,12 +141,12 @@ function Auth() {
           className="flex items-center gap-2.5 cursor-pointer select-none group"
         >
           <img 
-            src="/favicon.jpg" 
-            alt="PrepAI Logo" 
-            className="w-8 h-8 rounded-full object-cover shadow-xs border border-[#EBD7BE] dark:border-[#303030] group-hover:scale-105 transition-transform" 
+            src="/logo.png" 
+            alt="NoteX Logo" 
+            className="w-8 h-8 rounded-xl object-contain shadow-xs border border-[#EBD7BE] dark:border-[#303030] group-hover:scale-105 transition-transform" 
           />
           <span className="text-lg font-bold tracking-tight text-[#1E2224] dark:text-white font-sans">
-            Prep<span className="text-[#C85A32] dark:text-white font-extrabold">AI</span>
+            Note<span className="text-[#C85A32] dark:text-white font-extrabold">X</span>
           </span>
         </div>
 
@@ -374,7 +374,7 @@ function Auth() {
             <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-[#C85A32]/15 blur-2xl pointer-events-none" />
 
             <div className="relative z-10">
-              <span className="text-xs font-bold uppercase tracking-wider text-white/80">PrepAI</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-white/80">NoteX</span>
             </div>
 
             {/* Content Swap */}
@@ -440,7 +440,7 @@ function Auth() {
 
       {/* Footer minimal */}
       <footer className="max-w-7xl w-full mx-auto px-6 py-4 text-center text-xs text-[#5C6468] dark:text-gray-500 relative z-10 font-medium">
-        © {new Date().getFullYear()} PrepAI Inc. All rights reserved.
+        © {new Date().getFullYear()} NoteX Inc. All rights reserved.
       </footer>
 
     </div>

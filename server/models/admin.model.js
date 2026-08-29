@@ -23,7 +23,7 @@ const adminSettingsSchema = new mongoose.Schema({
     },
     announcementBanner: {
         type: String,
-        default: "Welcome to PrepAI! Upgrade to Pro for unlimited priority note generation."
+        default: "Welcome to NoteX! Upgrade to Pro for unlimited priority note generation."
     },
     isBannerActive: {
         type: Boolean,

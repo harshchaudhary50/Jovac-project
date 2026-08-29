@@ -1,6 +1,7 @@
 import UserModel from "../models/user.model.js";
 import Notes from "../models/notes.model.js";
 import AdminSettings from "../models/admin.model.js";
+import PaymentModel from "../models/payment.model.js";
 import mongoose from "mongoose";
 
 // GET Admin Overview (100% Real Live Database Aggregations)
@@ -17,8 +18,12 @@ export const getOverviewStats = async (req, res) => {
         const totalRemainingCredits = creditAggregation[0]?.totalRemainingCredits || 0;
         const creditsUsed = notesGenerated * 10;
         
-        // Estimate or calculate revenue from user credit purchases
-        const revenue = 0; // Live Stripe / Payment integration will sync here
+        // Calculate real revenue from Razorpay payment collection
+        const revenueAggregation = await PaymentModel.aggregate([
+            { $match: { status: "success" } },
+            { $group: { _id: null, totalRevenue: { $sum: "$amount" } } }
+        ]);
+        const revenue = revenueAggregation[0]?.totalRevenue || 0;
 
         // Calculate dynamic weekly activity
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -133,7 +138,7 @@ export const getNoteLogs = async (req, res) => {
         const notesLogs = dbNotes.map(n => ({
             id: n._id,
             user: n.user?.name || "Student User",
-            email: n.user?.email || "student@examnotes.ai",
+            email: n.user?.email || "student@notex.ai",
             topic: n.topic,
             type: n.examType || "Deep Concept Notes",
             date: new Date(n.createdAt).toLocaleDateString("en-IN", { 
@@ -155,12 +160,16 @@ export const getNoteLogs = async (req, res) => {
     }
 };
 
-// GET Payments
+// GET Payments (Real MongoDB Payment Logs)
 export const getPaymentLogs = async (req, res) => {
     try {
-        // Returns real payments or empty array if none recorded yet
-        return res.status(200).json({ success: true, payments: [] });
+        const payments = await PaymentModel.find()
+            .populate("user", "name email")
+            .sort({ createdAt: -1 })
+            .limit(50);
+        return res.status(200).json({ success: true, payments });
     } catch (error) {
+        console.error("❌ getPaymentLogs error:", error);
         return res.status(500).json({ success: false, message: error.message, payments: [] });
     }
 };
@@ -301,7 +310,7 @@ let memorySettings = {
     proPlanPrice: 199,
     maintenanceMode: false,
     selectedAiModel: "Gemini 2.5 Flash",
-    announcementBanner: "Welcome to PrepAI! Select any note format below to start studying.",
+    announcementBanner: "Welcome to NoteX! Select any note format below to start studying.",
     isBannerActive: true
 };
 

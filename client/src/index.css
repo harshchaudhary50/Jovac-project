@@ -9,7 +9,6 @@
     color: #1E2224;
     background-color: #FAF7F2;
     overflow-x: hidden;
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   html.dark body, body.dark {
@@ -20,6 +19,21 @@
   h1, h2, h3, .font-serif-title {
     font-family: 'Playfair Display', Georgia, serif;
   }
+}
+
+/* View Transition Butter-Smooth Rendering Optimization */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  will-change: transform, opacity, clip-path;
+}
+
+html.vt-active *,
+html.vt-active body,
+html.vt-active *::before,
+html.vt-active *::after {
+  transition: none !important;
 }
 
 * {

@@ -101,28 +101,31 @@ const cleanMarkdown = (text) => {
         .replace(/\\t/g, "  ")
         .replace(/\\"/g, '"');
 
-    // Fix double pipes and pipe spaces | | into newlines
+    // 1. Fix double pipes and concatenated table rows (| ... | | ... |)
     cleaned = cleaned.replace(/\|\s*\|\s*/g, "|\n|");
 
-    // Ensure proper newlines around markdown table structures
-    cleaned = cleaned.replace(/([^\n])\n(\|.*\|)/g, "$1\n\n$2");
-    cleaned = cleaned.replace(/(\|.*\|)\n([^\n|])/g, "$1\n\n$2");
+    // 2. Ensure blank line before any markdown table block
+    cleaned = cleaned.replace(/([^\n|])\n\s*(\|)/g, "$1\n\n$2");
+
+    // 3. Ensure blank line after any markdown table block
+    cleaned = cleaned.replace(/(\|)\n\s*([^\n|])/g, "$1\n\n$2");
+
+    // 4. Split any row where a pipe immediately follows another pipe without space
+    cleaned = cleaned.replace(/\|\|/g, "|\n|");
 
     return cleaned.trim();
 };
 
 function FinalResult({ result }) {
     const [quickRevision, setQuickRevision] = useState(false);
-    if (
-        !result ||
-        !result.subTopics ||
-        !result.questions ||
-        !result.questions.short ||
-        !result.questions.long ||
-        !result.revisionPoints
-    ) {
-        return null;
-    }
+    if (!result) return null;
+
+    const notesContent = result.notes || result.fullContent || result.content || (typeof result === 'string' ? result : '');
+    const revisionPoints = Array.isArray(result.revisionPoints) 
+        ? result.revisionPoints 
+        : (Array.isArray(result.revisionSheet) ? result.revisionSheet.map(r => typeof r === 'object' ? `${r.key}: ${r.val}` : String(r)) : []);
+    const shortQuestions = Array.isArray(result.questions?.short) ? result.questions.short : [];
+    const longQuestions = Array.isArray(result.questions?.long) ? result.questions.long : [];
 
     return (
         <div className="space-y-8 text-[#1E2224] dark:text-white">
@@ -137,17 +140,19 @@ function FinalResult({ result }) {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    <button 
-                        onClick={() => setQuickRevision(!quickRevision)} 
-                        className={`px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition flex items-center gap-2 cursor-pointer ${
-                            quickRevision
-                                ? "bg-[#1E2224] dark:bg-white text-white dark:text-black shadow-sm"
-                                : "bg-[#FAF0DC] dark:bg-[#222222] text-[#B86337] dark:text-[#E6E2D3] border border-[#DA9B42]/30 dark:border-[#303030] hover:bg-[#1E2224] dark:hover:bg-white hover:text-white dark:hover:text-black"
-                        }`}
-                    >
-                        <FiZap className="w-3.5 h-3.5" />
-                        <span>{quickRevision ? "Full Concept View" : "5-Min Revision Mode"}</span>
-                    </button>
+                    {revisionPoints.length > 0 && (
+                        <button 
+                            onClick={() => setQuickRevision(!quickRevision)} 
+                            className={`px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition flex items-center gap-2 cursor-pointer ${
+                                quickRevision
+                                    ? "bg-[#1E2224] dark:bg-white text-white dark:text-black shadow-sm"
+                                    : "bg-[#FAF0DC] dark:bg-[#222222] text-[#B86337] dark:text-[#E6E2D3] border border-[#DA9B42]/30 dark:border-[#303030] hover:bg-[#1E2224] dark:hover:bg-white hover:text-white dark:hover:text-black"
+                            }`}
+                        >
+                            <FiZap className="w-3.5 h-3.5" />
+                            <span>{quickRevision ? "Full Concept View" : "5-Min Revision Mode"}</span>
+                        </button>
+                    )}
 
                     <button 
                         onClick={() => downloadPdf(result)}
@@ -160,19 +165,19 @@ function FinalResult({ result }) {
             </div>
 
             {/* Detailed Notes Markdown (Main Section) */}
-            {!quickRevision && (
+            {!quickRevision && notesContent && (
                 <section className="space-y-3">
                     <SectionHeader icon={<FiBookOpen />} title="Detailed Chapter & Concept Notes" color="teal" />
                     <div className="bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] rounded-3xl p-6 sm:p-9 shadow-sm">
                         <ReactMarkdown remarkPlugins={[remarkGfm]} components={markDownComponent}>
-                            {cleanMarkdown(result.notes)}
+                            {cleanMarkdown(notesContent)}
                         </ReactMarkdown>
                     </div>
                 </section>
             )}
 
             {/* Quick Revision Sheet */}
-            {quickRevision && (
+            {(quickRevision || !notesContent) && revisionPoints.length > 0 && (
                 <section className="rounded-3xl bg-[#FAF0DC] dark:bg-[#1e1e1e] border border-[#DA9B42]/40 dark:border-[#303030] p-6 sm:p-8 space-y-4">
                     <div className="flex items-center gap-2 text-[#B86337] dark:text-[#E6E2D3]">
                         <FiZap className="w-5 h-5 text-[#DA9B42] dark:text-[#E6E2D3]" />
@@ -181,7 +186,7 @@ function FinalResult({ result }) {
                         </h3>
                     </div>
                     <ul className="list-disc ml-6 space-y-2 text-xs sm:text-sm text-[#5C6468] dark:text-gray-300 leading-relaxed">
-                        {result.revisionPoints.map((p, i) => (
+                        {revisionPoints.map((p, i) => (
                             <li key={i} className="marker:text-[#DA9B42] dark:marker:text-[#E6E2D3]">{p}</li>
                         ))}
                     </ul>
@@ -212,54 +217,52 @@ function FinalResult({ result }) {
             )}
 
             {/* Important Exam Questions */}
-            <section className="space-y-4">
-                <SectionHeader icon={<FiHelpCircle />} title="Predicted Exam Questions" color="sienna" />
+            {(shortQuestions.length > 0 || longQuestions.length > 0 || result.questions?.diagram) && (
+                <section className="space-y-4">
+                    <SectionHeader icon={<FiHelpCircle />} title="Predicted Exam Questions" color="sienna" />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-5 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-2">
-                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#2B5866] dark:text-[#EEEEEE]">Short Answer Questions</p>
-                        <ul className="list-disc ml-4 text-xs text-[#5C6468] dark:text-gray-400 space-y-1.5 leading-relaxed">
-                            {result.questions.short.map((q, i) => (
-                                <li key={i}>{q}</li>
-                            ))}
-                        </ul>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {shortQuestions.length > 0 && (
+                            <div className="p-5 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-2">
+                                <p className="text-xs font-extrabold uppercase tracking-wider text-[#2B5866] dark:text-[#EEEEEE]">Short Answer Questions</p>
+                                <ul className="list-disc ml-5 text-xs text-[#3E4549] dark:text-gray-300 space-y-2 leading-relaxed">
+                                    {shortQuestions.map((q, i) => (
+                                        <li key={i}>{q}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {longQuestions.length > 0 && (
+                            <div className="p-5 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-2">
+                                <p className="text-xs font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-[#E6E2D3]">Long Descriptive Questions</p>
+                                <ul className="list-disc ml-5 text-xs text-[#3E4549] dark:text-gray-300 space-y-2 leading-relaxed">
+                                    {longQuestions.map((q, i) => (
+                                        <li key={i}>{q}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </div>
 
-                    <div className="p-5 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-2">
-                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#C85A32] dark:text-[#E6E2D3]">Long Answer / Essay Questions</p>
-                        <ul className="list-disc ml-4 text-xs text-[#5C6468] dark:text-gray-400 space-y-1.5 leading-relaxed">
-                            {result.questions.long.map((q, i) => (
-                                <li key={i}>{q}</li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-
-                {result.questions.diagram && (
-                    <div className="p-5 rounded-2xl bg-[#EDF2E8] dark:bg-[#1e1e1e] border border-[#6B7B52]/30 dark:border-[#303030] space-y-1">
-                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#6B7B52] dark:text-[#EEEEEE]">Diagram-Based Question</p>
-                        <p className="text-xs text-[#5C6468] dark:text-gray-400 leading-relaxed font-medium">{result.questions.diagram}</p>
-                    </div>
-                )}
-            </section>
+                    {result.questions?.diagram && (
+                        <div className="p-5 rounded-2xl bg-[#FAF7F2] dark:bg-[#1e1e1e] border border-[#E8DFD5] dark:border-[#262626] space-y-1">
+                            <p className="text-xs font-extrabold uppercase tracking-wider text-[#DA9B42] dark:text-[#E6E2D3]">Diagram Question</p>
+                            <p className="text-xs text-[#3E4549] dark:text-gray-300 leading-relaxed">{result.questions.diagram}</p>
+                        </div>
+                    )}
+                </section>
+            )}
 
         </div>
     );
 }
 
-function SectionHeader({ icon, title, color = "terracotta" }) {
-    const colorStyles = {
-        terracotta: "bg-[#F5EBE1] dark:bg-[#222222] text-[#C85A32] dark:text-[#E6E2D3] border-[#EBD7BE] dark:border-[#303030]",
-        teal: "bg-[#E4ECEF] dark:bg-[#222222] text-[#2B5866] dark:text-[#EEEEEE] border-[#2B5866]/20 dark:border-[#303030]",
-        olive: "bg-[#EDF2E8] dark:bg-[#222222] text-[#6B7B52] dark:text-[#EEEEEE] border-[#6B7B52]/20 dark:border-[#303030]",
-        ochre: "bg-[#FAF0DC] dark:bg-[#222222] text-[#B86337] dark:text-[#E6E2D3] border-[#DA9B42]/30 dark:border-[#303030]",
-        sienna: "bg-[#F6ECE4] dark:bg-[#222222] text-[#B86337] dark:text-[#E6E2D3] border-[#E8DFD5] dark:border-[#303030]"
-    };
-
+function SectionHeader({ icon, title, color }) {
     return (
-        <div className={`px-4 py-2 rounded-2xl border font-bold text-xs flex items-center gap-2 w-fit ${colorStyles[color] || colorStyles.terracotta}`}>
-            <span>{icon}</span>
-            <span>{title}</span>
+        <div className="flex items-center gap-2 pb-2">
+            <span className="text-[#C85A32] dark:text-[#E6E2D3] text-base">{icon}</span>
+            <h3 className="font-serif font-bold text-lg text-[#1E2224] dark:text-white tracking-tight">{title}</h3>
         </div>
     );
 }

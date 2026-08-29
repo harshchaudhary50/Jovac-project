@@ -1,7 +1,9 @@
+import { parseAiJson } from "../utils/parseAiJson.js";
+
 const OLLAMA_API_URL = process.env.OLLAMA_URL || "http://127.0.0.1:11434/api/generate";
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "llama3.2:3b";
 
-export const generateOllamaResponse = async (prompt) => {
+export const generateOllamaResponse = async (prompt, defaultTopic = "Exam Notes") => {
     try {
         const response = await fetch(OLLAMA_API_URL, {
             method: "POST",
@@ -31,12 +33,7 @@ export const generateOllamaResponse = async (prompt) => {
             throw new Error("No response received from local Ollama model");
         }
 
-        const cleanText = content
-            .replace(/```json/g, "")
-            .replace(/```/g, "")
-            .trim();
-
-        return JSON.parse(cleanText);
+        return parseAiJson(content, defaultTopic);
 
     } catch (error) {
         console.error("❌ Ollama Local Fetch Error:", error.message);

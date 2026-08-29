@@ -5,6 +5,7 @@ const authRouter = express.Router();
 
 authRouter.post("/google", googleAuth);
 authRouter.post("/email", emailAuth);
+authRouter.post("/logout", logOut);
 authRouter.get("/logout", logOut);
 
 export default authRouter;

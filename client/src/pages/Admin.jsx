@@ -66,7 +66,7 @@ function Admin() {
         proPlanPrice: 199,
         maintenanceMode: false,
         selectedAiModel: 'Gemini 2.5 Flash',
-        announcementBanner: 'Welcome to PrepAI! Select any note format below to start studying.',
+        announcementBanner: 'Welcome to NoteX! Select any note format below to start studying.',
         isBannerActive: true
     };
 
@@ -166,22 +166,29 @@ function Admin() {
                     </button>
                 </div>
 
-                {/* Tab Navigation Pill Bar */}
-                <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-2 border-b border-[#E8DFD5] dark:border-[#262626] no-scrollbar">
+                {/* Tab Navigation Bar with Sliding Underline Indicator */}
+                <div className="flex items-center gap-4 sm:gap-7 overflow-x-auto border-b border-[#E8DFD5] dark:border-[#262626] no-scrollbar pt-1">
                     {navTabs.map((tab) => {
                         const isActive = activeTab === tab.id;
                         return (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`px-4 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+                                className={`pb-3.5 pt-1 text-xs font-bold transition-colors flex items-center gap-2 shrink-0 relative cursor-pointer select-none ${
                                     isActive
-                                        ? 'bg-[#C85A32] dark:bg-white text-white dark:text-[#0d0d0d] shadow-sm shadow-[#C85A32]/20 dark:shadow-none'
-                                        : 'bg-white dark:bg-[#161616] text-[#5C6468] dark:text-gray-400 hover:text-[#1E2224] dark:hover:text-white border border-[#E8DFD5] dark:border-[#262626]'
+                                        ? 'text-[#C85A32] dark:text-white'
+                                        : 'text-[#5C6468] dark:text-neutral-400 hover:text-[#1E2224] dark:hover:text-white'
                                 }`}
                             >
                                 {tab.icon}
                                 <span>{tab.label}</span>
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="adminActiveTabIndicator"
+                                        className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#C85A32] dark:bg-white rounded-full shadow-xs"
+                                        transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                                    />
+                                )}
                             </button>
                         );
                     })}

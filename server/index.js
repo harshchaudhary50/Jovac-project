@@ -9,21 +9,12 @@ import rateLimit from "express-rate-limit";
 import userRouter from "./routes/user.route.js";
 import notesRouter from "./routes/genrate.route.js";
 import pdfRouter from "./routes/pdf.route.js";
-import creditRouter from "./routes/credits.route.js";
-import { stripeWebhook } from "./controllers/credits.controller.js";
 import paymentRouter from "./routes/payment.route.js";
 import adminRouter from "./routes/admin.route.js";
 
 dotenv.config();
 
 const app = express();
-
-// 1. Webhook Raw Body Middleware (Before json parser)
-app.post(
-  "/api/credits/webhook",
-  express.raw({ type: "application/json" }),
-  stripeWebhook
-);
 
 // 2. Helmet HTTP Security Headers
 app.use(helmet({
@@ -86,7 +77,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/notes", notesRouter);
 app.use("/api/pdf", pdfRouter);
-app.use("/api/credit", creditRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/admin", adminRouter);
 

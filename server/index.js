@@ -29,6 +29,7 @@ app.use(helmet({
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
+  "https://jovac-project-rosy.vercel.app",
   "https://client-nine-sigma-45.vercel.app",
   process.env.CLIENT_URL
 ].filter(Boolean).map(url => url.replace(/\/$/, ""));

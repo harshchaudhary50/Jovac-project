@@ -39,6 +39,17 @@ const isValidEmail = (email) => {
            domain.endsWith(".edu.in");
 };
 
+const getCookieOptions = (req) => {
+    const origin = req.headers?.origin || "";
+    const isCrossDomain = origin.includes("vercel.app") || process.env.NODE_ENV === "production";
+    return {
+        httpOnly: true,
+        secure: isCrossDomain,
+        sameSite: isCrossDomain ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    };
+};
+
 export const googleAuth = async (req, res) => {
     try {
         const { name, email } = req.body;
@@ -73,12 +84,7 @@ export const googleAuth = async (req, res) => {
         }
         
         let token = await getToken(user._id);
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        res.cookie("token", token, getCookieOptions(req));
         return res.status(200).json(user);
     } catch (error) {
         console.error("❌ googleAuth error:", error);
@@ -128,12 +134,7 @@ export const emailAuth = async (req, res) => {
         }
 
         let token = await getToken(user._id);
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        res.cookie("token", token, getCookieOptions(req));
         return res.status(200).json(user);
     } catch (error) {
         console.error("❌ emailAuth error:", error);
@@ -143,12 +144,7 @@ export const emailAuth = async (req, res) => {
 
 export const logOut = async (req, res) => {
     try {
-        const isProd = process.env.NODE_ENV === "production";
-        const cookieOptions = {
-            httpOnly: true,
-            secure: isProd,
-            sameSite: isProd ? "none" : "lax"
-        };
+        const cookieOptions = getCookieOptions(req);
         res.clearCookie("token", cookieOptions);
         res.cookie("token", "", {
             ...cookieOptions,

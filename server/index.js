@@ -16,6 +16,9 @@ dotenv.config();
 
 const app = express();
 
+// Trust proxy for Render reverse proxy (required for secure cookies and accurate rate limiting)
+app.set("trust proxy", 1);
+
 // 2. Helmet HTTP Security Headers
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -26,16 +29,24 @@ app.use(helmet({
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
+  "https://client-nine-sigma-45.vercel.app",
   process.env.CLIENT_URL
-].filter(Boolean);
+].filter(Boolean).map(url => url.replace(/\/$/, ""));
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, server-to-server)
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin) return callback(null, true);
+    
+    const cleanOrigin = origin.replace(/\/$/, "");
+    if (
+      allowedOrigins.includes(cleanOrigin) ||
+      cleanOrigin.endsWith(".vercel.app") ||
+      cleanOrigin.includes("localhost")
+    ) {
       return callback(null, true);
     }
-    return callback(new Error("CORS origin not allowed"), false);
+    return callback(new Error(`CORS origin not allowed: ${origin}`), false);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

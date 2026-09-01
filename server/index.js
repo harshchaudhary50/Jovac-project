@@ -7,7 +7,7 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import userRouter from "./routes/user.route.js";
-import notesRouter from "./routes/genrate.route.js";
+import notesRouter from "./routes/notes.route.js";
 import pdfRouter from "./routes/pdf.route.js";
 import paymentRouter from "./routes/payment.route.js";
 import adminRouter from "./routes/admin.route.js";

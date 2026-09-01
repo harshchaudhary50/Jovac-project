@@ -13,8 +13,9 @@ import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
 import Admin from './pages/Admin';
 import GlobalGenerationIndicator from './components/GlobalGenerationIndicator';
+import { SERVER_URL } from './config/constants';
 
-export const serverUrl = import.meta.env.VITE_SERVER_URL || "https://jovac-project-fu4c.onrender.com";
+export const serverUrl = SERVER_URL;
 
 function App() {
   const dispatch = useDispatch();

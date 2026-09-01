@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { flushSync } from "react-dom";
-import { cn } from "../lib/utils";
+import { cn } from "../../lib/utils";
 
 /**
  * High-performance, silky smooth Vector Morphing Sun ↔ Moon Icon

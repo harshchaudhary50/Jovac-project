@@ -65,3 +65,6 @@ NoteX/
 │
 ├── README.md
 └── package.json
+
+##  Live Link:
+https://jovac-project-rosy.vercel.app/
